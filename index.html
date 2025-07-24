@@ -345,37 +345,44 @@
           }
         }, 200);
 
-        const handler = async (e) => {
-          if ((e.key === 'Enter' || e.type === 'click') && enterKey.style.display === 'block') {
-            userInput.removeEventListener('keydown', handler);
-            enterKey.removeEventListener('click', handler);
-            enterKey.style.display = 'none';
-            const scanProgress = document.getElementById('scanProgress');
-            if (scanProgress) scanProgress.remove();
-            console.log('Enter pressed, starting virus removal'); // デバッグログ
-            addOutput(createTranslatableSpan('sos5')); // ウイルス除去開始
-            const pulseElement = document.createElement('div');
-            pulseElement.id = 'pulseProgress';
-            output.appendChild(pulseElement);
-            let shock = 0;
-            const pulse = setInterval(() => {
-              shock++;
-              pulseElement.textContent = '⚡ '.repeat(shock);
-              console.log(`Shock: ${shock}/10`); // デバッグログ
-              if (shock === 10) {
-                clearInterval(pulse);
-                console.log('Virus removal completed'); // デバッグログ
-                const pulseProgress = document.getElementById('pulseProgress');
-                if (pulseProgress) pulseProgress.remove();
-                addOutput(createTranslatableSpan('sos6')); // Virus eliminated!
-                appendPromptLine(lang);
-                isProcessing = false;
-              }
-            }, 200);
-          }
+        const setupEnterHandler = () => {
+          const handler = async (e) => {
+            if ((e.key === 'Enter' || e.type === 'click') && enterKey.style.display === 'block') {
+              userInput.removeEventListener('keydown', handler);
+              enterKey.removeEventListener('click', handler);
+              enterKey.style.display = 'none';
+              const scanProgress = document.getElementById('scanProgress');
+              if (scanProgress) scanProgress.remove();
+              console.log('Enter pressed, starting virus removal'); // デバッグログ
+              addOutput(createTranslatableSpan('sos5')); // ウイルス除去開始
+              const pulseElement = document.createElement('div');
+              pulseElement.id = 'pulseProgress';
+              output.appendChild(pulseElement);
+              let shock = 0;
+              const pulse = setInterval(() => {
+                shock++;
+                pulseElement.textContent = '⚡ '.repeat(shock);
+                console.log(`Shock: ${shock}/10`); // デバッグログ
+                if (shock === 10) {
+                  clearInterval(pulse);
+                  console.log('Virus removal completed'); // デバッグログ
+                  const pulseProgress = document.getElementById('pulseProgress');
+                  if (pulseProgress) pulseProgress.remove();
+                  addOutput(createTranslatableSpan('sos6')); // Virus eliminated!
+                  appendPromptLine(lang);
+                  isProcessing = false;
+                }
+              }, 200);
+            }
+          };
+          userInput.addEventListener('keydown', handler);
+          enterKey.addEventListener('click', handler);
         };
-        userInput.addEventListener('keydown', handler);
-        enterKey.addEventListener('click', handler);
+
+        // スキャン終了後にハンドラをセットアップ
+        if (progress === 10) {
+          setupEnterHandler();
+        }
       } else if (input.includes('lonely')) {
         addOutput(createTranslatableSpan('lonely1'));
         appendPromptLine(lang, 'lonely2');
