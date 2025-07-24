@@ -15,22 +15,23 @@
       align-items: center;
       height: 100vh;
       margin: 0;
-      font-size: 14px;
+      font-size: 12px; /* 小さい画面向けに少し小さく */
       letter-spacing: 0.08em;
     }
     #terminal {
       background: #000;
       border: 2px solid #00ffcc;
-      padding: 20px;
-      width: 80%;
+      padding: 10px; /* 余白を減らして小さい画面にフィット */
+      width: 90%; /* 画面幅に合わせる */
       max-width: 600px;
-      height: 80%;
-      overflow-y: auto;
+      height: auto; /* 小さい画面でスクロール可能 */
+      min-height: 80vh; /* 最低限の高さを確保 */
+      overflow-y: auto; /* 縦スクロールを有効 */
       position: relative;
     }
     #lang-buttons {
       text-align: right;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
     }
     #lang-buttons button {
       background: none;
@@ -39,8 +40,9 @@
       padding: 5px 10px;
       font-family: 'DotGothic16', monospace;
       cursor: pointer;
-      margin-left: 10px;
-      letter-spacing: 0.08em;
+      margin-left: 5px;
+      font-size: 12px; /* 小さい文字で調整 */
+      min-width: 60px; /* タッチしやすいサイズ */
     }
     #lang-buttons button:hover {
       background-color: #00ffcc;
@@ -51,28 +53,33 @@
       color: #000;
     }
     #output {
-      white-space: pre-wrap;
-      margin-bottom: 20px;
-      letter-spacing: 0.08em;
+      white-space: pre-wrap; /* 改行を自然に */
+      word-wrap: break-word; /* 長い単語も折り返し */
+      margin-bottom: 10px;
+      line-height: 1.2; /* 行間を調整 */
     }
     .prompt-line {
       display: flex;
       align-items: center;
+      margin-top: 5px;
     }
     #prompt {
       color: #ff0077;
-      margin-right: 10px;
-      letter-spacing: 0.08em;
+      margin-right: 5px;
+      font-weight: bold; /* 目立たせる */
+      border-bottom: 1px dashed #ff0077; /* 下線で強調 */
     }
     #userInput {
       background: none;
       border: none;
       color: #00ffcc;
       font-family: 'DotGothic16', monospace;
-      font-size: 14px;
+      font-size: 12px;
       outline: none;
       flex-grow: 1;
-      letter-spacing: 0.08em;
+      padding: 5px; /* タッチエリアを広げる */
+      min-height: 30px; /* 高さを増やしてタッチしやすく */
+      border-bottom: 1px solid #00ffcc; /* 入力欄の視認性 */
     }
     .scramble {
       animation: scramble 0.5s ease-in-out forwards;
@@ -90,15 +97,15 @@
       background: #00ffcc;
       border: 2px solid #00ffcc;
       color: #000;
-      padding: 10px 20px;
-      font-size: 14px;
+      padding: 8px 15px;
+      font-size: 12px;
       cursor: pointer;
       border-radius: 5px;
       position: absolute;
-      bottom: 20px;
-      right: 20px;
+      bottom: 10px;
+      right: 10px;
       display: none;
-      letter-spacing: 0.08em;
+      min-width: 60px; /* タッチしやすい */
     }
   </style>
 </head>
@@ -163,12 +170,10 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       const lang = isJapanese ? 'ja' : 'en';
-      console.log('Initializing prompt for language:', lang); // デバッグ用
       appendPromptLine(lang);
     });
 
     function appendPromptLine(lang, promptKey = 'prompt', isRed = false) {
-      console.log('Appending prompt line with key:', promptKey); // デバッグ用
       removeExistingPromptLines();
       const promptLine = document.createElement('div');
       promptLine.classList.add('prompt-line');
@@ -178,7 +183,7 @@
       promptSymbol.id = 'prompt';
       promptSymbol.setAttribute('data-key', promptKey);
       promptSymbol.textContent = promptKey ? translations[lang][promptKey] : '';  
-      promptSymbol.style.marginRight = '10px';
+      promptSymbol.style.marginRight = '5px';
 
       const inputField = document.createElement('input');
       inputField.id = 'userInput';
@@ -187,10 +192,12 @@
       inputField.style.border = 'none';
       inputField.style.color = '#00ffcc';
       inputField.style.fontFamily = "'DotGothic16', monospace";
-      inputField.style.fontSize = '14px';
+      inputField.style.fontSize = '12px';
       inputField.style.outline = 'none';
       inputField.style.flexGrow = '1';
-      inputField.style.letterSpacing = '0.08em';
+      inputField.style.padding = '5px';
+      inputField.style.minHeight = '30px';
+      inputField.style.borderBottom = '1px solid #00ffcc';
 
       promptLine.appendChild(promptSymbol);
       promptLine.appendChild(inputField);
@@ -200,13 +207,11 @@
       userInput = inputField;
       userInput.addEventListener('keydown', handleInput);
       userInput.focus();
-      console.log('Prompt line appended, text:', promptSymbol.textContent); // デバッグ用
     }
 
     function removeExistingPromptLines() {
       const promptLines = output.querySelectorAll('.prompt-line');
       promptLines.forEach(line => line.remove());
-      console.log('Removed existing prompt lines:', promptLines.length); // デバッグ用
     }
 
     async function scrambleToText(element, newText) {
@@ -288,7 +293,6 @@
       const rawInput = userInput.value.trim();
       const lang = isJapanese ? 'ja' : 'en';
 
-      // 入力後の赤い行をspanでラップして翻訳対応
       const inputContainer = document.createElement('span');
       inputContainer.classList.add('red-scramble');
       const promptSpan = createTranslatableSpan('prompt', '', '', true);
@@ -311,7 +315,7 @@
         }
         addOutput(createTranslatableSpan('sos3', '', '', true));
         addOutput(createTranslatableSpan('sos4', '', '', true));
-        appendPromptLine(lang, '', true);  // 空のpromptKeyで重複回避、入力欄だけ追加
+        appendPromptLine(lang, '', true);
         enterKey.style.display = 'block';
         output.appendChild(enterKey);
         output.scrollTop = output.scrollHeight;
@@ -359,9 +363,9 @@
           }
         }
         userInput.addEventListener('keydown', songHandler);
-      } else if (input.replace(/\s/g, '').includes('hatemyself')) { // スペース無視で認識
+      } else if (input.replace(/\s/g, '').includes('hatemyself')) {
         const delay = ms => new Promise(r => setTimeout(r, ms));
-        addOutput(createTranslatableSpan('travel', '🚗 ', '', false, 0)); // Past
+        addOutput(createTranslatableSpan('travel', '🚗 ', '', false, 0));
         await delay(500);
         addOutput('.');
         await delay(500);
@@ -369,7 +373,7 @@
         await delay(500);
         addOutput('.');
         await delay(500);
-        addOutput(createTranslatableSpan('travel', '🚗 ', '', false, 1)); // Future
+        addOutput(createTranslatableSpan('travel', '🚗 ', '', false, 1));
         await delay(500);
         addOutput('.');
         await delay(500);
@@ -387,7 +391,6 @@
           await new Promise(r => setTimeout(r, 300));
         }
         addOutput(createTranslatableSpan('why2'));
-        // デジタル時計を永遠に追加（HH:MM:SS形式）
         setInterval(() => {
           const now = new Date();
           const hours = now.getHours().toString().padStart(2, '0');
@@ -395,7 +398,7 @@
           const seconds = now.getSeconds().toString().padStart(2, '0');
           addOutput(`${hours}:${minutes}:${seconds}`);
         }, 1000);
-        isProcessing = false; // プロンプトは再表示しない
+        isProcessing = false;
       } else {
         appendPromptLine(lang);
         isProcessing = false;
