@@ -171,11 +171,13 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       const lang = isJapanese ? 'ja' : 'en';
-      appendPromptLine(lang);
+      console.log('Initializing prompt with language:', lang); // デバッグログ
+      appendPromptLine(lang); // 初期プロンプトを追加
     });
 
     function appendPromptLine(lang, promptKey = 'prompt', isRed = false) {
-      removeExistingPromptLines();
+      // 初期呼び出しではremoveをスキップ（初回にプロンプトがない）
+      if (output.querySelector('.prompt-line')) removeExistingPromptLines();
       const promptLine = document.createElement('div');
       promptLine.classList.add('prompt-line');
       if (isRed) promptLine.classList.add('red-scramble');
@@ -212,11 +214,13 @@
       userInput = inputField;
       userInput.addEventListener('keydown', handleInput);
       userInput.focus();
+      console.log('Prompt line appended, text:', promptSymbol.textContent); // デバッグログ
     }
 
     function removeExistingPromptLines() {
       const promptLines = output.querySelectorAll('.prompt-line');
       promptLines.forEach(line => line.remove());
+      console.log('Removed existing prompt lines:', promptLines.length); // デバッグログ
     }
 
     async function scrambleToText(element, newText) {
@@ -350,7 +354,7 @@
             userInput.addEventListener('keydown', handler);
             enterKey.addEventListener('click', handler);
           }
-        }, 200); // 200ms間隔でスキャンアニメーション
+        }, 200);
       } else if (input.includes('lonely')) {
         addOutput(createTranslatableSpan('lonely1'));
         appendPromptLine(lang, 'lonely2');
