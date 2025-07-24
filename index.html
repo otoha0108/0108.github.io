@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>HELL0w0RLD! by 0108</title>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -41,7 +41,7 @@
       font-family: 'DotGothic16', monospace;
       cursor: pointer;
       margin-left: 5px;
-      font-size: 16px; /* ← スマホズーム防止 */
+      font-size: 16px;
       min-width: 60px;
     }
     #lang-buttons button:hover {
@@ -65,21 +65,23 @@
     }
     #prompt {
       color: #ff0077;
-      margin-right: 5px;
+      margin-bottom: 5px;
       font-weight: bold;
       border-bottom: 1px dashed #ff0077;
+      display: block;
     }
     #userInput {
       background: none;
       border: none;
       color: #00ffcc;
       font-family: 'DotGothic16', monospace;
-      font-size: 16px; /* ← スマホズーム防止 */
+      font-size: 16px;
       outline: none;
       flex-grow: 1;
       padding: 5px;
       min-height: 30px;
       border-bottom: 1px solid #00ffcc;
+      width: 100%;
     }
     .scramble {
       animation: scramble 0.5s ease-in-out forwards;
@@ -166,7 +168,6 @@
     const langEnButton = document.getElementById('lang-en');
     let userInput = null;
     const enterKey = document.getElementById('enterKey');
-    let isProcessing = false;
 
     window.addEventListener('DOMContentLoaded', () => {
       const lang = isJapanese ? 'ja' : 'en';
@@ -176,33 +177,33 @@
     function appendPromptLine(lang, promptKey = 'prompt', isRed = false) {
       removeExistingPromptLines();
 
-      const promptLine = document.createElement('div');
-      promptLine.classList.add('prompt-line');
-      if (isRed) promptLine.classList.add('red-scramble');
+      const promptText = document.createElement('div');
+      promptText.id = 'prompt';
+      promptText.setAttribute('data-key', promptKey);
+      promptText.textContent = translations[lang][promptKey] || '';
+      if (isRed) promptText.classList.add('red-scramble');
 
-      const promptSymbol = document.createElement('span');
-      promptSymbol.id = 'prompt';
-      promptSymbol.setAttribute('data-key', promptKey);
-      promptSymbol.textContent = promptKey ? translations[lang][promptKey] : '';  
-      promptSymbol.style.marginRight = '5px';
+      const inputWrapper = document.createElement('div');
+      inputWrapper.classList.add('prompt-line');
 
       const inputField = document.createElement('input');
       inputField.id = 'userInput';
       inputField.type = 'text';
+      inputField.style.fontSize = '16px'; // ズーム防止
       inputField.style.background = 'none';
       inputField.style.border = 'none';
       inputField.style.color = '#00ffcc';
       inputField.style.fontFamily = "'DotGothic16', monospace";
-      inputField.style.fontSize = '16px'; // ← ズーム防止
       inputField.style.outline = 'none';
       inputField.style.flexGrow = '1';
       inputField.style.padding = '5px';
       inputField.style.minHeight = '30px';
       inputField.style.borderBottom = '1px solid #00ffcc';
+      inputField.style.width = '100%';
 
-      promptLine.appendChild(promptSymbol);
-      promptLine.appendChild(inputField);
-      output.appendChild(promptLine);
+      inputWrapper.appendChild(inputField);
+      output.appendChild(promptText);
+      output.appendChild(inputWrapper);
 
       const spacer = document.createElement('div');
       spacer.style.height = '0.8em';
@@ -215,8 +216,41 @@
       userInput.focus();
     }
 
-    // （以下、handleInputやscrambleToTextなど省略されていたら元のコードを貼ってOK）
+    function removeExistingPromptLines() {
+      const promptLines = output.querySelectorAll('.prompt-line, #prompt');
+      promptLines.forEach(el => el.remove());
+    }
 
+    function handleInput(event) {
+      if (event.key === 'Enter') {
+        const value = userInput.value.trim();
+        const response = document.createElement('div');
+        response.textContent = '📡 ' + value;
+        output.appendChild(response);
+        appendPromptLine(isJapanese ? 'ja' : 'en');
+      }
+    }
+
+    langJaButton.addEventListener('click', () => {
+      isJapanese = true;
+      langJaButton.classList.add('active');
+      langEnButton.classList.remove('active');
+      updateLanguage();
+    });
+
+    langEnButton.addEventListener('click', () => {
+      isJapanese = false;
+      langEnButton.classList.add('active');
+      langJaButton.classList.remove('active');
+      updateLanguage();
+    });
+
+    function updateLanguage() {
+      document.querySelectorAll('[data-key]').forEach(el => {
+        const key = el.getAttribute('data-key');
+        el.textContent = translations[isJapanese ? 'ja' : 'en'][key];
+      });
+    }
   </script>
 </body>
 </html>
