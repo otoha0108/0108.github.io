@@ -245,7 +245,7 @@
 
     function addOutput(content, options = {}) {
       const lastOutput = output.lastElementChild;
-      if (lastOutput && options.red === undefined && !lastOutput.classList.contains('red-scramble')) {
+      if (lastOutput && !options.red && !lastOutput.classList.contains('red-scramble') && !lastOutput.querySelector('.prompt-line')) {
         lastOutput.textContent = content; // 上書き
       } else {
         const el = document.createElement('div');
@@ -320,6 +320,7 @@
         addOutput(createTranslatableSpan('sos1'));
         let progress = 0;
         const scanElement = document.createElement('div');
+        scanElement.id = 'scanProgress'; // IDで特定
         output.appendChild(scanElement);
         const scan = setInterval(() => {
           progress++;
@@ -339,16 +340,20 @@
             userInput.removeEventListener('keydown', handler);
             enterKey.removeEventListener('click', handler);
             enterKey.style.display = 'none';
-            scanElement.remove(); // プログレスバーを削除
+            const scanProgress = document.getElementById('scanProgress');
+            if (scanProgress) scanProgress.remove(); // プログレスバーを削除
             addOutput(createTranslatableSpan('sos5'));
             let shock = 0;
             const pulseElement = document.createElement('div');
+            pulseElement.id = 'pulseProgress'; // IDで特定
             output.appendChild(pulseElement);
             const pulse = setInterval(() => {
               shock++;
               pulseElement.textContent = '⚡ '.repeat(shock);
               if (shock === 10) {
                 clearInterval(pulse);
+                const pulseProgress = document.getElementById('pulseProgress');
+                if (pulseProgress) pulseProgress.remove(); // パルスを削除
                 addOutput(createTranslatableSpan('sos6'));
                 appendPromptLine(lang);
                 isProcessing = false;
