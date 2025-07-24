@@ -172,11 +172,14 @@
     window.addEventListener('DOMContentLoaded', () => {
       const lang = isJapanese ? 'ja' : 'en';
       console.log('Initializing prompt with language:', lang); // デバッグログ
-      appendPromptLine(lang);
+      if (!output.querySelector('.prompt-line')) {
+        appendPromptLine(lang); // 初回のみプロンプト追加
+      }
     });
 
     function appendPromptLine(lang, promptKey = 'prompt', isRed = false) {
-      if (output.querySelector('.prompt-line')) removeExistingPromptLines(); // 初回以外でクリア
+      console.log('Appending prompt line with key:', promptKey); // デバッグログ
+      if (output.querySelector('.prompt-line')) removeExistingPromptLines(); // 既存のプロンプトをクリア
       const promptLine = document.createElement('div');
       promptLine.classList.add('prompt-line');
       if (isRed) promptLine.classList.add('red-scramble');
@@ -246,12 +249,19 @@
     function addOutput(content, options = {}) {
       const lastOutput = output.lastElementChild;
       if (lastOutput && !options.red && !lastOutput.classList.contains('red-scramble') && !lastOutput.querySelector('.prompt-line')) {
-        lastOutput.textContent = content; // 上書き
+        if (content instanceof HTMLElement) {
+          lastOutput.innerHTML = content.textContent; // 要素ならテキストだけ上書き
+        } else {
+          lastOutput.textContent = content; // 文字列なら上書き
+        }
       } else {
         const el = document.createElement('div');
         if (options.red) el.classList.add('red-scramble');
-        if (typeof content === 'string') el.textContent = content;
-        else el.appendChild(content);
+        if (content instanceof HTMLElement) {
+          el.appendChild(content);
+        } else {
+          el.textContent = content;
+        }
         output.appendChild(el);
       }
       output.scrollTop = output.scrollHeight;
@@ -320,7 +330,7 @@
         addOutput(createTranslatableSpan('sos1'));
         let progress = 0;
         const scanElement = document.createElement('div');
-        scanElement.id = 'scanProgress'; // IDで特定
+        scanElement.id = 'scanProgress';
         output.appendChild(scanElement);
         const scan = setInterval(() => {
           progress++;
@@ -341,19 +351,19 @@
             enterKey.removeEventListener('click', handler);
             enterKey.style.display = 'none';
             const scanProgress = document.getElementById('scanProgress');
-            if (scanProgress) scanProgress.remove(); // プログレスバーを削除
+            if (scanProgress) scanProgress.remove();
             addOutput(createTranslatableSpan('sos5'));
-            let shock = 0;
             const pulseElement = document.createElement('div');
-            pulseElement.id = 'pulseProgress'; // IDで特定
+            pulseElement.id = 'pulseProgress';
             output.appendChild(pulseElement);
+            let shock = 0;
             const pulse = setInterval(() => {
               shock++;
               pulseElement.textContent = '⚡ '.repeat(shock);
               if (shock === 10) {
                 clearInterval(pulse);
                 const pulseProgress = document.getElementById('pulseProgress');
-                if (pulseProgress) pulseProgress.remove(); // パルスを削除
+                if (pulseProgress) pulseProgress.remove();
                 addOutput(createTranslatableSpan('sos6'));
                 appendPromptLine(lang);
                 isProcessing = false;
