@@ -336,7 +336,7 @@
           console.log(`Progress: ${progress}/10`); // デバッグログ
           if (progress === 10) {
             clearInterval(scan);
-            console.log('Scan completed, showing alert'); // デバッグログ
+            console.log('Scan completed'); // デバッグログ
             addOutput(createTranslatableSpan('sos3', '', '', true)); // ウイルス発見
             addOutput(createTranslatableSpan('sos4', '', '', true)); // Enter指示
             enterKey.style.display = 'block';
@@ -364,6 +364,7 @@
               console.log(`Shock: ${shock}/10`); // デバッグログ
               if (shock === 10) {
                 clearInterval(pulse);
+                console.log('Virus removal completed'); // デバッグログ
                 const pulseProgress = document.getElementById('pulseProgress');
                 if (pulseProgress) pulseProgress.remove();
                 addOutput(createTranslatableSpan('sos6')); // Virus eliminated!
