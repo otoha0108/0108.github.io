@@ -172,14 +172,11 @@
     window.addEventListener('DOMContentLoaded', () => {
       const lang = isJapanese ? 'ja' : 'en';
       console.log('Initializing prompt with language:', lang); // デバッグログ
-      if (!output.querySelector('.prompt-line')) {
-        appendPromptLine(lang); // 初回のみプロンプト追加
-      }
+      appendPromptLine(lang);
     });
 
     function appendPromptLine(lang, promptKey = 'prompt', isRed = false) {
-      console.log('Appending prompt line with key:', promptKey); // デバッグログ
-      if (output.querySelector('.prompt-line')) removeExistingPromptLines(); // 既存のプロンプトをクリア
+      if (output.querySelector('.prompt-line')) removeExistingPromptLines(); // 初回以外でクリア
       const promptLine = document.createElement('div');
       promptLine.classList.add('prompt-line');
       if (isRed) promptLine.classList.add('red-scramble');
@@ -250,15 +247,15 @@
       const lastOutput = output.lastElementChild;
       if (lastOutput && !options.red && !lastOutput.classList.contains('red-scramble') && !lastOutput.querySelector('.prompt-line')) {
         if (content instanceof HTMLElement) {
-          lastOutput.innerHTML = content.textContent; // 要素ならテキストだけ上書き
+          lastOutput.textContent = content.textContent; // 要素ならテキストを上書き
         } else {
-          lastOutput.textContent = content; // 文字列なら上書き
+          lastOutput.textContent = content; // 文字列を上書き
         }
       } else {
         const el = document.createElement('div');
         if (options.red) el.classList.add('red-scramble');
         if (content instanceof HTMLElement) {
-          el.appendChild(content);
+          el.appendChild(content.cloneNode(true)); // 要素をコピーして追加
         } else {
           el.textContent = content;
         }
@@ -318,7 +315,7 @@
       const promptSpan = createTranslatableSpan('prompt', '', '', true);
       const rawSpan = document.createElement('span');
       rawSpan.textContent = ' ' + rawInput;
-      inputContainer.appendChild(promptSpan);
+      inputContainer.appendChild(promptSpan.cloneNode(true));
       inputContainer.appendChild(rawSpan);
       addOutput(inputContainer);
 
@@ -332,11 +329,14 @@
         const scanElement = document.createElement('div');
         scanElement.id = 'scanProgress';
         output.appendChild(scanElement);
+        console.log('Starting scan animation'); // デバッグログ
         const scan = setInterval(() => {
           progress++;
           scanElement.textContent = `${t['sos2']}[${'█'.repeat(progress)}${'-'.repeat(10 - progress)}]`;
+          console.log(`Progress: ${progress}/10`); // デバッグログ
           if (progress === 10) {
             clearInterval(scan);
+            console.log('Scan completed, showing alert'); // デバッグログ
             addOutput(createTranslatableSpan('sos3', '', '', true));
             addOutput(createTranslatableSpan('sos4', '', '', true));
             enterKey.style.display = 'block';
@@ -352,6 +352,7 @@
             enterKey.style.display = 'none';
             const scanProgress = document.getElementById('scanProgress');
             if (scanProgress) scanProgress.remove();
+            console.log('Enter pressed, starting virus removal'); // デバッグログ
             addOutput(createTranslatableSpan('sos5'));
             const pulseElement = document.createElement('div');
             pulseElement.id = 'pulseProgress';
@@ -360,6 +361,7 @@
             const pulse = setInterval(() => {
               shock++;
               pulseElement.textContent = '⚡ '.repeat(shock);
+              console.log(`Shock: ${shock}/10`); // デバッグログ
               if (shock === 10) {
                 clearInterval(pulse);
                 const pulseProgress = document.getElementById('pulseProgress');
