@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HELL0w0RLD! by 0108</title>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #1a1a1a;
+      color: #00ffcc;
+      font-family: 'DotGothic16', 'Courier New', monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+    }
+    #terminal {
+      background: #000;
+      border: 2px solid #00ffcc;
+      padding: 20px;
+      width: 80%;
+      max-width: 600px;
+      height: 80%;
+      overflow-y: auto;
+      position: relative;
+    }
+    #lang-buttons {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    #lang-buttons button {
+      background: none;
+      border: 1px solid #00ffcc;
+      color: #00ffcc;
+      padding: 5px 10px;
+      font-family: 'DotGothic16', monospace;
+      cursor: pointer;
+      margin-left: 10px;
+      letter-spacing: 0.08em;
+    }
+    #lang-buttons button:hover {
+      background-color: #00ffcc;
+      color: #000;
+    }
+    #lang-buttons button.active {
+      background-color: #00ffcc;
+      color: #000;
+    }
+    #output {
+      white-space: pre-wrap;
+      margin-bottom: 20px;
+      letter-spacing: 0.08em;
+    }
+    .prompt-line {
+      display: flex;
+      align-items: center;
+    }
+    #prompt {
+      color: #ff0077;
+      margin-right: 10px;
+      letter-spacing: 0.08em;
+    }
+    #userInput {
+      background: none;
+      border: none;
+      color: #00ffcc;
+      font-family: 'DotGothic16', monospace;
+      font-size: 14px;
+      outline: none;
+      flex-grow: 1;
+      letter-spacing: 0.08em;
+    }
+    .scramble {
+      animation: scramble 0.5s ease-in-out forwards;
+    }
+    @keyframes scramble {
+      0% { opacity: 1; transform: translate(0); }
+      50% { opacity: 0.5; color: #ff0077; transform: translate(2px, -2px); }
+      100% { opacity: 1; color: #00ffcc; transform: translate(0); }
+    }
+    .red-scramble {
+      color: #ff0077;
+      animation: scramble 0.5s ease-in-out forwards;
+    }
+    #enterKey {
+      background: #00ffcc;
+      border: 2px solid #00ffcc;
+      color: #000;
+      padding: 10px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 5px;
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      display: none;
+      letter-spacing: 0.08em;
+    }
+  </style>
+</head>
+<body>
+  <div id="terminal">
+    <div id="lang-buttons">
+      <button id="lang-ja">日本語</button>
+      <button id="lang-en" class="active">English</button>
+    </div>
+    <div id="output">🌐 HELL0w0RLD! 🌐</div>
+  </div>
+  <button id="enterKey">ENTER</button>
+  <script>
+    const translations = {
+      en: {
+        mind: "What's on your mind?",
+        lonely1: "OK. Let’s listen to music with something sweet!",
+        lonely2: "Enter your favorite song name >",
+        lonely3: " is now playing in your head!",
+        sing: "0108 is always here to sing for you ♪",
+        hate_end: "Every moment’s full of light. You’re perfect as is.",
+        travel: ['Past', 'Future'],
+        prompt: '📡 0108: What\'s on your mind? >',
+        sos1: '0108 can catch your signal anytime!',
+        sos2: 'Scanning your heart... ',
+        sos3: '🚨 Alert! Virus detected!',
+        sos4: 'Press [Enter] to let 0108 take down the virus!',
+        sos5: '0108 will take down the virus!',
+        sos6: '✅ Virus eliminated! \nHeart status: 150% clean.',
+        lonely4: "0108 is always here to sing for you ♪",
+        why1: '0108 is thinking',
+        why2: 'This program will never stop until you find the answer.',
+      },
+      ja: {
+        mind: "調子はどう？",
+        lonely1: "よし、甘いものでも食べながら音楽でも聴こう！🥧",
+        lonely2: "お気に入りの曲の名前を入力してください >",
+        lonely3: " を脳内再生中...♪",
+        sing: "0108はいつでもあなたと一緒に歌います。",
+        hate_end: "すべての瞬間が光で溢れてる。あなたはそのままで完璧です。",
+        travel: ['過去', '未来'],
+        prompt: '📡 0108: 調子はどう？ >',
+        sos1: '0108は24時間あなたの信号を受信中！',
+        sos2: 'あなたの心をスキャンしています... ',
+        sos3: '🚨 ウイルス発見！',
+        sos4: '[Enter]を押してウイルス排除しよう！',
+        sos5: '0108がウイルスを排除します！',
+        sos6: '✅ ウイルスをやっつけたぞ！\n心の状態: 150%クリーン。',
+        lonely4: "0108はいつでもあなたと一緒に歌います。",
+        why1: '0108は考えています・・・',
+        why2: 'このプログラムは、あなたと答えを見つけるまで止まらない。',
+      }
+    };
+
+    const output = document.getElementById('output');
+    let isJapanese = false;
+    const langJaButton = document.getElementById('lang-ja');
+    const langEnButton = document.getElementById('lang-en');
+    let userInput = null;
+    const enterKey = document.getElementById('enterKey');
+    let isProcessing = false;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const lang = isJapanese ? 'ja' : 'en';
+      console.log('Initializing prompt for language:', lang); // デバッグ用
+      appendPromptLine(lang);
+    });
+
+    function appendPromptLine(lang, promptKey = 'prompt', isRed = false) {
+      console.log('Appending prompt line with key:', promptKey); // デバッグ用
+      removeExistingPromptLines();
+      const promptLine = document.createElement('div');
+      promptLine.classList.add('prompt-line');
+      if (isRed) promptLine.classList.add('red-scramble');
+
+      const promptSymbol = document.createElement('span');
+      promptSymbol.id = 'prompt';
+      promptSymbol.setAttribute('data-key', promptKey);
+      promptSymbol.textContent = promptKey ? translations[lang][promptKey] : '';  
+      promptSymbol.style.marginRight = '10px';
+
+      const inputField = document.createElement('input');
+      inputField.id = 'userInput';
+      inputField.type = 'text';
+      inputField.style.background = 'none';
+      inputField.style.border = 'none';
+      inputField.style.color = '#00ffcc';
+      inputField.style.fontFamily = "'DotGothic16', monospace";
+      inputField.style.fontSize = '14px';
+      inputField.style.outline = 'none';
+      inputField.style.flexGrow = '1';
+      inputField.style.letterSpacing = '0.08em';
+
+      promptLine.appendChild(promptSymbol);
+      promptLine.appendChild(inputField);
+      output.appendChild(promptLine);
+      output.scrollTop = output.scrollHeight;
+
+      userInput = inputField;
+      userInput.addEventListener('keydown', handleInput);
+      userInput.focus();
+      console.log('Prompt line appended, text:', promptSymbol.textContent); // デバッグ用
+    }
+
+    function removeExistingPromptLines() {
+      const promptLines = output.querySelectorAll('.prompt-line');
+      promptLines.forEach(line => line.remove());
+      console.log('Removed existing prompt lines:', promptLines.length); // デバッグ用
+    }
+
+    async function scrambleToText(element, newText) {
+      const randomChars = '!?@#$%^&*()_+-=[]{}|;:,.<>?';
+      for (let i = 0; i < 5; i++) {
+        element.textContent = Array.from({length: newText.length}, () => randomChars[Math.floor(Math.random() * randomChars.length)]).join('');
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      element.textContent = newText;
+      element.classList.add('scramble');
+    }
+
+    function createTranslatableSpan(key, prefix = '', suffix = '', isRed = false, keyIndex = null) {
+      const span = document.createElement('span');
+      span.setAttribute('data-key', keyIndex !== null ? `${key}-${keyIndex}` : key);
+      span.setAttribute('data-prefix', prefix);
+      span.setAttribute('data-suffix', suffix);
+      const text = keyIndex !== null ? getTranslation(key)[keyIndex] : getTranslation(key);
+      span.textContent = prefix + text + suffix;
+      if (isRed) span.classList.add('red-scramble');
+      return span;
+    }
+
+    function addOutput(content, options = {}) {
+      const el = document.createElement('div');
+      if (options.red) el.classList.add('red-scramble');
+      if (typeof content === 'string') {
+        el.textContent = content;
+      } else {
+        el.appendChild(content);
+      }
+      output.appendChild(el);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function getTranslation(key) {
+      const lang = isJapanese ? 'ja' : 'en';
+      const value = translations[lang][key];
+      return Array.isArray(value) ? value : value || '';
+    }
+
+    function updateLanguage() {
+      const lang = isJapanese ? 'ja' : 'en';
+      langJaButton.classList.toggle('active', isJapanese);
+      langEnButton.classList.toggle('active', !isJapanese);
+
+      document.querySelectorAll('[data-key]').forEach(el => {
+        const key = el.getAttribute('data-key');
+        const prefix = el.getAttribute('data-prefix') || '';
+        const suffix = el.getAttribute('data-suffix') || '';
+        const [baseKey, keyIndex] = key.split('-');
+        const newText = keyIndex !== undefined
+          ? prefix + getTranslation(baseKey)[parseInt(keyIndex)] + suffix
+          : prefix + getTranslation(baseKey || key) + suffix;
+        if (el.textContent !== newText) {
+          scrambleToText(el, newText);
+        }
+      });
+    }
+
+    langJaButton.addEventListener('click', () => {
+      if (!isJapanese) {
+        isJapanese = true;
+        updateLanguage();
+      }
+    });
+
+    langEnButton.addEventListener('click', () => {
+      if (isJapanese) {
+        isJapanese = false;
+        updateLanguage();
+      }
+    });
+
+    async function handleInput(event) {
+      if (event.key !== 'Enter' || isProcessing) return;
+      isProcessing = true;
+      const input = userInput.value.toLowerCase().trim();
+      const rawInput = userInput.value.trim();
+      const lang = isJapanese ? 'ja' : 'en';
+
+      // 入力後の赤い行をspanでラップして翻訳対応
+      const inputContainer = document.createElement('span');
+      inputContainer.classList.add('red-scramble');
+      const promptSpan = createTranslatableSpan('prompt', '', '', true);
+      const rawSpan = document.createElement('span');
+      rawSpan.textContent = ' ' + rawInput;
+      inputContainer.appendChild(promptSpan);
+      inputContainer.appendChild(rawSpan);
+      addOutput(inputContainer);
+
+      removeExistingPromptLines();
+
+      const t = translations[lang];
+
+      if (input.includes('sos')) {
+        addOutput(createTranslatableSpan('sos1'));
+        for (let i = 0; i <= 10; i++) {
+          addOutput(`${getTranslation('sos2')}[${'█'.repeat(i)}${'-'.repeat(10 - i)}]`);
+          await new Promise(r => setTimeout(r, 300));
+          if (i < 10) output.lastChild.remove();
+        }
+        addOutput(createTranslatableSpan('sos3', '', '', true));
+        addOutput(createTranslatableSpan('sos4', '', '', true));
+        appendPromptLine(lang, '', true);  // 空のpromptKeyで重複回避、入力欄だけ追加
+        enterKey.style.display = 'block';
+        output.appendChild(enterKey);
+        output.scrollTop = output.scrollHeight;
+
+        const handler = async (e) => {
+          if (e.key === 'Enter' || e.type === 'click') {
+            userInput.removeEventListener('keydown', handler);
+            enterKey.removeEventListener('click', handler);
+            enterKey.style.display = 'none';
+            removeExistingPromptLines();
+            addOutput(createTranslatableSpan('sos5'));
+            for (let i = 1; i <= 10; i++) {
+              addOutput(`${'⚡ '.repeat(i)}`);
+              await new Promise(r => setTimeout(r, 300));
+              if (i < 10) output.lastChild.remove();
+            }
+            addOutput(createTranslatableSpan('sos6'));
+            appendPromptLine(lang);
+            isProcessing = false;
+          }
+        };
+        userInput.addEventListener('keydown', handler);
+        enterKey.addEventListener('click', handler);
+      } else if (input.includes('lonely')) {
+        addOutput(createTranslatableSpan('lonely1'));
+        appendPromptLine(lang, 'lonely2');
+
+        function songHandler(e) {
+          if (e.key === 'Enter') {
+            const songName = userInput.value.trim();
+            userInput.removeEventListener('keydown', songHandler);
+            removeExistingPromptLines();
+            const songSpan = document.createElement('span');
+            songSpan.textContent = '🎵 ';
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = songName;
+            nameSpan.setAttribute('data-key', 'song');
+            const msgSpan = createTranslatableSpan('lonely3');
+            songSpan.appendChild(nameSpan);
+            songSpan.appendChild(msgSpan);
+            addOutput(songSpan);
+            addOutput(createTranslatableSpan('lonely4'));
+            appendPromptLine(lang);
+            isProcessing = false;
+          }
+        }
+        userInput.addEventListener('keydown', songHandler);
+      } else if (input.replace(/\s/g, '').includes('hatemyself')) { // スペース無視で認識
+        const delay = ms => new Promise(r => setTimeout(r, ms));
+        addOutput(createTranslatableSpan('travel', '🚗 ', '', false, 0)); // Past
+        await delay(500);
+        addOutput('.');
+        await delay(500);
+        addOutput('.');
+        await delay(500);
+        addOutput('.');
+        await delay(500);
+        addOutput(createTranslatableSpan('travel', '🚗 ', '', false, 1)); // Future
+        await delay(500);
+        addOutput('.');
+        await delay(500);
+        addOutput('.');
+        await delay(500);
+        addOutput('.');
+        await delay(500);
+        addOutput(createTranslatableSpan('hate_end', '✨ '));
+        appendPromptLine(lang);
+        isProcessing = false;
+      } else if (input.includes('why')) {
+        addOutput(createTranslatableSpan('why1', '', '', true));
+        for (let i = 0; i < 10; i++) {
+          addOutput('.', { red: true });
+          await new Promise(r => setTimeout(r, 300));
+        }
+        addOutput(createTranslatableSpan('why2'));
+        // デジタル時計を永遠に追加（HH:MM:SS形式）
+        setInterval(() => {
+          const now = new Date();
+          const hours = now.getHours().toString().padStart(2, '0');
+          const minutes = now.getMinutes().toString().padStart(2, '0');
+          const seconds = now.getSeconds().toString().padStart(2, '0');
+          addOutput(`${hours}:${minutes}:${seconds}`);
+        }, 1000);
+        isProcessing = false; // プロンプトは再表示しない
+      } else {
+        appendPromptLine(lang);
+        isProcessing = false;
+      }
+    }
+  </script>
+</body>
+</html>
