@@ -346,7 +346,7 @@
         }, 200);
 
         const handler = async (e) => {
-          if (e.key === 'Enter' || e.type === 'click') {
+          if ((e.key === 'Enter' || e.type === 'click') && enterKey.style.display === 'block') {
             userInput.removeEventListener('keydown', handler);
             enterKey.removeEventListener('click', handler);
             enterKey.style.display = 'none';
