@@ -172,12 +172,11 @@
     window.addEventListener('DOMContentLoaded', () => {
       const lang = isJapanese ? 'ja' : 'en';
       console.log('Initializing prompt with language:', lang); // デバッグログ
-      appendPromptLine(lang); // 初期プロンプトを追加
+      appendPromptLine(lang);
     });
 
     function appendPromptLine(lang, promptKey = 'prompt', isRed = false) {
-      // 初期呼び出しではremoveをスキップ（初回にプロンプトがない）
-      if (output.querySelector('.prompt-line')) removeExistingPromptLines();
+      if (output.querySelector('.prompt-line')) removeExistingPromptLines(); // 初回以外でクリア
       const promptLine = document.createElement('div');
       promptLine.classList.add('prompt-line');
       if (isRed) promptLine.classList.add('red-scramble');
@@ -245,14 +244,16 @@
     }
 
     function addOutput(content, options = {}) {
-      const el = document.createElement('div');
-      if (options.red) el.classList.add('red-scramble');
-      if (typeof content === 'string') {
-        el.textContent = content;
+      const lastOutput = output.lastElementChild;
+      if (lastOutput && options.red === undefined && !lastOutput.classList.contains('red-scramble')) {
+        lastOutput.textContent = content; // 上書き
       } else {
-        el.appendChild(content);
+        const el = document.createElement('div');
+        if (options.red) el.classList.add('red-scramble');
+        if (typeof content === 'string') el.textContent = content;
+        else el.appendChild(content);
+        output.appendChild(el);
       }
-      output.appendChild(el);
       output.scrollTop = output.scrollHeight;
     }
 
@@ -318,43 +319,45 @@
       if (input.includes('sos')) {
         addOutput(createTranslatableSpan('sos1'));
         let progress = 0;
+        const scanElement = document.createElement('div');
+        output.appendChild(scanElement);
         const scan = setInterval(() => {
           progress++;
-          const line = `${t['sos2']}[${'█'.repeat(progress)}${'-'.repeat(10 - progress)}]`;
-          addOutput(line);
+          scanElement.textContent = `${t['sos2']}[${'█'.repeat(progress)}${'-'.repeat(10 - progress)}]`;
           if (progress === 10) {
             clearInterval(scan);
             addOutput(createTranslatableSpan('sos3', '', '', true));
             addOutput(createTranslatableSpan('sos4', '', '', true));
-            appendPromptLine(lang, '', true);
             enterKey.style.display = 'block';
             output.appendChild(enterKey);
             output.scrollTop = output.scrollHeight;
-
-            const handler = async (e) => {
-              if (e.key === 'Enter' || e.type === 'click') {
-                userInput.removeEventListener('keydown', handler);
-                enterKey.removeEventListener('click', handler);
-                enterKey.style.display = 'none';
-                removeExistingPromptLines();
-                addOutput(createTranslatableSpan('sos5'));
-                let shock = 0;
-                const pulse = setInterval(() => {
-                  shock++;
-                  addOutput('⚡ '.repeat(shock));
-                  if (shock === 10) {
-                    clearInterval(pulse);
-                    addOutput(createTranslatableSpan('sos6'));
-                    appendPromptLine(lang);
-                    isProcessing = false;
-                  }
-                }, 200);
-              }
-            };
-            userInput.addEventListener('keydown', handler);
-            enterKey.addEventListener('click', handler);
           }
         }, 200);
+
+        const handler = async (e) => {
+          if (e.key === 'Enter' || e.type === 'click') {
+            userInput.removeEventListener('keydown', handler);
+            enterKey.removeEventListener('click', handler);
+            enterKey.style.display = 'none';
+            scanElement.remove(); // プログレスバーを削除
+            addOutput(createTranslatableSpan('sos5'));
+            let shock = 0;
+            const pulseElement = document.createElement('div');
+            output.appendChild(pulseElement);
+            const pulse = setInterval(() => {
+              shock++;
+              pulseElement.textContent = '⚡ '.repeat(shock);
+              if (shock === 10) {
+                clearInterval(pulse);
+                addOutput(createTranslatableSpan('sos6'));
+                appendPromptLine(lang);
+                isProcessing = false;
+              }
+            }, 200);
+          }
+        };
+        userInput.addEventListener('keydown', handler);
+        enterKey.addEventListener('click', handler);
       } else if (input.includes('lonely')) {
         addOutput(createTranslatableSpan('lonely1'));
         appendPromptLine(lang, 'lonely2');
