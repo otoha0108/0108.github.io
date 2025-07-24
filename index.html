@@ -59,24 +59,25 @@
             font-size: 16px;
         }
         #input-container {
-            display: flex;
-            align-items: center;
+            margin-top: 10px; /* プロンプトとの間にスペースを追加 */
         }
         #prompt {
             color: #ff0077;
-            margin-right: 10px;
+            display: block; /* 改行を入れるためブロック要素に */
+            margin-right: 0;
             letter-spacing: 0.08em;
-            font-size: 18px; /* 入力欄のフォントサイズを18pxに増やしてズーム回避 */
+            font-size: 18px;
         }
         #userInput {
             background: none;
             border: none;
             color: #00ffcc;
             font-family: 'DotGothic16', monospace;
-            font-size: 18px; /* 入力欄のフォントサイズを18pxに増やしてズーム回避 */
+            font-size: 18px;
             outline: none;
             flex-grow: 1;
             letter-spacing: 0.08em;
+            width: 100%; /* 入力欄を幅いっぱいに */
         }
         .scramble {
             animation: scramble 0.5s ease-in-out forwards;
@@ -299,6 +300,7 @@
 
                 const enterHandler = async (e) => {
                     if (e.key === 'Enter' || e.type === 'click') {
+                        console.log('Enter detected');
                         userInput.removeEventListener('keydown', enterHandler);
                         enterKey.removeEventListener('click', enterHandler);
                         enterKey.style.display = 'none';
@@ -313,14 +315,13 @@
                         // プロンプトを再追加
                         const newInputContainer = document.createElement('div');
                         newInputContainer.id = 'input-container';
-                        newInputContainer.style.display = 'flex';
-                        newInputContainer.style.alignItems = 'center';
+                        newInputContainer.style.marginTop = '10px';
 
                         const newPrompt = document.createElement('span');
                         newPrompt.id = 'prompt';
                         newPrompt.textContent = t.prompt;
                         newPrompt.style.color = '#ff0077';
-                        newPrompt.style.marginRight = '10px';
+                        newPrompt.style.display = 'block';
 
                         userInput = document.createElement('input');
                         userInput.id = 'userInput';
@@ -333,6 +334,7 @@
                         userInput.style.outline = 'none';
                         userInput.style.flexGrow = '1';
                         userInput.style.letterSpacing = '0.08em';
+                        userInput.style.width = '100%';
 
                         newInputContainer.appendChild(newPrompt);
                         newInputContainer.appendChild(userInput);
@@ -348,14 +350,13 @@
                 addOutput(t.lonely1);
                 const newInputContainer = document.createElement('div');
                 newInputContainer.id = 'input-container';
-                newInputContainer.style.display = 'flex';
-                newInputContainer.style.alignItems = 'center';
+                newInputContainer.style.marginTop = '10px';
 
                 const newPrompt = document.createElement('span');
                 newPrompt.id = 'prompt';
                 newPrompt.textContent = t.lonely2;
                 newPrompt.style.color = '#ff0077';
-                newPrompt.style.marginRight = '10px';
+                newPrompt.style.display = 'block';
 
                 userInput = document.createElement('input');
                 userInput.id = 'userInput';
@@ -368,6 +369,7 @@
                 userInput.style.outline = 'none';
                 userInput.style.flexGrow = '1';
                 userInput.style.letterSpacing = '0.08em';
+                userInput.style.width = '100%';
 
                 newInputContainer.appendChild(newPrompt);
                 newInputContainer.appendChild(userInput);
@@ -385,14 +387,13 @@
                         // プロンプトを再追加
                         const finalInputContainer = document.createElement('div');
                         finalInputContainer.id = 'input-container';
-                        finalInputContainer.style.display = 'flex';
-                        finalInputContainer.style.alignItems = 'center';
+                        finalInputContainer.style.marginTop = '10px';
 
                         const finalPrompt = document.createElement('span');
                         finalPrompt.id = 'prompt';
                         finalPrompt.textContent = t.prompt;
                         finalPrompt.style.color = '#ff0077';
-                        finalPrompt.style.marginRight = '10px';
+                        finalPrompt.style.display = 'block';
 
                         userInput = document.createElement('input');
                         userInput.id = 'userInput';
@@ -405,6 +406,7 @@
                         userInput.style.outline = 'none';
                         userInput.style.flexGrow = '1';
                         userInput.style.letterSpacing = '0.08em';
+                        userInput.style.width = '100%';
 
                         finalInputContainer.appendChild(finalPrompt);
                         finalInputContainer.appendChild(userInput);
@@ -457,6 +459,41 @@
                 isProcessing = false;
                 createInputLine();
             }
+        }
+
+        function createInputLine() {
+            const inputContainer = document.querySelector('#input-container');
+            if (inputContainer) inputContainer.remove();
+
+            const newInputContainer = document.createElement('div');
+            newInputContainer.id = 'input-container';
+            newInputContainer.style.marginTop = '10px';
+
+            const newPrompt = document.createElement('span');
+            newPrompt.id = 'prompt';
+            newPrompt.textContent = translations[isJapanese ? 'ja' : 'en'].prompt;
+            newPrompt.style.color = '#ff0077';
+            newPrompt.style.display = 'block';
+
+            userInput = document.createElement('input');
+            userInput.id = 'userInput';
+            userInput.type = 'text';
+            userInput.style.background = 'none';
+            userInput.style.border = 'none';
+            userInput.style.color = '#00ffcc';
+            userInput.style.fontFamily = "'DotGothic16', monospace";
+            userInput.style.fontSize = '18px';
+            userInput.style.outline = 'none';
+            userInput.style.flexGrow = '1';
+            userInput.style.letterSpacing = '0.08em';
+            userInput.style.width = '100%';
+
+            newInputContainer.appendChild(newPrompt);
+            newInputContainer.appendChild(userInput);
+            terminal.appendChild(newInputContainer);
+
+            userInput.addEventListener('keydown', handleInput);
+            userInput.focus();
         }
 
         // 初期入力行の作成
