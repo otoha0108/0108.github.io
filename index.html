@@ -125,9 +125,21 @@
     const translations = {
       en: {
         prompt: "📡 0108: What's on your mind? >",
+        sos1: "0108 can catch your signal anytime!",
+        sos2: "Scanning your heart... ",
+        sos3: "🚨 Alert! Virus detected!",
+        sos4: "Press [Enter] to let 0108 take down the virus!",
+        sos5: "0108 will take down the virus!",
+        sos6: "✅ Virus eliminated! \nHeart status: 150% clean.",
       },
       ja: {
         prompt: "📡 0108: 調子はどう？ >",
+        sos1: "0108は24時間あなたの信号を受信中！",
+        sos2: "あなたの心をスキャンしています... ",
+        sos3: "🚨 ウイルス発見！",
+        sos4: "[Enter]を押してウイルス排除しよう！",
+        sos5: "0108がウイルスを排除します！",
+        sos6: "✅ ウイルスをやっつけたぞ！\n心の状態: 150%クリーン。",
       }
     };
 
@@ -136,6 +148,7 @@
     const langJaButton = document.getElementById('lang-ja');
     const langEnButton = document.getElementById('lang-en');
     let userInput = null;
+    const enterKey = document.getElementById('enterKey');
 
     window.addEventListener('DOMContentLoaded', () => {
       const lang = isJapanese ? 'ja' : 'en';
@@ -145,7 +158,6 @@
     function appendPromptLine(lang, promptKey = 'prompt') {
       removeExistingPromptLines();
 
-      // 📡プロンプト（1行目）
       const promptText = document.createElement('div');
       promptText.id = 'prompt';
       promptText.setAttribute('data-key', promptKey);
@@ -155,7 +167,6 @@
       promptText.style.borderBottom = '1px dashed #ff0077';
       promptText.style.color = '#ff0077';
 
-      // 📝入力欄（2行目）
       const inputWrapper = document.createElement('div');
       inputWrapper.classList.add('prompt-line');
 
@@ -195,12 +206,67 @@
     }
 
     function handleInput(event) {
-      if (event.key === 'Enter') {
-        const val = userInput.value.trim();
-        const display = document.createElement('div');
-        display.textContent = '📡 ' + val;
-        output.appendChild(display);
-        appendPromptLine(isJapanese ? 'ja' : 'en');
+      if (event.key !== 'Enter' || !userInput) return;
+      const val = userInput.value.trim().toLowerCase();
+
+      const display = document.createElement('div');
+      display.textContent = '📡 ' + val;
+      display.classList.add('red-scramble');
+      output.appendChild(display);
+
+      removeExistingPromptLines();
+
+      const lang = isJapanese ? 'ja' : 'en';
+      const t = translations[lang];
+
+      if (val.includes('sos')) {
+        const addLine = (text, red = false) => {
+          const line = document.createElement('div');
+          line.textContent = text;
+          if (red) line.classList.add('red-scramble');
+          output.appendChild(line);
+        };
+
+        addLine(t['sos1']);
+        let progress = 0;
+
+        const scan = setInterval(() => {
+          progress++;
+          const line = `${t['sos2']}[${'█'.repeat(progress)}${'-'.repeat(10 - progress)}]`;
+          addLine(line);
+          if (progress === 10) {
+            clearInterval(scan);
+            addLine(t['sos3'], true);
+            addLine(t['sos4'], true);
+
+            appendPromptLine(lang);
+            enterKey.style.display = 'block';
+            output.appendChild(enterKey);
+            output.scrollTop = output.scrollHeight;
+
+            const handler = () => {
+              enterKey.removeEventListener('click', handler);
+              enterKey.style.display = 'none';
+              removeExistingPromptLines();
+
+              addLine(t['sos5']);
+              let shock = 0;
+              const pulse = setInterval(() => {
+                shock++;
+                addLine('⚡ '.repeat(shock));
+                if (shock === 10) {
+                  clearInterval(pulse);
+                  addLine(t['sos6']);
+                  appendPromptLine(lang);
+                }
+              }, 200);
+            };
+
+            enterKey.addEventListener('click', handler);
+          }
+        }, 200);
+      } else {
+        appendPromptLine(lang);
       }
     }
 
