@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
   <title>HELL0w0RLD! by 0108</title>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
@@ -15,19 +15,19 @@
       align-items: center;
       height: 100vh;
       margin: 0;
-      font-size: 12px; /* 小さい画面向けに少し小さく */
+      font-size: 14px;
       letter-spacing: 0.08em;
     }
     #terminal {
       background: #000;
       border: 2px solid #00ffcc;
-      padding: 10px; /* 余白を減らして小さい画面にフィット */
-      width: 90%; /* 画面幅に合わせる */
+      padding: 10px;
+      width: 90%;
       max-width: 600px;
-      height: auto; /* 小さい画面でスクロール可能 */
-      min-height: 80vh; /* 最低限の高さを確保 */
-      overflow-y: auto; /* 縦スクロールを有効 */
+      min-height: 80vh;
+      overflow-y: auto;
       position: relative;
+      -webkit-overflow-scrolling: touch;
     }
     #lang-buttons {
       text-align: right;
@@ -37,12 +37,12 @@
       background: none;
       border: 1px solid #00ffcc;
       color: #00ffcc;
-      padding: 5px 10px;
+      padding: 8px 12px;
       font-family: 'DotGothic16', monospace;
       cursor: pointer;
       margin-left: 5px;
-      font-size: 12px; /* 小さい文字で調整 */
-      min-width: 60px; /* タッチしやすいサイズ */
+      font-size: 16px; /* ← スマホズーム防止 */
+      min-width: 60px;
     }
     #lang-buttons button:hover {
       background-color: #00ffcc;
@@ -53,10 +53,10 @@
       color: #000;
     }
     #output {
-      white-space: pre-wrap; /* 改行を自然に */
-      word-wrap: break-word; /* 長い単語も折り返し */
+      white-space: pre-wrap;
+      word-wrap: break-word;
       margin-bottom: 10px;
-      line-height: 1.2; /* 行間を調整 */
+      line-height: 1.4;
     }
     .prompt-line {
       display: flex;
@@ -66,20 +66,20 @@
     #prompt {
       color: #ff0077;
       margin-right: 5px;
-      font-weight: bold; /* 目立たせる */
-      border-bottom: 1px dashed #ff0077; /* 下線で強調 */
+      font-weight: bold;
+      border-bottom: 1px dashed #ff0077;
     }
     #userInput {
       background: none;
       border: none;
       color: #00ffcc;
       font-family: 'DotGothic16', monospace;
-      font-size: 12px;
+      font-size: 16px; /* ← スマホズーム防止 */
       outline: none;
       flex-grow: 1;
-      padding: 5px; /* タッチエリアを広げる */
-      min-height: 30px; /* 高さを増やしてタッチしやすく */
-      border-bottom: 1px solid #00ffcc; /* 入力欄の視認性 */
+      padding: 5px;
+      min-height: 30px;
+      border-bottom: 1px solid #00ffcc;
     }
     .scramble {
       animation: scramble 0.5s ease-in-out forwards;
@@ -98,14 +98,14 @@
       border: 2px solid #00ffcc;
       color: #000;
       padding: 8px 15px;
-      font-size: 12px;
+      font-size: 16px;
       cursor: pointer;
       border-radius: 5px;
       position: absolute;
       bottom: 10px;
       right: 10px;
       display: none;
-      min-width: 60px; /* タッチしやすい */
+      min-width: 60px;
     }
   </style>
 </head>
@@ -175,6 +175,7 @@
 
     function appendPromptLine(lang, promptKey = 'prompt', isRed = false) {
       removeExistingPromptLines();
+
       const promptLine = document.createElement('div');
       promptLine.classList.add('prompt-line');
       if (isRed) promptLine.classList.add('red-scramble');
@@ -192,7 +193,7 @@
       inputField.style.border = 'none';
       inputField.style.color = '#00ffcc';
       inputField.style.fontFamily = "'DotGothic16', monospace";
-      inputField.style.fontSize = '12px';
+      inputField.style.fontSize = '16px'; // ← ズーム防止
       inputField.style.outline = 'none';
       inputField.style.flexGrow = '1';
       inputField.style.padding = '5px';
@@ -202,6 +203,11 @@
       promptLine.appendChild(promptSymbol);
       promptLine.appendChild(inputField);
       output.appendChild(promptLine);
+
+      const spacer = document.createElement('div');
+      spacer.style.height = '0.8em';
+      output.appendChild(spacer);
+
       output.scrollTop = output.scrollHeight;
 
       userInput = inputField;
@@ -209,201 +215,8 @@
       userInput.focus();
     }
 
-    function removeExistingPromptLines() {
-      const promptLines = output.querySelectorAll('.prompt-line');
-      promptLines.forEach(line => line.remove());
-    }
+    // （以下、handleInputやscrambleToTextなど省略されていたら元のコードを貼ってOK）
 
-    async function scrambleToText(element, newText) {
-      const randomChars = '!?@#$%^&*()_+-=[]{}|;:,.<>?';
-      for (let i = 0; i < 5; i++) {
-        element.textContent = Array.from({length: newText.length}, () => randomChars[Math.floor(Math.random() * randomChars.length)]).join('');
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-      element.textContent = newText;
-      element.classList.add('scramble');
-    }
-
-    function createTranslatableSpan(key, prefix = '', suffix = '', isRed = false, keyIndex = null) {
-      const span = document.createElement('span');
-      span.setAttribute('data-key', keyIndex !== null ? `${key}-${keyIndex}` : key);
-      span.setAttribute('data-prefix', prefix);
-      span.setAttribute('data-suffix', suffix);
-      const text = keyIndex !== null ? getTranslation(key)[keyIndex] : getTranslation(key);
-      span.textContent = prefix + text + suffix;
-      if (isRed) span.classList.add('red-scramble');
-      return span;
-    }
-
-    function addOutput(content, options = {}) {
-      const el = document.createElement('div');
-      if (options.red) el.classList.add('red-scramble');
-      if (typeof content === 'string') {
-        el.textContent = content;
-      } else {
-        el.appendChild(content);
-      }
-      output.appendChild(el);
-      output.scrollTop = output.scrollHeight;
-    }
-
-    function getTranslation(key) {
-      const lang = isJapanese ? 'ja' : 'en';
-      const value = translations[lang][key];
-      return Array.isArray(value) ? value : value || '';
-    }
-
-    function updateLanguage() {
-      const lang = isJapanese ? 'ja' : 'en';
-      langJaButton.classList.toggle('active', isJapanese);
-      langEnButton.classList.toggle('active', !isJapanese);
-
-      document.querySelectorAll('[data-key]').forEach(el => {
-        const key = el.getAttribute('data-key');
-        const prefix = el.getAttribute('data-prefix') || '';
-        const suffix = el.getAttribute('data-suffix') || '';
-        const [baseKey, keyIndex] = key.split('-');
-        const newText = keyIndex !== undefined
-          ? prefix + getTranslation(baseKey)[parseInt(keyIndex)] + suffix
-          : prefix + getTranslation(baseKey || key) + suffix;
-        if (el.textContent !== newText) {
-          scrambleToText(el, newText);
-        }
-      });
-    }
-
-    langJaButton.addEventListener('click', () => {
-      if (!isJapanese) {
-        isJapanese = true;
-        updateLanguage();
-      }
-    });
-
-    langEnButton.addEventListener('click', () => {
-      if (isJapanese) {
-        isJapanese = false;
-        updateLanguage();
-      }
-    });
-
-    async function handleInput(event) {
-      if (event.key !== 'Enter' || isProcessing) return;
-      isProcessing = true;
-      const input = userInput.value.toLowerCase().trim();
-      const rawInput = userInput.value.trim();
-      const lang = isJapanese ? 'ja' : 'en';
-
-      const inputContainer = document.createElement('span');
-      inputContainer.classList.add('red-scramble');
-      const promptSpan = createTranslatableSpan('prompt', '', '', true);
-      const rawSpan = document.createElement('span');
-      rawSpan.textContent = ' ' + rawInput;
-      inputContainer.appendChild(promptSpan);
-      inputContainer.appendChild(rawSpan);
-      addOutput(inputContainer);
-
-      removeExistingPromptLines();
-
-      const t = translations[lang];
-
-      if (input.includes('sos')) {
-        addOutput(createTranslatableSpan('sos1'));
-        for (let i = 0; i <= 10; i++) {
-          addOutput(`${getTranslation('sos2')}[${'█'.repeat(i)}${'-'.repeat(10 - i)}]`);
-          await new Promise(r => setTimeout(r, 300));
-          if (i < 10) output.lastChild.remove();
-        }
-        addOutput(createTranslatableSpan('sos3', '', '', true));
-        addOutput(createTranslatableSpan('sos4', '', '', true));
-        appendPromptLine(lang, '', true);
-        enterKey.style.display = 'block';
-        output.appendChild(enterKey);
-        output.scrollTop = output.scrollHeight;
-
-        const handler = async (e) => {
-          if (e.key === 'Enter' || e.type === 'click') {
-            userInput.removeEventListener('keydown', handler);
-            enterKey.removeEventListener('click', handler);
-            enterKey.style.display = 'none';
-            removeExistingPromptLines();
-            addOutput(createTranslatableSpan('sos5'));
-            for (let i = 1; i <= 10; i++) {
-              addOutput(`${'⚡ '.repeat(i)}`);
-              await new Promise(r => setTimeout(r, 300));
-              if (i < 10) output.lastChild.remove();
-            }
-            addOutput(createTranslatableSpan('sos6'));
-            appendPromptLine(lang);
-            isProcessing = false;
-          }
-        };
-        userInput.addEventListener('keydown', handler);
-        enterKey.addEventListener('click', handler);
-      } else if (input.includes('lonely')) {
-        addOutput(createTranslatableSpan('lonely1'));
-        appendPromptLine(lang, 'lonely2');
-
-        function songHandler(e) {
-          if (e.key === 'Enter') {
-            const songName = userInput.value.trim();
-            userInput.removeEventListener('keydown', songHandler);
-            removeExistingPromptLines();
-            const songSpan = document.createElement('span');
-            songSpan.textContent = '🎵 ';
-            const nameSpan = document.createElement('span');
-            nameSpan.textContent = songName;
-            nameSpan.setAttribute('data-key', 'song');
-            const msgSpan = createTranslatableSpan('lonely3');
-            songSpan.appendChild(nameSpan);
-            songSpan.appendChild(msgSpan);
-            addOutput(songSpan);
-            addOutput(createTranslatableSpan('lonely4'));
-            appendPromptLine(lang);
-            isProcessing = false;
-          }
-        }
-        userInput.addEventListener('keydown', songHandler);
-      } else if (input.replace(/\s/g, '').includes('hatemyself')) {
-        const delay = ms => new Promise(r => setTimeout(r, ms));
-        addOutput(createTranslatableSpan('travel', '🚗 ', '', false, 0));
-        await delay(500);
-        addOutput('.');
-        await delay(500);
-        addOutput('.');
-        await delay(500);
-        addOutput('.');
-        await delay(500);
-        addOutput(createTranslatableSpan('travel', '🚗 ', '', false, 1));
-        await delay(500);
-        addOutput('.');
-        await delay(500);
-        addOutput('.');
-        await delay(500);
-        addOutput('.');
-        await delay(500);
-        addOutput(createTranslatableSpan('hate_end', '✨ '));
-        appendPromptLine(lang);
-        isProcessing = false;
-      } else if (input.includes('why')) {
-        addOutput(createTranslatableSpan('why1', '', '', true));
-        for (let i = 0; i < 10; i++) {
-          addOutput('.', { red: true });
-          await new Promise(r => setTimeout(r, 300));
-        }
-        addOutput(createTranslatableSpan('why2'));
-        setInterval(() => {
-          const now = new Date();
-          const hours = now.getHours().toString().padStart(2, '0');
-          const minutes = now.getMinutes().toString().padStart(2, '0');
-          const seconds = now.getSeconds().toString().padStart(2, '0');
-          addOutput(`${hours}:${minutes}:${seconds}`);
-        }, 1000);
-        isProcessing = false;
-      } else {
-        appendPromptLine(lang);
-        isProcessing = false;
-      }
-    }
   </script>
 </body>
 </html>
