@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>HELL0w0RLD! by 0108</title>
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
     <style>
@@ -42,6 +42,7 @@
             cursor: pointer;
             margin-left: 10px;
             letter-spacing: 0.08em;
+            font-size: 16px;
         }
         #lang-buttons button:hover {
             background-color: #00ffcc;
@@ -55,6 +56,7 @@
             white-space: pre-wrap;
             margin-bottom: 20px;
             letter-spacing: 0.08em;
+            font-size: 16px;
         }
         #input-container {
             display: flex;
@@ -64,13 +66,14 @@
             color: #ff0077;
             margin-right: 10px;
             letter-spacing: 0.08em;
+            font-size: 18px; /* 入力欄のフォントサイズを18pxに増やしてズーム回避 */
         }
         #userInput {
             background: none;
             border: none;
             color: #00ffcc;
             font-family: 'DotGothic16', monospace;
-            font-size: 16px;
+            font-size: 18px; /* 入力欄のフォントサイズを18pxに増やしてズーム回避 */
             outline: none;
             flex-grow: 1;
             letter-spacing: 0.08em;
@@ -92,7 +95,7 @@
             border: 2px solid #00ffcc;
             color: #000;
             padding: 10px 20px;
-            font-size: 14px;
+            font-size: 16px;
             cursor: pointer;
             border-radius: 5px;
             position: absolute;
@@ -110,7 +113,7 @@
             <button id="lang-en" class="active">English</button>
         </div>
         <div id="output">🌐 HELL0w0RLD! 🌐</div>
-        <div id="input-container" style="display: none;">
+        <div id="input-container">
             <span id="prompt">📡 0108: What's on your mind? ></span>
             <input type="text" id="userInput" autocomplete="off">
         </div>
@@ -122,7 +125,7 @@
         const output = document.getElementById('output');
         const langJaButton = document.getElementById('lang-ja');
         const langEnButton = document.getElementById('lang-en');
-        let userInput = null;
+        let userInput = document.getElementById('userInput');
         let enterKey = document.getElementById('enterKey');
         let isProcessing = false;
         let isJapanese = false;
@@ -261,7 +264,6 @@
             if (!isJapanese) {
                 isJapanese = true;
                 updateLanguage();
-                createInputLine();
             }
         });
 
@@ -269,41 +271,8 @@
             if (isJapanese) {
                 isJapanese = false;
                 updateLanguage();
-                createInputLine();
             }
         });
-
-        function createInputLine() {
-            const inputContainer = document.createElement('div');
-            inputContainer.id = 'input-container';
-            inputContainer.style.display = 'flex';
-            inputContainer.style.alignItems = 'center';
-
-            const promptEl = document.createElement('span');
-            promptEl.id = 'prompt';
-            promptEl.textContent = translations[isJapanese ? 'ja' : 'en'].prompt;
-            promptEl.style.color = '#ff0077';
-            promptEl.style.marginRight = '10px';
-
-            userInput = document.createElement('input');
-            userInput.id = 'userInput';
-            userInput.type = 'text';
-            userInput.style.background = 'none';
-            userInput.style.border = 'none';
-            userInput.style.color = '#00ffcc';
-            userInput.style.fontFamily = "'DotGothic16', monospace";
-            userInput.style.fontSize = '14px';
-            userInput.style.outline = 'none';
-            userInput.style.flexGrow = '1';
-            userInput.style.letterSpacing = '0.08em';
-
-            inputContainer.appendChild(promptEl);
-            inputContainer.appendChild(userInput);
-            terminal.appendChild(inputContainer);
-
-            userInput.addEventListener('keydown', handleInput);
-            userInput.focus();
-        }
 
         async function handleInput(event) {
             if (event.key !== 'Enter' || isProcessing) return;
@@ -314,8 +283,8 @@
             const t = translations[lang];
 
             // 既存の入力コンテナを削除
-            const oldInputContainer = document.getElementById('input-container');
-            if (oldInputContainer) oldInputContainer.remove();
+            const inputContainer = document.getElementById('input-container');
+            if (inputContainer) inputContainer.remove();
 
             addOutput(`${t.prompt} ${rawInput}`, { red: true });
 
@@ -341,17 +310,46 @@
                         }
                         addOutput(t.sos6);
                         isProcessing = false;
-                        createInputLine();
+                        // プロンプトを再追加
+                        const newInputContainer = document.createElement('div');
+                        newInputContainer.id = 'input-container';
+                        newInputContainer.style.display = 'flex';
+                        newInputContainer.style.alignItems = 'center';
+
+                        const newPrompt = document.createElement('span');
+                        newPrompt.id = 'prompt';
+                        newPrompt.textContent = t.prompt;
+                        newPrompt.style.color = '#ff0077';
+                        newPrompt.style.marginRight = '10px';
+
+                        userInput = document.createElement('input');
+                        userInput.id = 'userInput';
+                        userInput.type = 'text';
+                        userInput.style.background = 'none';
+                        userInput.style.border = 'none';
+                        userInput.style.color = '#00ffcc';
+                        userInput.style.fontFamily = "'DotGothic16', monospace";
+                        userInput.style.fontSize = '18px';
+                        userInput.style.outline = 'none';
+                        userInput.style.flexGrow = '1';
+                        userInput.style.letterSpacing = '0.08em';
+
+                        newInputContainer.appendChild(newPrompt);
+                        newInputContainer.appendChild(userInput);
+                        terminal.appendChild(newInputContainer);
+
+                        userInput.addEventListener('keydown', handleInput);
+                        userInput.focus();
                     }
                 };
                 userInput.addEventListener('keydown', enterHandler);
                 enterKey.addEventListener('click', enterHandler);
             } else if (input.includes('lonely')) {
                 addOutput(t.lonely1);
-                const newPromptLine = document.createElement('div');
-                newPromptLine.id = 'input-container';
-                newPromptLine.style.display = 'flex';
-                newPromptLine.style.alignItems = 'center';
+                const newInputContainer = document.createElement('div');
+                newInputContainer.id = 'input-container';
+                newInputContainer.style.display = 'flex';
+                newInputContainer.style.alignItems = 'center';
 
                 const newPrompt = document.createElement('span');
                 newPrompt.id = 'prompt';
@@ -366,14 +364,14 @@
                 userInput.style.border = 'none';
                 userInput.style.color = '#00ffcc';
                 userInput.style.fontFamily = "'DotGothic16', monospace";
-                userInput.style.fontSize = '14px';
+                userInput.style.fontSize = '18px';
                 userInput.style.outline = 'none';
                 userInput.style.flexGrow = '1';
                 userInput.style.letterSpacing = '0.08em';
 
-                newPromptLine.appendChild(newPrompt);
-                newPromptLine.appendChild(userInput);
-                output.appendChild(newPromptLine);
+                newInputContainer.appendChild(newPrompt);
+                newInputContainer.appendChild(userInput);
+                output.appendChild(newInputContainer);
                 output.scrollTop = output.scrollHeight;
 
                 userInput.addEventListener('keydown', async (e) => {
@@ -384,12 +382,41 @@
                         addOutput(`🎵 ${song} ${t.lonely3}`);
                         addOutput(t.lonely4);
                         isProcessing = false;
-                        createInputLine();
+                        // プロンプトを再追加
+                        const finalInputContainer = document.createElement('div');
+                        finalInputContainer.id = 'input-container';
+                        finalInputContainer.style.display = 'flex';
+                        finalInputContainer.style.alignItems = 'center';
+
+                        const finalPrompt = document.createElement('span');
+                        finalPrompt.id = 'prompt';
+                        finalPrompt.textContent = t.prompt;
+                        finalPrompt.style.color = '#ff0077';
+                        finalPrompt.style.marginRight = '10px';
+
+                        userInput = document.createElement('input');
+                        userInput.id = 'userInput';
+                        userInput.type = 'text';
+                        userInput.style.background = 'none';
+                        userInput.style.border = 'none';
+                        userInput.style.color = '#00ffcc';
+                        userInput.style.fontFamily = "'DotGothic16', monospace";
+                        userInput.style.fontSize = '18px';
+                        userInput.style.outline = 'none';
+                        userInput.style.flexGrow = '1';
+                        userInput.style.letterSpacing = '0.08em';
+
+                        finalInputContainer.appendChild(finalPrompt);
+                        finalInputContainer.appendChild(userInput);
+                        terminal.appendChild(finalInputContainer);
+
+                        userInput.addEventListener('keydown', handleInput);
+                        userInput.focus();
                     }
                 });
                 userInput.focus();
             } else if (input.includes('hate myself')) {
-                addOutput('Traveling to your ' + t.hate1);
+                addOutput(`Traveling to your ${t.hate1}`);
                 await new Promise(r => setTimeout(r, 500));
                 addOutput('.');
                 await new Promise(r => setTimeout(r, 500));
@@ -397,7 +424,7 @@
                 await new Promise(r => setTimeout(r, 500));
                 addOutput('.');
                 await new Promise(r => setTimeout(r, 500));
-                addOutput('Traveling to your ' + t.hate2);
+                addOutput(`Traveling to your ${t.hate2}`);
                 await new Promise(r => setTimeout(r, 500));
                 addOutput('.');
                 await new Promise(r => setTimeout(r, 500));
