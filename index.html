@@ -9,7 +9,7 @@
         body {
             background: #1a1a1a;
             color: #00ffcc;
-            font-family: 'DotGothic16', 'Courier New', monospace;
+            font-family: 'DotGothic16', 'Courier New', monospace, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -59,11 +59,11 @@
             font-size: 16px;
         }
         #input-container {
-            margin-top: 10px; /* プロンプトとの間にスペースを追加 */
+            margin-top: 10px;
         }
         #prompt {
             color: #ff0077;
-            display: block; /* 改行を入れるためブロック要素に */
+            display: block;
             margin-right: 0;
             letter-spacing: 0.08em;
             font-size: 18px;
@@ -72,12 +72,12 @@
             background: none;
             border: none;
             color: #00ffcc;
-            font-family: 'DotGothic16', monospace;
+            font-family: 'DotGothic16', 'Courier New', monospace, sans-serif;
             font-size: 18px;
             outline: none;
             flex-grow: 1;
             letter-spacing: 0.08em;
-            width: 100%; /* 入力欄を幅いっぱいに */
+            width: 100%;
         }
         .scramble {
             animation: scramble 0.5s ease-in-out forwards;
@@ -174,33 +174,40 @@
             console.log('Updating language to:', isJapanese ? 'Japanese' : 'English');
             const lang = isJapanese ? 'ja' : 'en';
             const elements = [...output.children].filter(el => el.textContent.trim() !== '🌐 HELL0w0RLD! 🌐');
-            elements.forEach(element => {
+            // すべての要素を一斉にアニメーションで変換
+            const promises = elements.map(element => {
                 const currentText = element.textContent.trim();
                 const newText = getTranslatedText(currentText, lang);
-                console.log('Checking element:', currentText, '->', newText); // デバッグ追加
+                console.log('Checking element:', currentText, '->', newText);
                 if (currentText !== newText && newText !== undefined) {
-                    scrambleToText(element, newText, element.classList.contains('red-scramble'));
+                    return scrambleToText(element, newText, element.classList.contains('red-scramble'));
                 }
+                return Promise.resolve();
             });
-            // 入力プロンプトも更新
+            // プロンプトも一斉にアニメーション
             const promptEl = document.querySelector('#prompt');
             if (promptEl) {
                 const currentPrompt = promptEl.textContent.trim();
                 const newPrompt = translations[lang].prompt;
-                console.log('Prompt check:', currentPrompt, '->', newPrompt); // デバッグ追加
+                console.log('Prompt check:', currentPrompt, '->', newPrompt);
                 if (currentPrompt !== newPrompt) {
-                    scrambleToText(promptEl, newPrompt);
+                    promises.push(scrambleToText(promptEl, newPrompt));
                 }
             }
-            langJaButton.classList.toggle('active', isJapanese);
-            langEnButton.classList.toggle('active', !isJapanese);
+            // すべてのアニメーションが完了するのを待つ
+            return Promise.all(promises).then(() => {
+                langJaButton.classList.toggle('active', isJapanese);
+                langEnButton.classList.toggle('active', !isJapanese);
+            });
         }
 
         function getTranslatedText(currentText, lang) {
             console.log('Translating full text:', currentText);
             const t = translations[lang];
             // プロンプトの完全一致または部分一致
-            if (currentText === t.prompt || currentText.startsWith(t.prompt)) return t.prompt + (currentText.slice(t.prompt.length) || '');
+            if (currentText === t.prompt || currentText.startsWith(t.prompt)) {
+                return t.prompt + (currentText.slice(t.prompt.length) || '');
+            }
             // SOS関連
             if (currentText === t.sos1) return t.sos1;
             if (currentText.startsWith(t.sos2)) {
@@ -273,14 +280,14 @@
         langJaButton.addEventListener('click', () => {
             if (!isJapanese) {
                 isJapanese = true;
-                updateLanguage();
+                updateLanguage().then(() => console.log('Language switch completed'));
             }
         });
 
         langEnButton.addEventListener('click', () => {
             if (isJapanese) {
                 isJapanese = false;
-                updateLanguage();
+                updateLanguage().then(() => console.log('Language switch completed'));
             }
         });
 
@@ -338,7 +345,7 @@
                         userInput.style.background = 'none';
                         userInput.style.border = 'none';
                         userInput.style.color = '#00ffcc';
-                        userInput.style.fontFamily = "'DotGothic16', monospace";
+                        userInput.style.fontFamily = "'DotGothic16', 'Courier New', monospace, sans-serif";
                         userInput.style.fontSize = '18px';
                         userInput.style.outline = 'none';
                         userInput.style.flexGrow = '1';
@@ -373,7 +380,7 @@
                 userInput.style.background = 'none';
                 userInput.style.border = 'none';
                 userInput.style.color = '#00ffcc';
-                userInput.style.fontFamily = "'DotGothic16', monospace";
+                userInput.style.fontFamily = "'DotGothic16', 'Courier New', monospace, sans-serif";
                 userInput.style.fontSize = '18px';
                 userInput.style.outline = 'none';
                 userInput.style.flexGrow = '1';
@@ -410,7 +417,7 @@
                         userInput.style.background = 'none';
                         userInput.style.border = 'none';
                         userInput.style.color = '#00ffcc';
-                        userInput.style.fontFamily = "'DotGothic16', monospace";
+                        userInput.style.fontFamily = "'DotGothic16', 'Courier New', monospace, sans-serif";
                         userInput.style.fontSize = '18px';
                         userInput.style.outline = 'none';
                         userInput.style.flexGrow = '1';
@@ -490,7 +497,7 @@
             userInput.style.background = 'none';
             userInput.style.border = 'none';
             userInput.style.color = '#00ffcc';
-            userInput.style.fontFamily = "'DotGothic16', monospace";
+            userInput.style.fontFamily = "'DotGothic16', 'Courier New', monospace, sans-serif";
             userInput.style.fontSize = '18px';
             userInput.style.outline = 'none';
             userInput.style.flexGrow = '1';
