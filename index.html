@@ -216,16 +216,22 @@
             background: #e6007e;
             color: #ffffff;
             border: none;
-            padding: 6px;
+            padding: 8px 12px;
             border-radius: 6px;
             font-size: 0.9em;
             cursor: pointer;
             font-family: inherit;
             margin-top: 8px;
+            z-index: 100;
+            position: relative;
         }
         
         #rankingBtn:hover {
             background: #ff1493;
+        }
+        
+        #rankingBtn:active {
+            background: #c71585;
         }
         
         #buttons button {
@@ -888,6 +894,8 @@
         const JSONBIN_API_KEY = '$2a$10$ycn6./ig3dZJOO0jmNBceuZ64D5j0jRHJFRsC5DNWEjmqk6O65/3K';
         const JSONBIN_BIN_ID = '6891fc2a7b4b8670d8adbb49';
         const USE_ONLINE_RANKING = true; // オンライン機能ON！
+        
+        console.log('🔧 Online ranking config:', { USE_ONLINE_RANKING, JSONBIN_BIN_ID });
         
         // オンラインランキング送信
         async function submitScoreOnline(userName, time) {
