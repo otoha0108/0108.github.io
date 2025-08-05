@@ -573,38 +573,42 @@
     </div>
 
     <script>
-        // 🌍 グローバルランキングシステム - セキュア版
+        // 🌍 リアルタイムオンラインランキングシステム
         const RANKING_CONFIG = {
-            // 公開APIエンドポイント（デモ用）
-            endpoint: 'https://jsonplaceholder.typicode.com/posts/1',
-            fallbackEndpoint: 'https://httpbin.org/json',
-            maxEntries: 100,
-            cacheDuration: 30000, // 30秒キャッシュ
-            retryAttempts: 2
+            // Firebase Realtime Database（公開データベース）
+            firebaseURL: 'https://hellowworld-ranking-default-rtdb.firebaseio.com',
+            maxEntries: 50,
+            cacheDuration: 5000, // 5秒キャッシュ
+            retryAttempts: 3
         };
 
-        // 🔒 セキュアなランキング管理
-        class SecureRankingManager {
+        // 🔒 リアルタイムランキング管理
+        class RealTimeRankingManager {
             constructor() {
                 this.cache = null;
                 this.cacheTime = 0;
                 this.isOnline = false;
                 this.retryCount = 0;
+                this.sessionId = this.generateSessionId();
+            }
+
+            generateSessionId() {
+                return 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
             }
 
             // オンライン状態確認
             async checkConnection() {
                 try {
-                    const response = await fetch('https://httpbin.org/status/200', {
-                        method: 'HEAD',
-                        mode: 'no-cors',
-                        cache: 'no-cache'
+                    const response = await fetch(`${RANKING_CONFIG.firebaseURL}/test.json`, {
+                        method: 'GET'
                     });
-                    this.isOnline = true;
-                    this.updateConnectionStatus(true);
+                    this.isOnline = response.status < 400;
+                    this.updateConnectionStatus(this.isOnline);
+                    console.log('🌐 接続状態:', this.isOnline ? 'ONLINE' : 'OFFLINE');
                 } catch {
                     this.isOnline = false;
                     this.updateConnectionStatus(false);
+                    console.log('📱 接続状態: OFFLINE');
                 }
                 return this.isOnline;
             }
@@ -615,59 +619,107 @@
                 statusEl.textContent = online ? '🌐 ONLINE' : '📱 OFFLINE';
             }
 
-            // セキュアなランキング取得
+            // リアルタイムランキング取得
             async loadRankings() {
-                // キャッシュチェック
+                // キャッシュチェック（短時間）
                 if (this.cache && (Date.now() - this.cacheTime) < RANKING_CONFIG.cacheDuration) {
                     return this.cache;
                 }
 
-                console.log('🔍 ランキング取得試行...');
+                console.log('🔍 リアルタイムランキング取得中...');
                 
-                // 常にオフラインランキングを返す（デモ用）
-                this.cache = this.getOfflineRankings();
-                this.cacheTime = Date.now();
-                this.isOnline = false; // デモ用にオフライン表示
-                this.updateConnectionStatus(false);
-                
-                console.log('📱 オフラインランキング使用:', this.cache.length, 'entries');
-                return this.cache;
-            }
-
-            // セキュアなスコア送信
-            async submitScore(userName, time, gameData = {}) {
-                console.log('📤 スコア送信:', { userName, time });
-                
-                // ローカルランキングに追加
-                this.saveToLocal(userName, time);
-                
-                // キャッシュを更新
-                const newEntry = {
-                    name: userName.slice(0, 20),
-                    time: Math.round(time * 10) / 10,
-                    country: 'XX',
-                    timestamp: Date.now(),
-                    date: new Date().toISOString().split('T')[0],
-                    ...gameData
-                };
-                
-                if (!this.cache) this.cache = this.getOfflineRankings();
-                this.cache.push(newEntry);
-                this.cache = this.cache.sort((a, b) => a.time - b.time).slice(0, RANKING_CONFIG.maxEntries);
-                this.cacheTime = Date.now();
-                
-                console.log('✅ ローカルスコア保存完了!');
-                return true;
-            }
-
-            // ユーザーの国を取得
-            async getUserCountry() {
                 try {
-                    const response = await fetch('https://ipapi.co/json/', { timeout: 2000 });
+                    await this.checkConnection();
+                    if (!this.isOnline) throw new Error('Offline');
+
+                    const response = await fetch(`${RANKING_CONFIG.firebaseURL}/rankings.json`);
+                    
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
                     const data = await response.json();
-                    return data.country_code || 'XX';
-                } catch {
-                    return 'XX';
+                    let rankings = [];
+                    
+                    if (data && typeof data === 'object') {
+                        rankings = Object.values(data).filter(entry => entry && entry.name && entry.time);
+                    }
+                    
+                    // 上位50位まで取得
+                    rankings = rankings
+                        .sort((a, b) => a.time - b.time)
+                        .slice(0, RANKING_CONFIG.maxEntries);
+                    
+                    this.cache = rankings;
+                    this.cacheTime = Date.now();
+                    this.retryCount = 0;
+                    
+                    console.log('✅ オンラインランキング取得:', rankings.length, 'entries');
+                    return rankings;
+                    
+                } catch (error) {
+                    console.warn('⚠️ オンライン取得失敗:', error.message);
+                    this.cache = this.getOfflineRankings();
+                    this.cacheTime = Date.now();
+                    return this.cache;
+                }
+            }
+
+            // リアルタイムスコア送信
+            async submitScore(userName, time, gameData = {}) {
+                console.log('📤 リアルタイムスコア送信:', { userName, time });
+                
+                try {
+                    await this.checkConnection();
+                    if (!this.isOnline) throw new Error('Offline mode');
+
+                    const newEntry = {
+                        name: userName.slice(0, 20),
+                        time: Math.round(time * 10) / 10,
+                        timestamp: Date.now(),
+                        date: new Date().toISOString().split('T')[0],
+                        sessionId: this.sessionId,
+                        ...gameData
+                    };
+
+                    // Firebase Realtime Databaseに送信
+                    const entryId = 'entry_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                    
+                    for (let attempt = 0; attempt < RANKING_CONFIG.retryAttempts; attempt++) {
+                        try {
+                            const response = await fetch(`${RANKING_CONFIG.firebaseURL}/rankings/${entryId}.json`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(newEntry)
+                            });
+
+                            if (response.ok) {
+                                console.log('🚀 Firebase送信成功!');
+                                
+                                // キャッシュを即座に更新
+                                if (this.cache) {
+                                    this.cache.push(newEntry);
+                                    this.cache = this.cache.sort((a, b) => a.time - b.time).slice(0, RANKING_CONFIG.maxEntries);
+                                }
+                                this.cacheTime = 0; // 次回強制リロード
+                                
+                                return true;
+                            }
+                        } catch (error) {
+                            console.warn(`Firebase送信試行 ${attempt + 1} 失敗:`, error.message);
+                            if (attempt < RANKING_CONFIG.retryAttempts - 1) {
+                                await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+                            }
+                        }
+                    }
+                    
+                    throw new Error('送信失敗');
+                    
+                } catch (error) {
+                    console.error('❌ リアルタイム送信エラー:', error.message);
+                    // ローカルに保存
+                    this.saveToLocal(userName, time);
+                    return false;
                 }
             }
 
@@ -675,14 +727,16 @@
             saveToLocal(userName, time) {
                 try {
                     const localRankings = JSON.parse(localStorage.getItem('hellowworld_rankings') || '[]');
-                    localRankings.push({
+                    const newEntry = {
                         name: userName,
                         time: time,
-                        country: 'XX',
                         date: new Date().toISOString().split('T')[0],
-                        local: true
-                    });
-                    localStorage.setItem('hellowworld_rankings', JSON.stringify(localRankings.slice(-50)));
+                        local: true,
+                        timestamp: Date.now()
+                    };
+                    localRankings.push(newEntry);
+                    localStorage.setItem('hellowworld_rankings', JSON.stringify(localRankings.slice(-20)));
+                    console.log('💾 ローカル保存完了');
                 } catch (error) {
                     console.warn('ローカル保存失敗:', error);
                 }
@@ -693,20 +747,21 @@
                 try {
                     const localRankings = JSON.parse(localStorage.getItem('hellowworld_rankings') || '[]');
                     const baseRankings = [
-                        { name: 'AKIRA', time: 8.2, country: 'XX' },
-                        { name: '민지', time: 9.1, country: 'XX' },
-                        { name: 'ALEX', time: 10.7, country: 'XX' },
-                        { name: 'EMMA', time: 11.3, country: 'XX' },
-                        { name: 'LUCAS', time: 12.5, country: 'XX' },
-                        { name: 'NINA', time: 13.8, country: 'XX' },
-                        { name: 'CARLOS', time: 14.2, country: 'XX' },
-                        { name: 'SARAH', time: 15.6, country: 'XX' },
-                        { name: 'JACK', time: 16.1, country: 'XX' },
-                        { name: 'PRIYA', time: 17.9, country: 'XX' }
+                        { name: 'AKIRA', time: 8.2 },
+                        { name: '민지', time: 9.1 },
+                        { name: 'ALEX', time: 10.7 },
+                        { name: 'EMMA', time: 11.3 },
+                        { name: 'LUCAS', time: 12.5 },
+                        { name: 'NINA', time: 13.8 },
+                        { name: 'CARLOS', time: 14.2 },
+                        { name: 'SARAH', time: 15.6 },
+                        { name: 'JACK', time: 16.1 },
+                        { name: 'PRIYA', time: 17.9 }
                     ].map(entry => ({
                         ...entry,
                         time: entry.time + (Math.random() - 0.5) * 2,
-                        date: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                        date: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        offline: true
                     }));
 
                     const combinedRankings = [...localRankings, ...baseRankings]
@@ -717,16 +772,27 @@
                 } catch (error) {
                     console.warn('ランキング生成エラー:', error);
                     return [
-                        { name: 'AKIRA', time: 8.2, country: 'XX', date: '2024-08-01' },
-                        { name: '민지', time: 9.1, country: 'XX', date: '2024-08-02' },
-                        { name: 'ALEX', time: 10.7, country: 'XX', date: '2024-08-03' }
+                        { name: 'AKIRA', time: 8.2, date: '2024-08-01', offline: true },
+                        { name: '민지', time: 9.1, date: '2024-08-02', offline: true },
+                        { name: 'ALEX', time: 10.7, date: '2024-08-03', offline: true }
                     ];
                 }
+            }
+
+            // 自動リフレッシュ機能
+            startAutoRefresh() {
+                setInterval(async () => {
+                    if (this.isOnline) {
+                        this.cacheTime = 0; // キャッシュを無効化
+                        await this.loadRankings();
+                        console.log('🔄 自動リフレッシュ完了');
+                    }
+                }, 10000); // 10秒ごと
             }
         }
 
         // ランキングマネージャー初期化
-        const rankingManager = new SecureRankingManager();
+        const rankingManager = new RealTimeRankingManager();
 
         const translations = {
             en: {
@@ -1081,8 +1147,9 @@
             console.log('🌐 HELL0w0RLD! 起動中...');
             elements.loaderText.textContent = t('connect');
             
-            // 接続状態チェック
+            // 接続状態チェック & 自動リフレッシュ開始
             await rankingManager.checkConnection();
+            rankingManager.startAutoRefresh();
             
             setTimeout(() => {
                 console.log('First timeout fired - hiding loader, showing title');
@@ -1799,7 +1866,7 @@
         // 定期的に接続状態をチェック
         setInterval(async () => {
             await rankingManager.checkConnection();
-        }, 30000); // 30秒ごと
+        }, 15000); // 15秒ごと
 
         // 初期接続チェック
         rankingManager.checkConnection();
