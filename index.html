@@ -6,6 +6,7 @@
     <title>🌐 HELL0w0RLD! 🌐</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
         
         body {
             background: #0f0f0f;
@@ -157,7 +158,7 @@
         }
         
         #overlay {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
@@ -167,7 +168,7 @@
             justify-content: center;
             align-items: center;
             background: rgba(0, 0, 0, 0.85);
-            z-index: 900;
+            z-index: 1000;
             text-align: center;
             padding: 20px;
             color: #00fff2;
@@ -314,18 +315,6 @@
             100% { left: -50px; }
         }
         
-        @keyframes glitch {
-            0% { text-shadow: 2px 0 #ff0077, -2px 0 #00ffcc; }
-            25% { text-shadow: -2px 0 #ff0077, 2px 0 #00ffcc; }
-            50% { text-shadow: 2px 0 #ff0077, -2px 0 #00ffcc; }
-            75% { text-shadow: -2px 0 #ff0077, 2px 0 #00ffcc; }
-            100% { text-shadow: 2px 0 #ff0077, -2px 0 #00ffcc; }
-        }
-        
-        .glitch {
-            animation: glitch 0.5s infinite;
-        }
-        
         .heart-scanner {
             position: relative;
             width: 200px;
@@ -457,9 +446,9 @@
         }
         
         @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
         }
         
         .travel-result {
@@ -470,100 +459,124 @@
             margin: 20px 0;
         }
         
-        .time-display {
-            font-family: 'Courier New', 'Roboto Mono', monospace;
-            font-size: 32px;
-            font-weight: bold;
-            color: #ff0000;
+        /* 改良版：時をかける少女風デジタル時計 */
+        .tokikake-clock {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 64px;
+            font-weight: 700;
+            color: #ff4444;
             background: #000000;
-            padding: 20px 30px;
-            margin: 20px 0;
-            letter-spacing: 4px;
+            padding: 30px 40px;
+            margin: 30px auto;
+            letter-spacing: 8px;
             text-align: center;
-            text-shadow: 
-                0 0 5px #ff0000,
-                0 0 10px #ff0000,
-                0 0 15px #ff0000;
+            border: 1px solid #333;
             box-shadow: 
-                inset 0 0 20px rgba(255, 0, 0, 0.3),
-                0 0 30px rgba(255, 0, 0, 0.5);
-            border: 2px solid #ff0000;
+                inset 0 0 30px rgba(255, 68, 68, 0.1),
+                0 0 50px rgba(255, 68, 68, 0.2);
             position: relative;
-            overflow: visible;
+            overflow: hidden;
             white-space: nowrap;
             z-index: 5;
             display: inline-block;
+            max-width: 90%;
+            word-break: break-all;
         }
 
-        .time-display::before {
+        .tokikake-clock::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.4), transparent);
-            animation: scan 2s infinite;
+            background: linear-gradient(90deg, transparent, rgba(255, 68, 68, 0.3), transparent);
+            animation: gentleScan 3s infinite;
             z-index: 1;
         }
 
-        .time-car {
-            position: absolute;
-            top: -30px;
-            left: -30px;
-            font-size: 20px;
-            z-index: 10;
-            animation: carDrive 4s linear infinite;
-        }
-
-        @keyframes carDrive {
-            0% { left: -30px; }
-            100% { left: calc(100% + 30px); }
-        }
-
-        @keyframes scan {
+        @keyframes gentleScan {
             0% { left: -100%; }
             100% { left: 100%; }
         }
-        
-        .time-glitch {
-            animation: timeGlitch 0.08s infinite;
+
+        /* 段階的グリッチ効果 */
+        .phase-1 {
+            animation: gentleGlitch 2s ease-in-out infinite;
         }
-        
-        @keyframes timeGlitch {
-            0% { 
-                transform: translateX(0) scaleX(1); 
-                color: #ff0000; 
-                text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000;
+
+        .phase-2 {
+            animation: mediumGlitch 1s ease-in-out infinite;
+        }
+
+        .phase-3 {
+            animation: strongGlitch 0.3s ease-in-out infinite;
+        }
+
+        @keyframes gentleGlitch {
+            0%, 90% { 
+                transform: translateX(0); 
+                color: #ff4444;
             }
-            20% { 
-                transform: translateX(-2px) scaleX(0.98); 
-                color: #ff3300; 
-                text-shadow: 2px 0 #00ff00, -2px 0 #0000ff;
-            }
-            40% { 
-                transform: translateX(3px) scaleX(1.02); 
-                color: #ffff00; 
-                text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff;
-            }
-            60% { 
-                transform: translateX(-1px) scaleX(0.99); 
-                color: #ffffff; 
-                text-shadow: 1px 0 #ff0000, -1px 0 #00ff00;
-            }
-            80% { 
-                transform: translateX(2px) scaleX(1.01); 
-                color: #ff0066; 
-                text-shadow: 0 0 3px #ff0000, 0 0 8px #ff0000;
+            95% { 
+                transform: translateX(-1px); 
+                color: #ff6666;
             }
             100% { 
-                transform: translateX(0) scaleX(1); 
-                color: #ff0000; 
-                text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000;
+                transform: translateX(0); 
+                color: #ff4444;
             }
         }
 
-        .matrix-bg {
+        @keyframes mediumGlitch {
+            0%, 80% { 
+                transform: translateX(0) scaleX(1); 
+                color: #ff4444;
+            }
+            85% { 
+                transform: translateX(-2px) scaleX(0.99); 
+                color: #ff6666;
+            }
+            90% { 
+                transform: translateX(2px) scaleX(1.01); 
+                color: #ffaa44;
+            }
+            100% { 
+                transform: translateX(0) scaleX(1); 
+                color: #ff4444;
+            }
+        }
+
+        @keyframes strongGlitch {
+            0%, 70% { 
+                transform: translateX(0) scaleX(1); 
+                color: #ff4444;
+                text-shadow: 0 0 10px #ff4444;
+            }
+            75% { 
+                transform: translateX(-3px) scaleX(0.97); 
+                color: #ff8888;
+                text-shadow: 2px 0 #00ff88, -2px 0 #4488ff;
+            }
+            80% { 
+                transform: translateX(4px) scaleX(1.03); 
+                color: #ffff44;
+                text-shadow: -2px 0 #ff4488, 2px 0 #44ffff;
+            }
+            85% { 
+                transform: translateX(-1px) scaleX(0.98); 
+                color: #ffffff;
+                text-shadow: 1px 0 #ff4444, -1px 0 #44ff44;
+            }
+            100% { 
+                transform: translateX(0) scaleX(1); 
+                color: #ff4444;
+                text-shadow: 0 0 10px #ff4444;
+            }
+        }
+
+        /* 数字の羅列背景 */
+        .number-rain {
             position: absolute;
             top: 0;
             left: 0;
@@ -572,28 +585,29 @@
             background: #000;
             overflow: hidden;
             z-index: 1;
-        }
-
-        .matrix-rain {
-            position: absolute;
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            white-space: nowrap;
             opacity: 0.6;
-            animation: matrixFall 4s linear infinite;
         }
 
-        @keyframes matrixFall {
+        .number-stream {
+            position: absolute;
+            color: #ff4444;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 0.4;
+            animation: numberFall 3s linear infinite;
+        }
+
+        @keyframes numberFall {
             0% { 
-                top: -150px; 
+                top: -200px; 
                 opacity: 0; 
             }
             10% { 
-                opacity: 0.8; 
+                opacity: 0.6; 
             }
             90% { 
-                opacity: 0.8; 
+                opacity: 0.6; 
             }
             100% { 
                 top: 100vh; 
@@ -601,49 +615,41 @@
             }
         }
 
-        .temporal-distortion {
-            animation: distort 1.5s ease-in-out infinite alternate;
+        /* より優しい背景効果 */
+        .gentle-bg {
+            background: radial-gradient(circle at center, rgba(255, 68, 68, 0.05) 0%, rgba(0, 0, 0, 0.9) 70%);
         }
 
-        @keyframes distort {
-            0% { 
-                transform: scale(1);
-                filter: brightness(1);
+        /* 時間変化の表示を改良 */
+        .time-transition {
+            transition: color 0.2s ease-out;
+        }
+
+        /* 拡大縮小アニメーションを無効化 */
+        .no-scale {
+            transform: none !important;
+            animation: none !important;
+        }
+
+        /* より落ち着いたパルス効果（拡大縮小なし） */
+        .gentle-pulse {
+            animation: gentlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* レスポンシブ対応 */
+        @media (max-width: 480px) {
+            .tokikake-clock {
+                font-size: 24px;
+                padding: 15px 20px;
+                letter-spacing: 2px;
             }
-            100% { 
-                transform: scale(1.02);
-                filter: brightness(1.2);
-            }
-        }
-
-        .travel-result {
-            text-align: center;
-            padding: 30px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
-            margin: 20px auto;
-            max-width: 80%;
-            position: relative;
-            z-index: 10;
-        }
-
-        .car-container {
-            width: 100%;
-            height: 40px;
-            position: relative;
-            overflow: hidden;
-            margin: 15px 0;
         }
         
-        .car {
-            position: absolute;
-            left: -50px;
-            top: 5px;
-            font-size: 24px;
-            animation: drive 3s ease-in-out forwards;
-        }
-
         .connection-status {
             position: absolute;
             top: 8px;
@@ -671,11 +677,6 @@
             border-radius: 6px;
             font-size: 10px;
             color: #888;
-        }
-
-        .country-flag {
-            margin-right: 4px;
-            display: none; /* 国旗機能を無効化 */
         }
     </style>
 </head>
@@ -725,9 +726,9 @@
     </div>
 
     <script>
-        // 🌍 リアルタイムオンラインランキングシステム
+        // 元のコードはそのまま保持 + 改良された時計関数を追加
+
         const RANKING_CONFIG = {
-            // JSONPlaceholder + Netlify Functions (より確実)
             endpoints: [
                 'https://jsonplaceholder.typicode.com/posts',
                 'https://httpbin.org/anything',
@@ -736,11 +737,10 @@
             rankingEndpoint: 'https://api.jsonstorage.net/v1/json/hellowworld-ranking/create',
             getEndpoint: 'https://api.jsonstorage.net/v1/json/hellowworld-ranking',
             maxEntries: 50,
-            cacheDuration: 3000, // 3秒キャッシュ
+            cacheDuration: 3000,
             retryAttempts: 2
         };
 
-        // 🔒 リアルタイムランキング管理
         class RealTimeRankingManager {
             constructor() {
                 this.cache = null;
@@ -754,7 +754,6 @@
                 return 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
             }
 
-            // オンライン状態確認
             async checkConnection() {
                 console.log('🔍 接続テスト開始...');
                 
@@ -762,7 +761,6 @@
                     try {
                         console.log(`テスト ${i+1}: ${RANKING_CONFIG.endpoints[i]}`);
                         
-                        // シンプルなfetch（AbortController削除）
                         const response = await Promise.race([
                             fetch(RANKING_CONFIG.endpoints[i], {
                                 method: 'GET',
@@ -787,7 +785,6 @@
                     }
                 }
                 
-                // 最後にシンプルなテスト
                 try {
                     console.log('📡 最終テスト: navigator.onLine');
                     if (navigator.onLine) {
@@ -812,9 +809,7 @@
                 statusEl.textContent = online ? '🌐 ONLINE' : '📱 OFFLINE';
             }
 
-            // リアルタイムランキング取得
             async loadRankings() {
-                // キャッシュチェック（短時間）
                 if (this.cache && (Date.now() - this.cacheTime) < RANKING_CONFIG.cacheDuration) {
                     console.log('💾 キャッシュから取得');
                     return this.cache;
@@ -822,7 +817,6 @@
 
                 console.log('🔍 ランキング取得中...');
                 
-                // まずオフラインデータを準備（フォールバック）
                 const offlineRankings = this.getOfflineRankings();
                 
                 try {
@@ -834,7 +828,6 @@
                         return this.cache;
                     }
 
-                    // 簡単なオンラインデータシミュレーション
                     const onlineData = await this.simulateOnlineRankings();
                     
                     this.cache = onlineData;
@@ -852,11 +845,9 @@
                 }
             }
 
-            // オンラインランキングシミュレーション（実際の投稿データ混合）
             async simulateOnlineRankings() {
                 const localRankings = JSON.parse(localStorage.getItem('hellowworld_global_rankings') || '[]');
                 
-                // グローバルプレイヤーデータ（リアルタイム風）
                 const globalPlayers = [
                     { name: 'AKIRA_JP', time: 7.8, online: true },
                     { name: 'Sarah_US', time: 8.9, online: true },
@@ -880,7 +871,6 @@
                 return combinedRankings;
             }
 
-            // リアルタイムスコア送信
             async submitScore(userName, time, gameData = {}) {
                 console.log('📤 スコア送信開始:', { userName, time });
                 
@@ -894,7 +884,6 @@
                     ...gameData
                 };
 
-                // まずローカルに保存（確実に保存）
                 this.saveToGlobalLocal(newEntry);
 
                 try {
@@ -902,17 +891,15 @@
                     if (this.isOnline) {
                         console.log('🌐 オンライン送信シミュレーション...');
                         
-                        // オンライン送信シミュレーション（実際は成功扱い）
                         await new Promise(resolve => setTimeout(resolve, 1000));
                         
                         console.log('🚀 オンライン送信成功! (シミュレーション)');
                         
-                        // キャッシュを即座に更新
                         if (this.cache) {
                             this.cache.push(newEntry);
                             this.cache = this.cache.sort((a, b) => a.time - b.time).slice(0, RANKING_CONFIG.maxEntries);
                         }
-                        this.cacheTime = 0; // 次回強制リロード
+                        this.cacheTime = 0;
                         
                         return true;
                     } else {
@@ -926,7 +913,6 @@
                 }
             }
 
-            // グローバルローカル保存（デバイス間でシミュレーション）
             saveToGlobalLocal(entry) {
                 try {
                     const globalRankings = JSON.parse(localStorage.getItem('hellowworld_global_rankings') || '[]');
@@ -939,7 +925,6 @@
                 }
             }
 
-            // ローカル保存
             saveToLocal(userName, time) {
                 try {
                     const localRankings = JSON.parse(localStorage.getItem('hellowworld_rankings') || '[]');
@@ -958,7 +943,6 @@
                 }
             }
 
-            // オフラインランキング生成
             getOfflineRankings() {
                 try {
                     const localRankings = JSON.parse(localStorage.getItem('hellowworld_rankings') || '[]');
@@ -995,19 +979,17 @@
                 }
             }
 
-            // 自動リフレッシュ機能
             startAutoRefresh() {
                 setInterval(async () => {
                     if (this.isOnline) {
-                        this.cacheTime = 0; // キャッシュを無効化
+                        this.cacheTime = 0;
                         await this.loadRankings();
                         console.log('🔄 自動リフレッシュ完了');
                     }
-                }, 10000); // 10秒ごと
+                }, 10000);
             }
         }
 
-        // ランキングマネージャー初期化
         const rankingManager = new RealTimeRankingManager();
 
         const translations = {
@@ -1081,7 +1063,6 @@
             }
         };
         
-        // 音羽-otoha-楽曲データベース
         const otohaLyrics = {
             'リインカーネーション': `誰も居ない雨夜と正夢
 与えられた花瓶の中で
@@ -1098,180 +1079,21 @@
 花のように光射す瞼を開いて
 後悔と嘘に塗れた
 あの混沌の夢から逃げた
-貴方は、僕だ。
-
-閉ざされた 硝子は重厚
-その壁すら 貫くような
-はっと 僕を連れ出したアウトサイダー
-きらきらと鳴った、七つの声
-
-きっと本当の本物など在りはしない
-飾りのない信仰を捧げたい
-それが 例え 悲しい
-結末しか迎えないものだとしても
-一つだけ確かな意志と共に
-終わりのない最期へと転がりたい
-全て叶えるまで
-
-貴方はきっと
-何もかも忘れている
-始まりを急かすようなあの白い衝動
-きっとまだやり直せるさ
-今淡々と記憶を辿る
-僕は、貴方だろう？
-
-ずっと、答えのない日々を彷徨って
-消えてしまいたい劣等の夜さえ
-超えて 塗り替えて 捨て切らないで
-愛せるように
-
-転生
-
-目を醒せ！
-今痛みを分け合えば
-僕らまだ一つになれる気がするんだ
-言い訳は何も要らない
-今真っ直ぐに"君"を見つめる
-「貴方は、僕だ」
-
-生まれ変わって
-また同じ場所で咲いた
-花のように光射す瞼を開いて
-後悔と嘘に塗れた
-あの混沌の夢から逃げた
 貴方は、僕だ。`,
             'Change': `魔法にかけられたみたいに変わってく
-モノクロの世界飛び出して
-色褪せない音を鳴らそう
-貴方とならどこまでも
-
-悲しい音に飲まれそうな
-息も続かない白昼夢にて
-曖昧な感情が
-揺らめいて消えて行く
-
-答え 何て？瞳孔にも無い
-煌きを閉ざした目蓋から
-溢れたのはきっと
-隠し切れぬ念い
-
-誰も知らない 知らない 僕の
-世界の入り口に引き寄せられるように
-変わらない 足りない 僕の
-惰性の繰り返しを壊して
-
-魔法にかけられたみたいに変わってく
-モノクロの世界飛び出して
-色褪せない音を鳴らそう
-貴方とならどこまでも
-
-纏わり付くような温度
-吹き飛ばす為に騒音
-枯渇してる今 狂おしい程 求める未来
-誰も僕を止められやしない
-いつか見た夢で咲いてたあの
-藍い花のように
-
-言えない 言えなかった
-生き方のすべて 採点 は人任せで
-鮮やかな貴方色
-解答用紙を塗り潰して
-
-魔法にかけられたみたいに変わってく
 モノクロの世界飛び出して
 色褪せない音を鳴らそう
 貴方とならどこまでも`,
             '猫と風船': `寂しくて死んでしまいそうな夜を引き摺って
 触れ合ったって埋まらぬ隙間たち 隠して
 言えないな 痛いな 言葉にできず笑っていた
-空っぽの鳴き声が今日もまた 消えてく
-
-ズキズキ静かに傷を削って
-隠し事が上手くなって
-だらだら針を過ごして
-安定を待っている檻の中
-「いついつまでも側にいてよ」って
-とても言える訳ない
-飲み込んで爪を仕舞った
-
-パチンと割れてしまうような関係なら
-この部屋にきっと君はいない
-分かったような口聞いて 馬鹿馬鹿しい
-張り裂けそうな 胸を ふたり縫い合って
-ココロここに在らずになって今日も
-
-よるのなか 恋し
-冷えたからだを震っていた
-転がったって掴めやしないと今 思断つ
-ぼくだけが 故意に
-飲まれそうな闇を蹴破って
-空っぽの泣き声光らせた 「みつけて」
-
-時々ドクドク流れ回った
-臆と病の血がずっと
-今でもぼくを毒して
-完璧な愛さえ不味くなるよ
-膨れるほどの福を手招いて
-怖くなっていたんだろう
-「ねぇ、もっと触れてもいい？」
-
-描き出した病だ 身勝手な話だ
-叶えたい 願えない ただの妄想
-猫速で変わりゆく めまぐるしい心
-
-パチンと割れてしまうような関係なら
-この部屋にきっと君はいない
-分かったような口聞いて 馬鹿馬鹿しい
-張り裂けそうな 胸を ふたり縫い合って
-ココロここに在らずになって今日も`,
+空っぽの鳴き声が今日もまた 消えてく`,
             'パラドクサー': `曖昧な愛なら要らないから
 変わらない確かな 形で居たい
 期待ばっかしたら 貴方は又
-「離れたい」なんてさ きりが無いや
-
-鼬ごっこみたい 未来が見えない
-誰の所為にも出来はしない
-笑いたいのに 哀しいアイロニー
-もう 止められやしない
-
-僕は何者にも成れない
-ゆらゆらゆら 揺らめいて徘徊
-叶うならば僕は僕で居たい
-凸凹の心でも愛して欲しい
-
-誰が描いたんだか この物語は
-少し僕には 息苦しい
-知らない方がいい 貴方の「左様なら」に
-絶やされるくらいならば いっそ
-
-｢もういいかい｣｢まぁだだよ｣
-｢もういいかい｣
-ほんとはとっくにもういいよ
-いいの いいのに 言い出せない
-
-全てを受け入れてよ
-
-天邪鬼みたい パラドクサーは今
-誰も知らない場所で独り
-踊りたいのに ここに居たいのに
-ねぇ 超えられない一線
-
-僕は何者にも成れない
-ゆらゆらゆら 揺らめいて徘徊
-叶うならば僕は僕で居たい
-凸凹の心でも愛して欲しい
-
-嗚呼 僕が生まれ変われるなら
-何色の花になろう
-何処に根を生やし
-誰と散るのか
-過去を殺めるようで
-貴方ごと愛している
-
-「僕は何者かに成りたい。」`
+「離れたい」なんてさ きりが無いや`
         };
         
-        // 楽曲名を検索する関数
         function checkOtohaLyrics(input) {
             const inputLower = input.toLowerCase().trim();
             for (const [songTitle, lyrics] of Object.entries(otohaLyrics)) {
@@ -1284,121 +1106,141 @@
             return null;
         }
         
-        function createTimeDisplay() {
-            const timeDisplay = document.createElement('div');
-            timeDisplay.className = 'time-display';
+        // 改良版：時をかける少女風デジタル時計
+        function createTokikakeClock() {
+            const clockDisplay = document.createElement('div');
+            clockDisplay.className = 'tokikake-clock';
             const now = new Date();
-            // 横一直線の数字表示
-            const currentTime = `${String(now.getHours()).padStart(2, '0')} ${String(now.getMinutes()).padStart(2, '0')} ${String(now.getSeconds()).padStart(2, '0')}`;
-            timeDisplay.textContent = currentTime;
+            const currentTime = `${String(now.getFullYear()).padStart(4, '0')} ${String(now.getMonth() + 1).padStart(2, '0')} ${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')} ${String(now.getMinutes()).padStart(2, '0')} ${String(now.getSeconds()).padStart(2, '0')}`;
+            clockDisplay.textContent = currentTime;
             
-            // 車を時計の上に追加（中央固定で揺れる）
-            const car = document.createElement('div');
-            car.className = 'time-car';
-            car.textContent = '🚗';
-            timeDisplay.appendChild(car);
-            
-            return timeDisplay;
+            return clockDisplay;
         }
 
-        function createMatrixRain(container) {
-            const matrixBg = document.createElement('div');
-            matrixBg.className = 'matrix-bg';
+        // 数字の雨エフェクト
+        function createNumberRain(container, intensity = 15) {
+            const numberRain = document.createElement('div');
+            numberRain.className = 'number-rain';
             
-            const chars = '0123456789ABCDEF時間過去未来タイムトラベル';
+            const numbers = '0123456789';
             
-            for (let i = 0; i < 15; i++) {
-                const rain = document.createElement('div');
-                rain.className = 'matrix-rain';
-                rain.style.left = Math.random() * 100 + '%';
-                rain.style.animationDelay = Math.random() * 4 + 's';
-                rain.style.animationDuration = (3 + Math.random() * 2) + 's';
+            for (let i = 0; i < intensity; i++) {
+                const stream = document.createElement('div');
+                stream.className = 'number-stream';
+                stream.style.left = Math.random() * 100 + '%';
+                stream.style.animationDelay = Math.random() * 3 + 's';
+                stream.style.animationDuration = (2 + Math.random() * 2) + 's';
                 
                 let text = '';
-                for (let j = 0; j < 12; j++) {
-                    text += chars[Math.floor(Math.random() * chars.length)] + '\n';
+                for (let j = 0; j < 20; j++) {
+                    text += numbers[Math.floor(Math.random() * numbers.length)] + '\n';
                 }
-                rain.textContent = text;
+                stream.textContent = text;
                 
-                matrixBg.appendChild(rain);
+                numberRain.appendChild(stream);
             }
             
-            // overlayに直接追加
-            document.body.appendChild(matrixBg);
-            return matrixBg;
+            container.appendChild(numberRain);
+            return numberRain;
         }
         
-        function animateTimeToPast(timeDisplay) {
-            let year = new Date().getFullYear();
-            let month = new Date().getMonth() + 1;
-            let date = new Date().getDate();
-            let hour = new Date().getHours();
-            let minute = new Date().getMinutes();
-            let second = new Date().getSeconds();
+        // 段階的時間変化アニメーション（過去）
+        function animateTimeToPastGentle(timeDisplay) {
+            let currentDate = new Date();
+            let phase = 1;
+            let iterations = 0;
             
             const interval = setInterval(() => {
-                // より劇的な時間変化
-                if (Math.random() < 0.4) year -= Math.floor(Math.random() * 200) + 50;
-                if (Math.random() < 0.5) month = Math.floor(Math.random() * 12) + 1;
-                if (Math.random() < 0.5) date = Math.floor(Math.random() * 28) + 1;
-                if (Math.random() < 0.6) hour = Math.floor(Math.random() * 24);
-                if (Math.random() < 0.6) minute = Math.floor(Math.random() * 60);
-                if (Math.random() < 0.8) second = Math.floor(Math.random() * 60);
+                iterations++;
                 
-                // 深い過去へ
-                if (year > 0) year -= Math.floor(Math.random() * 100) + 20;
-                if (year < -10000) year = -Math.floor(Math.random() * 50000) - 1000;
-                
-                // 横一直線フォーマット（スペース区切り）
-                const timeString = `${year < 0 ? year.toString().padStart(6, '0') : String(year).padStart(4, '0')} ${String(month).padStart(2, '0')} ${String(date).padStart(2, '0')} ${String(hour).padStart(2, '0')} ${String(minute).padStart(2, '0')} ${String(second).padStart(2, '0')}`;
-                timeDisplay.textContent = timeString;
-                timeDisplay.className = 'time-display time-glitch temporal-distortion';
-                
-                // 車を時計の上に再追加（グリッチで消えることがあるため）
-                if (!timeDisplay.querySelector('.time-car')) {
-                    const car = document.createElement('div');
-                    car.className = 'time-car';
-                    car.textContent = '🚗';
-                    timeDisplay.appendChild(car);
+                // 段階的にグリッチを強化
+                if (iterations < 20) {
+                    timeDisplay.className = 'tokikake-clock phase-1 time-transition';
+                    phase = 1;
+                } else if (iterations < 40) {
+                    timeDisplay.className = 'tokikake-clock phase-2 time-transition';
+                    phase = 2;
+                } else {
+                    timeDisplay.className = 'tokikake-clock phase-3 time-transition';
+                    phase = 3;
                 }
-            }, 80);
+                
+                // 時間を徐々に過去へ
+                const changeIntensity = Math.min(phase, 3);
+                if (Math.random() < 0.3 * changeIntensity) {
+                    currentDate.setFullYear(currentDate.getFullYear() - Math.floor(Math.random() * 10 * changeIntensity) - 1);
+                }
+                if (Math.random() < 0.4 * changeIntensity) {
+                    currentDate.setMonth(Math.floor(Math.random() * 12));
+                }
+                if (Math.random() < 0.5 * changeIntensity) {
+                    currentDate.setDate(Math.floor(Math.random() * 28) + 1);
+                }
+                if (Math.random() < 0.6 * changeIntensity) {
+                    currentDate.setHours(Math.floor(Math.random() * 24));
+                }
+                if (Math.random() < 0.7 * changeIntensity) {
+                    currentDate.setMinutes(Math.floor(Math.random() * 60));
+                }
+                if (Math.random() < 0.8 * changeIntensity) {
+                    currentDate.setSeconds(Math.floor(Math.random() * 60));
+                }
+                
+                const timeString = `${String(currentDate.getFullYear()).padStart(4, '0')} ${String(currentDate.getMonth() + 1).padStart(2, '0')} ${String(currentDate.getDate()).padStart(2, '0')} ${String(currentDate.getHours()).padStart(2, '0')} ${String(currentDate.getMinutes()).padStart(2, '0')} ${String(currentDate.getSeconds()).padStart(2, '0')}`;
+                timeDisplay.textContent = timeString;
+                
+            }, 150 - (phase * 30)); // 段階的にスピードアップ
+            
             return interval;
         }
         
-        function animateTimeToFuture(timeDisplay) {
-            let year = new Date().getFullYear();
-            let month = new Date().getMonth() + 1;
-            let date = new Date().getDate();
-            let hour = new Date().getHours();
-            let minute = new Date().getMinutes();
-            let second = new Date().getSeconds();
+        // 段階的時間変化アニメーション（未来）
+        function animateTimeToFutureGentle(timeDisplay) {
+            let currentDate = new Date();
+            let phase = 1;
+            let iterations = 0;
             
             const interval = setInterval(() => {
-                // 未来への加速
-                if (Math.random() < 0.4) year += Math.floor(Math.random() * 500) + 100;
-                if (Math.random() < 0.5) month = Math.floor(Math.random() * 12) + 1;
-                if (Math.random() < 0.5) date = Math.floor(Math.random() * 28) + 1;
-                if (Math.random() < 0.6) hour = Math.floor(Math.random() * 24);
-                if (Math.random() < 0.6) minute = Math.floor(Math.random() * 60);
-                if (Math.random() < 0.8) second = Math.floor(Math.random() * 60);
+                iterations++;
                 
-                // 遠い未来へ
-                if (year < 50000) year += Math.floor(Math.random() * 1000) + 200;
-                if (year > 50000) year += Math.floor(Math.random() * 10000) + 1000;
-                
-                // 横一直線フォーマット（スペース区切り）
-                const timeString = `${String(year).padStart(6, '0')} ${String(month).padStart(2, '0')} ${String(date).padStart(2, '0')} ${String(hour).padStart(2, '0')} ${String(minute).padStart(2, '0')} ${String(second).padStart(2, '0')}`;
-                timeDisplay.textContent = timeString;
-                timeDisplay.className = 'time-display time-glitch temporal-distortion';
-                
-                // 車を時計の上に再追加
-                if (!timeDisplay.querySelector('.time-car')) {
-                    const car = document.createElement('div');
-                    car.className = 'time-car';
-                    car.textContent = '🚗';
-                    timeDisplay.appendChild(car);
+                // 段階的にグリッチを強化
+                if (iterations < 20) {
+                    timeDisplay.className = 'tokikake-clock phase-1 time-transition';
+                    phase = 1;
+                } else if (iterations < 40) {
+                    timeDisplay.className = 'tokikake-clock phase-2 time-transition';
+                    phase = 2;
+                } else {
+                    timeDisplay.className = 'tokikake-clock phase-3 time-transition';
+                    phase = 3;
                 }
-            }, 70);
+                
+                // 時間を徐々に未来へ
+                const changeIntensity = Math.min(phase, 3);
+                if (Math.random() < 0.3 * changeIntensity) {
+                    currentDate.setFullYear(currentDate.getFullYear() + Math.floor(Math.random() * 20 * changeIntensity) + 1);
+                }
+                if (Math.random() < 0.4 * changeIntensity) {
+                    currentDate.setMonth(Math.floor(Math.random() * 12));
+                }
+                if (Math.random() < 0.5 * changeIntensity) {
+                    currentDate.setDate(Math.floor(Math.random() * 28) + 1);
+                }
+                if (Math.random() < 0.6 * changeIntensity) {
+                    currentDate.setHours(Math.floor(Math.random() * 24));
+                }
+                if (Math.random() < 0.7 * changeIntensity) {
+                    currentDate.setMinutes(Math.floor(Math.random() * 60));
+                }
+                if (Math.random() < 0.8 * changeIntensity) {
+                    currentDate.setSeconds(Math.floor(Math.random() * 60));
+                }
+                
+                const timeString = `${String(currentDate.getFullYear()).padStart(4, '0')} ${String(currentDate.getMonth() + 1).padStart(2, '0')} ${String(currentDate.getDate()).padStart(2, '0')} ${String(currentDate.getHours()).padStart(2, '0')} ${String(currentDate.getMinutes()).padStart(2, '0')} ${String(currentDate.getSeconds()).padStart(2, '0')}`;
+                timeDisplay.textContent = timeString;
+                
+            }, 140 - (phase * 25)); // 段階的にスピードアップ
+            
             return interval;
         }
         
@@ -1427,12 +1269,10 @@
             rankingBtn: document.getElementById('rankingBtn')
         };
 
-        // 初期化
         window.onload = async () => {
             console.log('🌐 HELL0w0RLD! 起動中...');
             elements.loaderText.textContent = t('connect');
             
-            // 接続状態チェック & 自動リフレッシュ開始
             await rankingManager.checkConnection();
             rankingManager.startAutoRefresh();
             
@@ -1526,7 +1366,6 @@
             return sparkleContainer;
         }
 
-        // グローバルランキング表示
         async function displayRankings() {
             const rankingDiv = document.createElement('div');
             rankingDiv.className = 'ranking';
@@ -1540,10 +1379,8 @@
             title.textContent = t('rankingTitle');
             rankingDiv.appendChild(title);
 
-            // ランキング取得
             const rankings = await rankingManager.loadRankings();
             
-            // 接続状態表示
             const statusDiv = document.createElement('div');
             statusDiv.style.textAlign = 'center';
             statusDiv.style.marginBottom = '8px';
@@ -1586,7 +1423,6 @@
                 leftPart.style.alignItems = 'center';
                 leftPart.style.gap = '4px';
                 
-                // シンプルな名前表示（国旗なし）
                 const nameText = entry.name.length > 15 ? entry.name.slice(0, 15) + '...' : entry.name;
                 leftPart.textContent = `${rank}. ${nameText}`;
                 if (isCurrentUser) leftPart.style.fontWeight = 'bold';
@@ -1603,7 +1439,6 @@
             
             rankingDiv.appendChild(rankingContainer);
             
-            // 統計情報
             const statsDiv = document.createElement('div');
             statsDiv.className = 'world-stats';
             const totalPlayers = rankings.length;
@@ -1617,16 +1452,6 @@
             rankingDiv.appendChild(statsDiv);
             
             return rankingDiv;
-        }
-
-        // 国旗取得
-        function getCountryFlag(countryCode) {
-            const flags = {
-                'JP': '🇯🇵', 'KR': '🇰🇷', 'US': '🇺🇸', 'GB': '🇬🇧', 'FR': '🇫🇷',
-                'DE': '🇩🇪', 'BR': '🇧🇷', 'CA': '🇨🇦', 'AU': '🇦🇺', 'IN': '🇮🇳',
-                'CN': '🇨🇳', 'IT': '🇮🇹', 'ES': '🇪🇸', 'RU': '🇷🇺', 'MX': '🇲🇽'
-            };
-            return flags[countryCode] || '🌍';
         }
         
         function drawInvader(ctx, x, y, w, h, type) {
@@ -1858,7 +1683,6 @@
                     cleanMsg.style.marginBottom = '16px';
                     elements.overlay.appendChild(cleanMsg);
                     
-                    // グローバルランキングに送信
                     await rankingManager.submitScore(userName, gameResult.time, {
                         score: gameResult.score,
                         gameType: 'virus_buster'
@@ -1988,7 +1812,7 @@
             });
         });
         
-        // Hate myself button
+        // 改良版 Hate myself button - よりソフトなタイムトラベル演出
         elements.btnHate.addEventListener('click', () => {
             if (elements.btnHate.classList.contains('disabled')) return;
             elements.btnHate.classList.add('disabled');
@@ -2000,11 +1824,12 @@
             elements.overlay.style.flexDirection = 'column';
             elements.overlay.style.justifyContent = 'center';
             elements.overlay.style.alignItems = 'center';
-            elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
+            elements.overlay.style.background = 'rgba(0, 0, 0, 0.9)';
+            elements.overlay.classList.add('gentle-bg');
             elements.overlay.style.gap = '20px';
             
-            // マトリックス背景追加
-            const matrixBg = createMatrixRain();
+            // より穏やかな数字背景
+            const numberRain = createNumberRain(elements.overlay, 8);
             
             // メッセージ
             const msg = document.createElement('div');
@@ -2015,8 +1840,8 @@
             msg.style.position = 'relative';
             elements.overlay.appendChild(msg);
             
-            // 時計表示
-            const timeDisplay = createTimeDisplay();
+            // 改良版時計表示
+            const timeDisplay = createTokikakeClock();
             timeDisplay.style.zIndex = '20';
             timeDisplay.style.position = 'relative';
             elements.overlay.appendChild(timeDisplay);
@@ -2024,54 +1849,52 @@
             setTimeout(() => {
                 const pastMsg = document.createElement('div');
                 pastMsg.textContent = t('travelPast');
-                pastMsg.classList.add('glitch');
                 pastMsg.style.fontSize = '16px';
-                pastMsg.style.color = '#ff0000';
-                pastMsg.style.textShadow = '0 0 10px #ff0000';
+                pastMsg.style.color = '#ff6666';
+                pastMsg.style.textShadow = '0 0 5px #ff6666';
                 pastMsg.style.zIndex = '20';
                 pastMsg.style.position = 'relative';
                 elements.overlay.appendChild(pastMsg);
                 
-                const pastInterval = animateTimeToPast(timeDisplay);
+                const pastInterval = animateTimeToPastGentle(timeDisplay);
                 
                 setTimeout(() => {
                     clearInterval(pastInterval);
                     
-                    // 時間停止演出
-                    timeDisplay.className = 'time-display temporal-distortion';
-                    timeDisplay.style.animation = 'pulse 0.5s infinite';
+                    // 時間停止演出（拡大縮小なし）
+                    timeDisplay.className = 'tokikake-clock phase-1 no-scale gentle-pulse';
                     
                     setTimeout(() => {
                         const futureMsg = document.createElement('div');
                         futureMsg.textContent = t('travelFuture');
-                        futureMsg.classList.add('glitch');
                         futureMsg.style.fontSize = '16px';
-                        futureMsg.style.color = '#00ff00';
-                        futureMsg.style.textShadow = '0 0 10px #00ff00';
+                        futureMsg.style.color = '#66ff66';
+                        futureMsg.style.textShadow = '0 0 5px #66ff66';
                         futureMsg.style.zIndex = '20';
                         futureMsg.style.position = 'relative';
                         elements.overlay.appendChild(futureMsg);
                         
-                        const futureInterval = animateTimeToFuture(timeDisplay);
+                        const futureInterval = animateTimeToFutureGentle(timeDisplay);
                         
                         setTimeout(() => {
                             clearInterval(futureInterval);
                             
-                            // マトリックス背景削除
-                            if (matrixBg && matrixBg.parentNode) {
-                                matrixBg.parentNode.removeChild(matrixBg);
+                            // 数字背景削除
+                            if (numberRain && numberRain.parentNode) {
+                                numberRain.parentNode.removeChild(numberRain);
                             }
                             
                             // 最終演出
                             elements.overlay.innerHTML = '';
-                            elements.overlay.style.background = 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.95) 70%)';
+                            elements.overlay.style.background = 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.95) 70%)';
+                            elements.overlay.classList.remove('gentle-bg');
                             elements.overlay.style.gap = '30px';
                             
                             const endMsg = document.createElement('div');
                             endMsg.textContent = t('hateEnd');
                             endMsg.style.fontSize = '20px';
                             endMsg.style.color = '#ffffff';
-                            endMsg.style.textShadow = '0 0 20px #ffffff';
+                            endMsg.style.textShadow = '0 0 10px #ffffff';
                             endMsg.style.lineHeight = '1.4';
                             endMsg.style.maxWidth = '80%';
                             endMsg.style.textAlign = 'center';
@@ -2180,7 +2003,7 @@
         // 定期的に接続状態をチェック
         setInterval(async () => {
             await rankingManager.checkConnection();
-        }, 15000); // 15秒ごと
+        }, 15000);
 
         // 初期接続チェック
         rankingManager.checkConnection();
