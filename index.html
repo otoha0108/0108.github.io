@@ -523,6 +523,7 @@
 
         .country-flag {
             margin-right: 4px;
+            display: none; /* 国旗機能を無効化 */
         }
     </style>
 </head>
@@ -574,12 +575,12 @@
     <script>
         // 🌍 グローバルランキングシステム - セキュア版
         const RANKING_CONFIG = {
-            // JSONBin.io を使用（無料でAPIキー不要）
-            endpoint: 'https://api.jsonbin.io/v3/b/66f7b2e5acd3cb34a88d1c5a',
-            fallbackEndpoint: 'https://api.npoint.io/4f8a2d6b3c9e5f7a8b1d',
+            // 公開APIエンドポイント（デモ用）
+            endpoint: 'https://jsonplaceholder.typicode.com/posts/1',
+            fallbackEndpoint: 'https://httpbin.org/json',
             maxEntries: 100,
             cacheDuration: 30000, // 30秒キャッシュ
-            retryAttempts: 3
+            retryAttempts: 2
         };
 
         // 🔒 セキュアなランキング管理
@@ -621,86 +622,42 @@
                     return this.cache;
                 }
 
-                try {
-                    await this.checkConnection();
-                    if (!this.isOnline) throw new Error('Offline');
-
-                    const response = await fetch(RANKING_CONFIG.endpoint, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
-
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                    
-                    const data = await response.json();
-                    this.cache = Array.isArray(data.record) ? data.record : data.record?.rankings || [];
-                    this.cacheTime = Date.now();
-                    this.retryCount = 0;
-                    
-                    console.log('🌐 ランキング取得成功:', this.cache.length, 'entries');
-                    return this.cache;
-                    
-                } catch (error) {
-                    console.warn('⚠️ オンラインランキング取得失敗:', error.message);
-                    return this.getOfflineRankings();
-                }
+                console.log('🔍 ランキング取得試行...');
+                
+                // 常にオフラインランキングを返す（デモ用）
+                this.cache = this.getOfflineRankings();
+                this.cacheTime = Date.now();
+                this.isOnline = false; // デモ用にオフライン表示
+                this.updateConnectionStatus(false);
+                
+                console.log('📱 オフラインランキング使用:', this.cache.length, 'entries');
+                return this.cache;
             }
 
             // セキュアなスコア送信
             async submitScore(userName, time, gameData = {}) {
-                try {
-                    if (!this.isOnline) throw new Error('Offline mode');
-
-                    const newEntry = {
-                        name: userName.slice(0, 20), // 名前制限
-                        time: Math.round(time * 10) / 10, // 小数点1桁
-                        country: await this.getUserCountry(),
-                        timestamp: Date.now(),
-                        date: new Date().toISOString().split('T')[0],
-                        ...gameData
-                    };
-
-                    // 現在のランキングを取得
-                    const currentRankings = await this.loadRankings();
-                    
-                    // 新しいエントリを追加
-                    const updatedRankings = [...currentRankings, newEntry]
-                        .sort((a, b) => a.time - b.time)
-                        .slice(0, RANKING_CONFIG.maxEntries);
-
-                    // 送信試行
-                    for (let attempt = 0; attempt < RANKING_CONFIG.retryAttempts; attempt++) {
-                        try {
-                            const response = await fetch(RANKING_CONFIG.endpoint, {
-                                method: 'PUT',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-Master-Key': '$2a$10$h8Kg9qGmVl8Cxl5NqRnKU.8FhJjH0t6oDnG3KwV4Lx9PzMaQsEr7G'
-                                },
-                                body: JSON.stringify({ rankings: updatedRankings })
-                            });
-
-                            if (response.ok) {
-                                this.cache = updatedRankings;
-                                this.cacheTime = Date.now();
-                                console.log('✅ スコア送信成功!');
-                                return true;
-                            }
-                        } catch (error) {
-                            console.warn(`送信試行 ${attempt + 1} 失敗:`, error.message);
-                        }
-                    }
-                    
-                    throw new Error('送信失敗');
-                    
-                } catch (error) {
-                    console.error('❌ スコア送信エラー:', error.message);
-                    // ローカルに保存
-                    this.saveToLocal(userName, time);
-                    return false;
-                }
+                console.log('📤 スコア送信:', { userName, time });
+                
+                // ローカルランキングに追加
+                this.saveToLocal(userName, time);
+                
+                // キャッシュを更新
+                const newEntry = {
+                    name: userName.slice(0, 20),
+                    time: Math.round(time * 10) / 10,
+                    country: 'XX',
+                    timestamp: Date.now(),
+                    date: new Date().toISOString().split('T')[0],
+                    ...gameData
+                };
+                
+                if (!this.cache) this.cache = this.getOfflineRankings();
+                this.cache.push(newEntry);
+                this.cache = this.cache.sort((a, b) => a.time - b.time).slice(0, RANKING_CONFIG.maxEntries);
+                this.cacheTime = Date.now();
+                
+                console.log('✅ ローカルスコア保存完了!');
+                return true;
             }
 
             // ユーザーの国を取得
@@ -733,29 +690,38 @@
 
             // オフラインランキング生成
             getOfflineRankings() {
-                const localRankings = JSON.parse(localStorage.getItem('hellowworld_rankings') || '[]');
-                const baseRankings = [
-                    { name: '🎌 AKIRA', time: 8.2, country: 'JP' },
-                    { name: '🇰🇷 민지', time: 9.1, country: 'KR' },
-                    { name: '🇺🇸 ALEX', time: 10.7, country: 'US' },
-                    { name: '🇬🇧 EMMA', time: 11.3, country: 'GB' },
-                    { name: '🇫🇷 LUCAS', time: 12.5, country: 'FR' },
-                    { name: '🇩🇪 NINA', time: 13.8, country: 'DE' },
-                    { name: '🇧🇷 CARLOS', time: 14.2, country: 'BR' },
-                    { name: '🇨🇦 SARAH', time: 15.6, country: 'CA' },
-                    { name: '🇦🇺 JACK', time: 16.1, country: 'AU' },
-                    { name: '🇮🇳 PRIYA', time: 17.9, country: 'IN' }
-                ].map(entry => ({
-                    ...entry,
-                    time: entry.time + (Math.random() - 0.5) * 2,
-                    date: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-                }));
+                try {
+                    const localRankings = JSON.parse(localStorage.getItem('hellowworld_rankings') || '[]');
+                    const baseRankings = [
+                        { name: 'AKIRA', time: 8.2, country: 'XX' },
+                        { name: '민지', time: 9.1, country: 'XX' },
+                        { name: 'ALEX', time: 10.7, country: 'XX' },
+                        { name: 'EMMA', time: 11.3, country: 'XX' },
+                        { name: 'LUCAS', time: 12.5, country: 'XX' },
+                        { name: 'NINA', time: 13.8, country: 'XX' },
+                        { name: 'CARLOS', time: 14.2, country: 'XX' },
+                        { name: 'SARAH', time: 15.6, country: 'XX' },
+                        { name: 'JACK', time: 16.1, country: 'XX' },
+                        { name: 'PRIYA', time: 17.9, country: 'XX' }
+                    ].map(entry => ({
+                        ...entry,
+                        time: entry.time + (Math.random() - 0.5) * 2,
+                        date: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                    }));
 
-                const combinedRankings = [...localRankings, ...baseRankings]
-                    .sort((a, b) => a.time - b.time)
-                    .slice(0, 20);
+                    const combinedRankings = [...localRankings, ...baseRankings]
+                        .sort((a, b) => a.time - b.time)
+                        .slice(0, 20);
 
-                return combinedRankings;
+                    return combinedRankings;
+                } catch (error) {
+                    console.warn('ランキング生成エラー:', error);
+                    return [
+                        { name: 'AKIRA', time: 8.2, country: 'XX', date: '2024-08-01' },
+                        { name: '민지', time: 9.1, country: 'XX', date: '2024-08-02' },
+                        { name: 'ALEX', time: 10.7, country: 'XX', date: '2024-08-03' }
+                    ];
+                }
             }
         }
 
@@ -1268,10 +1234,9 @@
                 leftPart.style.alignItems = 'center';
                 leftPart.style.gap = '4px';
                 
-                // 国旗表示
-                const countryFlag = getCountryFlag(entry.country);
-                const nameText = entry.name.length > 12 ? entry.name.slice(0, 12) + '...' : entry.name;
-                leftPart.innerHTML = `${rank}. ${countryFlag} ${nameText}`;
+                // シンプルな名前表示（国旗なし）
+                const nameText = entry.name.length > 15 ? entry.name.slice(0, 15) + '...' : entry.name;
+                leftPart.textContent = `${rank}. ${nameText}`;
                 if (isCurrentUser) leftPart.style.fontWeight = 'bold';
                 
                 const rightPart = document.createElement('span');
