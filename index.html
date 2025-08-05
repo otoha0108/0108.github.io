@@ -726,8 +726,9 @@
                 clearInterval(interval);
                 // Virus detected
                 msg.textContent = t('virusDetected');
-                // Remove progress message
+                // Remove progress message and heart scanner
                 progressMsg.remove();
+                heartScanner.remove();
                 // Show button to launch buster
                 const busterBtn = document.createElement('button');
                 busterBtn.textContent = t('virusBtn');
