@@ -147,15 +147,17 @@
         
         #largeTitle {
             position: absolute;
-            top: 16px;
+            top: 40px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 24px;
+            font-size: 20px;
             color: #14ffec;
             display: none;
             z-index: 500;
             text-align: center;
             text-shadow: 0 0 10px #14ffec;
+            max-width: 80%;
+            word-wrap: break-word;
         }
         
         #overlay {
@@ -179,7 +181,7 @@
             flex-grow: 1;
             overflow-y: auto;
             margin-bottom: 12px;
-            margin-top: 60px;
+            margin-top: 80px;
             padding-right: 4px;
         }
         
@@ -320,7 +322,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 80px;
-            color: #ff0077;
+            color: #14ffec;
             z-index: 1;
         }
         
@@ -369,8 +371,11 @@
         }
         
         #clockDisplay {
-            font-size: 32px;
-            margin-top: 16px;
+            font-size: 48px;
+            margin-top: 32px;
+            color: #14ffec;
+            text-shadow: 0 0 20px #14ffec;
+            font-weight: bold;
         }
         
         .sparkles {
@@ -385,7 +390,7 @@
         
         .sparkle {
             position: absolute;
-            color: #ffff00;
+            color: #14ffec;
             font-size: 20px;
             animation: sparkle 2s infinite;
         }
@@ -397,29 +402,22 @@
         }
         
         .close-btn {
-            background: #ff0077;
-            color: white;
-            border: 2px solid #ffff00;
-            padding: 12px 24px;
-            border-radius: 8px;
+            background: #ffffff;
+            color: #151515;
+            border: 1px solid #666666;
+            padding: 8px 16px;
+            border-radius: 4px;
             cursor: pointer;
             font-family: inherit;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 12px;
             margin-top: 20px;
-            box-shadow: 0 4px 8px rgba(255, 0, 119, 0.3);
-            transition: all 0.2s ease;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
             align-self: center;
         }
         
         .close-btn:hover {
-            background: #ff3399;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(255, 0, 119, 0.4);
-        }
-        
-        .close-btn:active {
-            transform: translateY(0);
+            opacity: 1;
         }
         
         .ranking {
@@ -443,7 +441,7 @@
 <body>
     <div id="app">
         <div id="lang-toggle">
-            <button id="btn-en" class="active">ENG</button>
+            <button id="btn-en" class="active">ENGLISH</button>
             <button id="btn-ja">日本語</button>
         </div>
         
@@ -548,13 +546,28 @@
         let lonelyDone = false;
         let hateDone = false;
         
-        let rankings = [
-            { name: 'Alice', time: 15.7 },
-            { name: 'Bob', time: 18.2 },
-            { name: 'Charlie', time: 22.1 },
-            { name: 'Diana', time: 25.3 },
-            { name: 'Eve', time: 28.9 }
-        ];
+        let rankings = [];
+        
+        // Load rankings from localStorage
+        function loadRankings() {
+            try {
+                const saved = localStorage.getItem('hellworld_rankings');
+                if (saved) {
+                    rankings = JSON.parse(saved);
+                }
+            } catch (e) {
+                rankings = [];
+            }
+        }
+        
+        // Save rankings to localStorage
+        function saveRankings() {
+            try {
+                localStorage.setItem('hellworld_rankings', JSON.stringify(rankings));
+            } catch (e) {
+                console.log('Cannot save rankings');
+            }
+        }
         
         function t(key) {
             return translations[currentLang][key] || key;
@@ -581,6 +594,7 @@
         };
         
         window.onload = () => {
+            loadRankings();
             elements.loaderText.textContent = t('connect');
             setTimeout(() => {
                 elements.loader.style.display = 'none';
@@ -641,7 +655,7 @@
         function createCloseButton(callback, buttonToDisable = null) {
             const closeBtn = document.createElement('button');
             closeBtn.className = 'close-btn';
-            closeBtn.textContent = `✕ ${t('close')}`;
+            closeBtn.textContent = t('close');
             closeBtn.addEventListener('click', () => {
                 if (buttonToDisable) {
                     buttonToDisable.classList.add('disabled');
@@ -672,9 +686,10 @@
         }
         
         function updateRankings(newTime) {
-            rankings.push({ name: userName, time: newTime });
+            rankings.push({ name: userName, time: newTime, date: new Date().toLocaleDateString() });
             rankings.sort((a, b) => a.time - b.time);
-            rankings = rankings.slice(0, 10);
+            rankings = rankings.slice(0, 50); // Keep top 50
+            saveRankings();
         }
         
         function displayRankings() {
@@ -776,7 +791,7 @@
             
             const heartDisplay = document.createElement('div');
             heartDisplay.className = 'heart-display';
-            heartDisplay.textContent = '💖';
+            heartDisplay.textContent = '♡';
             heartScanner.appendChild(heartDisplay);
             
             const scanGrid = document.createElement('div');
@@ -798,6 +813,7 @@
                 virusIcon.style.fontSize = '120px';
                 virusIcon.style.margin = '20px 0';
                 virusIcon.style.animation = 'pulse 0.5s infinite';
+                virusIcon.style.color = '#14ffec';
                 virusIcon.textContent = '👾';
                 elements.overlay.appendChild(virusIcon);
                 
@@ -941,7 +957,7 @@
                             showPrompt();
                         }, elements.btnHate);
                         elements.overlay.appendChild(closeBtn);
-                    }, 2500);
+                    }, 3500);
                 }, 2500);
             }, 1000);
         });
