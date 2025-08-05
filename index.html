@@ -872,13 +872,28 @@
         async function submitScoreOnline(userName, time) {
             if (!USE_ONLINE_RANKING) return false;
             
+            console.log('🌐 Attempting to submit score online...', { userName, time });
+            
             try {
                 // 現在のランキングを取得
-                const currentRankings = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                console.log('📥 Fetching current rankings...');
+                const currentResponse = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: {
                         'X-Master-Key': JSONBIN_API_KEY
                     }
-                }).then(r => r.json()).then(data => data.record.rankings || []);
+                });
+                
+                console.log('📥 Current rankings response status:', currentResponse.status);
+                
+                if (!currentResponse.ok) {
+                    throw new Error(`Failed to fetch: ${currentResponse.status} ${currentResponse.statusText}`);
+                }
+                
+                const currentData = await currentResponse.json();
+                console.log('📥 Current data:', currentData);
+                
+                const currentRankings = currentData.record?.rankings || [];
+                console.log('📊 Current rankings:', currentRankings);
                 
                 // 新しいスコアを追加
                 const newEntry = {
@@ -892,8 +907,10 @@
                 currentRankings.sort((a, b) => a.time - b.time);
                 const topRankings = currentRankings.slice(0, 50);
                 
+                console.log('📤 Submitting updated rankings:', topRankings);
+                
                 // 更新されたランキングを保存
-                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                const updateResponse = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -902,10 +919,16 @@
                     body: JSON.stringify({ rankings: topRankings })
                 });
                 
-                console.log('🌐 Score submitted online!');
+                console.log('📤 Update response status:', updateResponse.status);
+                
+                if (!updateResponse.ok) {
+                    throw new Error(`Failed to update: ${updateResponse.status} ${updateResponse.statusText}`);
+                }
+                
+                console.log('✅ Score submitted successfully online!');
                 return true;
             } catch (error) {
-                console.log('❌ Online submission failed:', error);
+                console.error('❌ Online submission failed:', error);
                 return false;
             }
         }
@@ -914,17 +937,28 @@
         async function loadRankingsOnline() {
             if (!USE_ONLINE_RANKING) return null;
             
+            console.log('📥 Loading online rankings...');
+            
             try {
                 const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: {
                         'X-Master-Key': JSONBIN_API_KEY
                     }
                 });
+                
+                console.log('📥 Load rankings response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to load: ${response.status} ${response.statusText}`);
+                }
+                
                 const data = await response.json();
-                console.log('📊 Loaded online rankings!');
-                return data.record.rankings || [];
+                console.log('📊 Loaded data:', data);
+                console.log('📊 Rankings:', data.record?.rankings);
+                
+                return data.record?.rankings || [];
             } catch (error) {
-                console.log('❌ Failed to load online rankings:', error);
+                console.error('❌ Failed to load online rankings:', error);
                 return null;
             }
         }
