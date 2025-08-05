@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HELL0w0RLD! by 0108</title>
+    <!-- Responsive meta tag for smartphones, prevents zoom on input fields -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>HELL0w0RLD! Interactive</title>
     <style>
         body {
             background: #1a1a1a;
@@ -14,243 +15,194 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            font-size: 14px;
+            font-size: 16px; /* larger font to avoid mobile zoom */
         }
         #terminal {
             background: #000;
             border: 2px solid #00ffcc;
-            padding: 20px;
-            width: 80%;
+            padding: 16px;
+            width: 90vw;
             max-width: 600px;
-            height: 80%;
+            height: 80vh;
             overflow-y: auto;
+            box-sizing: border-box;
             position: relative;
         }
-        #lang-buttons {
-            text-align: right;
-            margin-bottom: 10px;
+        #output {
+            white-space: pre-wrap;
+            margin-bottom: 12px;
         }
-        #lang-buttons button {
-            background: none;
-            border: 1px solid #00ffcc;
-            color: #00ffcc;
-            padding: 5px 10px;
-            font-family: 'Courier New', monospace;
-            cursor: pointer;
-            margin-left: 10px;
+        #input-container {
+            display: flex;
+            align-items: center;
         }
-        #lang-buttons button:hover {
-            background-color: #00ffcc;
-            color: #000;
+        #prompt {
+            color: #ff0077;
+            margin-right: 8px;
         }
-        #lang-buttons button.active {
-            background-color: #00ffcc;
-            color: #000;
-        }
-        #output { white-space: pre-wrap; margin-bottom: 20px; }
-        #input-container { display: flex; align-items: center; }
-        #prompt { color: #ff0077; margin-right: 10px; }
         #userInput {
-            background: none;
+            background: transparent;
             border: none;
             color: #00ffcc;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
+            font-family: inherit;
+            font-size: 1em;
             outline: none;
             flex-grow: 1;
+            border-bottom: 1px solid #00ffcc;
+            padding: 2px;
         }
-        .scramble {
-            animation: scramble 0.5s ease-in-out forwards;
-        }
-        @keyframes scramble {
-            0% { opacity: 1; transform: translate(0); }
-            50% { opacity: 0.5; color: #ff0077; transform: translate(2px, -2px); }
-            100% { opacity: 1; color: #00ffcc; transform: translate(0); }
-        }
-        .red-scramble {
-            color: #ff0077;
-            animation: scramble 0.5s ease-in-out forwards;
-        }
-        #enterKey {
+        #enterBtn {
             background: #00ffcc;
             border: 2px solid #00ffcc;
             color: #000;
-            padding: 5px 10px;
-            font-size: 14px;
+            padding: 4px 10px;
+            font-size: 1em;
             cursor: pointer;
-            margin-left: 10px;
+            margin-left: 6px;
+            display: none; /* hidden by default */
         }
     </style>
 </head>
 <body>
     <div id="terminal">
-        <div id="lang-buttons">
-            <button id="lang-ja">日本語</button>
-            <button id="lang-en" class="active">English</button>
-        </div>
         <div id="output">🌐 HELL0w0RLD! 🌐</div>
         <div id="input-container">
-            <span id="prompt">📡 0108: What's on your mind? ></span>
-            <input type="text" id="userInput" autocomplete="off">
-            <div id="enterKey">Enter</div>
+            <span id="prompt">📡 0108: What's on your mind? &gt;</span>
+            <input type="text" id="userInput" placeholder="Type a command..." autocomplete="off">
+            <button id="enterBtn">Enter</button>
         </div>
     </div>
 
     <script>
         const output = document.getElementById('output');
+        const promptEl = document.getElementById('prompt');
         const userInput = document.getElementById('userInput');
-        const enterKey = document.getElementById('enterKey');
-        const prompt = document.getElementById('prompt');
-        const langJaButton = document.getElementById('lang-ja');
-        const langEnButton = document.getElementById('lang-en');
+        const enterBtn = document.getElementById('enterBtn');
         let isProcessing = false;
-        let isJapanese = false;
 
-        const translations = {
-            ja: {
-                prompt: '📡 0108: 何を考えていますか？ >',
-                sos1: '0108はいつでもあなたの信号をキャッチできます！',
-                sos2: '心をスキャン中... ',
-                sos3: '🚨 ウイルス検出！',
-                sos4: '[Enter]を押して0108にウイルスを排除させましょう！',
-                sos5: '0108がウイルスを排除します！',
-                sos6: '✅ ウイルス除去完了！\n心の状態: 150%クリーン。'
-            },
-            en: {
-                prompt: '📡 0108: What\'s on your mind? >',
-                sos1: '0108 can catch your signal anytime!',
-                sos2: 'Scanning your heart... ',
-                sos3: '🚨 Alert! Virus detected!',
-                sos4: 'Press [Enter] to let 0108 take down the virus!',
-                sos5: '0108 will take down the virus!',
-                sos6: '✅ Virus eliminated! \nHeart status: 150% clean.'
-            }
-        };
-
-        function updateLanguage() {
-            console.log('Updating language to:', isJapanese ? 'Japanese' : 'English');
-            const lang = isJapanese ? 'ja' : 'en';
-            const elements = [prompt, ...output.children].filter(element => element.textContent.trim() !== '🌐 HELL0w0RLD! 🌐');
-            const promises = elements.map(element => {
-                const currentText = element.textContent.trim();
-                const newText = getTranslatedText(currentText, lang);
-                console.log('Checking:', currentText, '->', newText);
-                if (currentText !== newText && newText !== undefined) {
-                    return scrambleToText(element, newText);
-                }
-                return Promise.resolve();
-            });
-            return Promise.all(promises).then(() => {
-                langJaButton.classList.toggle('active', isJapanese);
-                langEnButton.classList.toggle('active', !isJapanese);
-            });
-        }
-
-        function getTranslatedText(currentText, lang) {
-            console.log('Translating:', currentText);
-            if (currentText === translations.en.prompt || currentText === translations.ja.prompt) return translations[lang].prompt;
-            if (currentText === translations.en.sos1 || currentText === translations.ja.sos1) return translations[lang].sos1;
-            if (currentText.startsWith(translations.en.sos2) || currentText.startsWith(translations.ja.sos2)) {
-                return translations[lang].sos2 + (currentText.split('[')[1] || '');
-            }
-            if (currentText === translations.en.sos3 || currentText === translations.ja.sos3) return translations[lang].sos3;
-            if (currentText === translations.en.sos4 || currentText === translations.ja.sos4) return translations[lang].sos4;
-            if (currentText === translations.en.sos5 || currentText === translations.ja.sos5) return translations[lang].sos5;
-            if (currentText === translations.en.sos6 || currentText === translations.ja.sos6) return translations[lang].sos6;
-            return currentText;
-        }
-
-        async function scrambleToText(element, newText) {
-            console.log('Scrambling from:', element.textContent, 'to:', newText);
-            if (newText === undefined) {
-                console.error('Undefined newText for:', element.textContent);
-                return;
-            }
-            element.classList.add('scramble');
-
-            const randomChars = '!?@#$%^&*()_+-=[]{}|;:,.<>?';
-            let scrambledText = element.textContent;
-            for (let i = 0; i < 5; i++) {
-                scrambledText = element.textContent.split('').map(() => randomChars[Math.floor(Math.random() * randomChars.length)]).join('');
-                element.textContent = scrambledText;
-                await new Promise(resolve => setTimeout(resolve, 200));
-            }
-
-            element.textContent = newText;
-            element.classList.remove('scramble');
-            await new Promise(resolve => setTimeout(resolve, 500));
-            console.log('Text updated to:', element.textContent);
-        }
-
-        langJaButton.addEventListener('click', () => {
-            if (!isJapanese) {
-                isJapanese = true;
-                updateLanguage();
-            }
-        });
-
-        langEnButton.addEventListener('click', () => {
-            if (isJapanese) {
-                isJapanese = false;
-                updateLanguage();
-            }
-        });
-
-        function addOutput(text) {
-            output.innerHTML += `<div>${text}</div>`;
+        /** Helper to append a line of HTML to the output pane. */
+        function addLine(html) {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            output.appendChild(div);
             output.scrollTop = output.scrollHeight;
-            console.log('Output added:', text);
         }
 
-        async function updateProgress(text, i, max) {
-            addOutput(`${text}[${'█'.repeat(i)}${'-'.repeat(max - i)}]`);
-            await new Promise(resolve => setTimeout(resolve, 300));
-            if (i < 10) output.lastChild.remove();
-        }
-
-        userInput.addEventListener('keydown', async (event) => {
-            console.log('Key pressed:', event.key);
-            if (event.key !== 'Enter' || isProcessing) return;
-            isProcessing = true;
-            const input = userInput.value.toLowerCase().trim();
+        /** Processes input commands from the user. */
+        function processInput() {
+            if (isProcessing) return;
+            const text = userInput.value.trim().toLowerCase();
+            if (!text) return;
+            addLine(promptEl.textContent + ' ' + text);
             userInput.value = '';
-            addOutput(`${prompt.textContent} ${input}`);
+            if (text.includes('sos')) {
+                handleSOS();
+            } else if (text.includes('lonely')) {
+                handleLonely();
+            } else if (text.includes('hate myself')) {
+                handleHate();
+            } else if (text.includes('why')) {
+                handleWhy();
+            }
+        }
 
-            const lang = isJapanese ? 'ja' : 'en';
-
-            if (input.includes('sos')) {
-                addOutput(translations[lang].sos1);
-                for (let i = 0; i <= 10; i++) {
-                    await updateProgress(translations[lang].sos2, i, 10);
+        /** Handles the SOS command with progress bar and virus elimination. */
+        async function handleSOS() {
+            isProcessing = true;
+            addLine('0108 can catch your signal anytime!');
+            // progress bar
+            for (let i = 0; i <= 10; i++) {
+                const bar = '█'.repeat(i) + '-'.repeat(10 - i);
+                if (i > 0) {
+                    // remove previous bar
+                    output.removeChild(output.lastChild);
                 }
-                addOutput(`<span style="color: red;">${translations[lang].sos3}</span>`);
-                addOutput(`<span style="color: red;">${translations[lang].sos4}</span>`);
-                enterKey.style.display = 'block';
-
-                const enterHandler = async (e) => {
-                    console.log('Enter/Click detected:', e.type);
-                    if (e.key === 'Enter' || e.type === 'click') {
-                        userInput.removeEventListener('keydown', enterHandler);
-                        enterKey.removeEventListener('click', enterHandler);
-                        enterKey.style.display = 'none';
-                        addOutput(translations[lang].sos5);
+                addLine('Scanning your heart... [' + bar + ']');
+                await new Promise(r => setTimeout(r, 300));
+            }
+            addLine('<span style="color:red;">🚨 Alert! Virus detected!</span>');
+            addLine('<span style="color:red;">Press Enter or tap the button to let 0108 take down the virus!</span>');
+            // Show the Enter button and set up handler
+            enterBtn.style.display = 'inline-block';
+            function onEnter(e) {
+                if (e.key === 'Enter' || e.type === 'click') {
+                    e.preventDefault();
+                    userInput.removeEventListener('keydown', onEnter);
+                    enterBtn.removeEventListener('click', onEnter);
+                    enterBtn.style.display = 'none';
+                    addLine('0108 will take down the virus!');
+                    (async () => {
                         for (let i = 1; i <= 10; i++) {
-                            addOutput(`${'⚡ '.repeat(i)}`);
-                            await new Promise(resolve => setTimeout(resolve, 300));
-                            if (i < 10) output.lastChild.remove();
+                            if (i > 1) output.removeChild(output.lastChild);
+                            addLine(('⚡ ').repeat(i));
+                            await new Promise(r => setTimeout(r, 200));
                         }
-                        addOutput(translations[lang].sos6);
+                        addLine('✅ Virus eliminated! <br>Heart status: 150% clean.');
                         isProcessing = false;
+                    })();
+                }
+            }
+            enterBtn.addEventListener('click', onEnter);
+            userInput.addEventListener('keydown', onEnter);
+        }
+
+        /** Handles the lonely command. */
+        async function handleLonely() {
+            isProcessing = true;
+            addLine("OK. Let's listen to music with something sweet!");
+            // Ask for favourite song using a browser prompt
+            let songName = window.prompt("📡 0108: Enter your favorite song name");
+            if (!songName) songName = 'Unknown song';
+            addLine("Now Playing '" + songName + "' in your head!");
+            addLine("0108 is always here to sing for you 🎵");
+            isProcessing = false;
+        }
+
+        /** Handles the hate myself command. */
+        async function handleHate() {
+            isProcessing = true;
+            addLine('🚗 Time patrol active!');
+            await new Promise(r => setTimeout(r, 100));
+            const timelines = ['Past', 'Future'];
+            for (const timeline of timelines) {
+                let base = 'Traveling to your ' + timeline;
+                for (let dot = 1; dot <= 3; dot++) {
+                    const msg = base + '.'.repeat(dot);
+                    if (dot > 1) {
+                        output.removeChild(output.lastChild);
                     }
-                };
-                userInput.addEventListener('keydown', enterHandler);
-                enterKey.addEventListener('click', enterHandler);
-            } else {
-                isProcessing = false;
+                    addLine(msg);
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+            }
+            await new Promise(r => setTimeout(r, 1000));
+            addLine("Every moment's full of light.✨ You're perfect as is.");
+            isProcessing = false;
+        }
+
+        /** Handles the why command. */
+        async function handleWhy() {
+            isProcessing = true;
+            addLine('0108 is thinking...');
+            for (let i = 0; i < 10; i++) {
+                await new Promise(r => setTimeout(r, 1000));
+                addLine('.');
+            }
+            addLine('This program will never stop until you find the answer.');
+            // Show a simple clock icon every second indefinitely
+            setInterval(() => {
+                addLine('🕒');
+            }, 1000);
+        }
+
+        // Event listeners for user input
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                processInput();
             }
         });
-
-        userInput.focus();
+        // Only show Enter button when needed; clicking it processes input
+        enterBtn.addEventListener('click', processInput);
     </script>
 </body>
 </html>
