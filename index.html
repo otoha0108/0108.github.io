@@ -1,4 +1,17 @@
-<!DOCTYPE html>
+/* Scanning bar for why (keep original for why function) */
+        .scan-bar {
+            width: 300px;
+            height: 15px;
+            border: 1px solid #00fff2;
+            margin-top: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .scan-fill {
+            height: 100%;
+            background: #00fff2;
+            width: 0%;
+        }<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -282,19 +295,51 @@
         .glitch {
             animation: glitch 0.5s infinite;
         }
-        /* Scanning bar for SOS and why */
-        .scan-bar {
-            width: 300px;
-            height: 15px;
-            border: 1px solid #00fff2;
-            margin-top: 12px;
+        /* Heart scanning animation */
+        .heart-scanner {
             position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            background: #001122;
+            border: 2px solid #00fff2;
+            border-radius: 8px;
             overflow: hidden;
         }
-        .scan-fill {
-            height: 100%;
-            background: #00fff2;
-            width: 0%;
+        .heart-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            color: #ff0077;
+            z-index: 1;
+        }
+        .scan-line {
+            position: absolute;
+            top: -5px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00fff2, transparent);
+            box-shadow: 0 0 10px #00fff2;
+            animation: heartScan 2s linear infinite;
+            z-index: 2;
+        }
+        @keyframes heartScan {
+            0% { top: -5px; }
+            100% { top: 205px; }
+        }
+        .scan-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 255, 242, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 242, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
         /* Clock display for why */
         #clockDisplay {
@@ -649,11 +694,30 @@
         fill.className = 'scan-fill';
         bar.appendChild(fill);
         overlay.appendChild(bar);
-        // Show scanning progress message
+        // Show scanning progress message with heart scanner
         const progressMsg = document.createElement('div');
         progressMsg.style.marginTop = '8px';
         progressMsg.textContent = t('scanProgress');
         overlay.appendChild(progressMsg);
+        
+        // Create heart scanner animation
+        const heartScanner = document.createElement('div');
+        heartScanner.className = 'heart-scanner';
+        
+        const heartDisplay = document.createElement('div');
+        heartDisplay.className = 'heart-display';
+        heartDisplay.textContent = '💖';
+        heartScanner.appendChild(heartDisplay);
+        
+        const scanGrid = document.createElement('div');
+        scanGrid.className = 'scan-grid';
+        heartScanner.appendChild(scanGrid);
+        
+        const scanLine = document.createElement('div');
+        scanLine.className = 'scan-line';
+        heartScanner.appendChild(scanLine);
+        
+        overlay.appendChild(heartScanner);
         let progress = 0;
         const interval = setInterval(() => {
             progress += 5;
