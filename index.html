@@ -5,16 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🌐 HELL0w0RLD! 🌐</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
         body {
             background: #0f0f0f;
             color: #00fff2;
-            font-family: Arial, sans-serif;
+            font-family: 'Press Start 2P', monospace, Arial, sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
+            font-size: 8px;
         }
         
         #app {
@@ -881,28 +884,20 @@
             console.log('Page loaded, starting timer...');
             elements.loaderText.textContent = t('connect');
             
-            console.log('Setting first timeout (1s for testing)...');
             setTimeout(() => {
                 console.log('First timeout fired - hiding loader, showing title');
                 elements.loader.style.display = 'none';
                 elements.titleDiv.style.display = 'flex';
                 
-                console.log('Setting second timeout (1s for testing)...');
                 setTimeout(() => {
                     console.log('Second timeout fired - hiding title, showing username');
                     elements.titleDiv.style.display = 'none';
                     elements.enterNameText.textContent = t('enterName');
                     elements.startBtn.textContent = t('start');
                     elements.usernameScreen.style.display = 'flex';
-                    elements.usernameScreen.style.visibility = 'visible';
-                    elements.usernameScreen.style.opacity = '1';
                     console.log('Username screen should now be visible');
-                    
-                    // 追加のデバッグ情報
-                    console.log('Username screen display:', elements.usernameScreen.style.display);
-                    console.log('Username screen computed style:', window.getComputedStyle(elements.usernameScreen).display);
-                }, 1000); // 2000 → 1000 に短縮
-            }, 1000); // 3200 → 1000 に短縮
+                }, 2000); // 元の2秒に戻す
+            }, 3200); // 元の3.2秒に戻す
         };
         
         function setLanguage(lang) {
