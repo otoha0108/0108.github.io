@@ -1,166 +1,145 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HELL0w0RLD! by 0108</title>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
     body {
-      background: #1a1a1a;
-      color: #00ffcc;
-      font-family: 'DotGothic16', 'Courier New', monospace, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
-      font-size: 16px;
-      letter-spacing: 0.08em;
-    }
-    #terminal {
-      background: #000;
-      border: 2px solid #00ffcc;
-      padding: 20px;
-      width: 80%;
-      max-width: 600px;
-      height: 80%;
-      overflow-y: auto;
-      position: relative;
-      border-radius: 5px;
-    }
-    #lang-buttons {
-      text-align: right;
-      margin-bottom: 10px;
-    }
-    #lang-buttons button {
-      background: none;
-      border: 1px solid #00ffcc;
-      color: #00ffcc;
-      padding: 5px 10px;
-      font-family: 'DotGothic16', monospace;
-      cursor: pointer;
-      margin-left: 10px;
-      letter-spacing: 0.08em;
-      font-size: 16px;
-    }
-    #lang-buttons button:hover {
-      background-color: #00ffcc;
-      color: #000;
-    }
-    #lang-buttons button.active {
-      background-color: #00ffcc;
-      color: #000;
+      padding: 0;
+      font-family: 'DotGothic16', sans-serif;
+      background-color: black;
+      color: #00ff00;
+      overflow: hidden;
     }
     #output {
       white-space: pre-wrap;
-      margin-bottom: 20px;
-      letter-spacing: 0.08em;
+      padding: 20px;
+      height: 80vh;
+      overflow-y: auto;
+    }
+    #input-container {
+      padding: 10px;
+      background-color: #111;
+    }
+    #user-input {
+      width: 90%;
+      padding: 5px;
+      background-color: black;
+      color: #00ff00;
+      border: none;
+      font-family: 'DotGothic16', sans-serif;
       font-size: 16px;
     }
-    #prompt {
-      color: #ff0077;
-      display: block;
-      margin-right: 0;
-      letter-spacing: 0.08em;
-      font-size: 18px;
-    }
-    .scramble {
-      animation: scramble 0.5s ease-in-out forwards;
-    }
-    @keyframes scramble {
-      0% { opacity: 1; transform: translate(0); }
-      50% { opacity: 0.5; color: #ff0077; transform: translate(2px, -2px); }
-      100% { opacity: 1; color: #00ffcc; transform: translate(0); }
-    }
-    .red-scramble {
-      color: #ff0077;
-      animation: scramble 0.5s ease-in-out forwards;
+    .lang-button {
+      background: none;
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      padding: 5px;
+      cursor: pointer;
+      margin-left: 5px;
+      font-family: 'DotGothic16', sans-serif;
     }
   </style>
 </head>
 <body>
-  <div id="terminal">
-    <div id="lang-buttons">
-      <button id="lang-ja">日本語</button>
-      <button id="lang-en" class="active">English</button>
-    </div>
-    <div id="output">
-      <div>📡 0108: What's on your mind? ></div>
-      <div>0108 can catch your signal anytime!</div>
-      <div>Scanning your heart... [████------]</div>
-      <div>🚨 Alert! Virus detected!</div>
-      <div>Press [Enter] to let 0108 take down the virus!</div>
-      <div>✅ Virus eliminated! Heart status: 150% clean.</div>
-    </div>
+  <div id="output"></div>
+  <div id="input-container">
+    <span id="prompt"></span><input type="text" id="user-input" autocomplete="off">
+    <button class="lang-button" onclick="updateLanguage('ja')">日本語</button>
+    <button class="lang-button" onclick="updateLanguage('en')">English</button>
   </div>
-
   <script>
-    const output = document.getElementById('output');
-    const langJaButton = document.getElementById('lang-ja');
-    const langEnButton = document.getElementById('lang-en');
-
     const translations = {
-  en: {
-    prompt: '📡 0108: What\'s on your mind? >',
-    sos1: '0108 can catch your signal anytime!',
-    sos2: 'Scanning your heart... ',
-    sos3: '🚨 Alert! Virus detected!',
-    sos4: 'Press [Enter] to let 0108 take down the virus!',
-    sos5: '0108 will take down the virus!',
-    sos6: '✅ Virus eliminated! \nHeart status: 150% clean.',
-    lonely1: 'OK. Let’s listen to music with something sweet!',
-    lonely2: 'Enter your favorite song name >',
-    lonely3: ' is now playing in your head!',
-    lonely4: '0108 is always here to sing for you ♪',
-    hate1: 'Past',
-    hate2: 'Future',
-    hate_end: 'Every moment’s full of light. You’re perfect as is.',
-    why1: '0108 is thinking...',
-    why2: 'This program will never stop until you find the answer.'
-  },
-  ja: {
-    prompt: '📡 0108: 調子はどう？ >',
-    sos1: '0108は24時間あなたの信号を受信中！',
-    sos2: 'あなたの心をスキャンしています... ',
-    sos3: '🚨 ウイルス発見！',
-    sos4: '[Enter]を押してウイルス排除しよう！',
-    sos5: '0108がウイルスを排除します！',
-    sos6: '✅ ウイルスをやっつけたぞ！\n心の状態: 150%クリーン。',
-    lonely1: 'よし、甘いものでも食べながら音楽でも聴こう！🥧',
-    lonely2: 'お気に入りの曲の名前を入力してください >',
-    lonely3: ' を脳内再生中...♪',
-    lonely4: '0108はいつでもあなたと一緒に歌います。',
-    hate1: '過去',
-    hate2: '未来',
-    hate_end: 'すべての瞬間が光で溢れてる。あなたはそのままで完璧です。',
-    why1: '0108は考えています…',
-    why2: 'このプログラムは、あなたと答えを見つけるまで止まらない。'
-  }
-};
-
-    async function scrambleToText(element, newText) {
-      const randomChars = '!?@#$%^&*()_+-=[]{}|;:,.<>?';
-      for (let i = 0; i < 4; i++) {
-        element.textContent = newText.split('').map(() => randomChars[Math.floor(Math.random() * randomChars.length)]).join('');
-        await new Promise(resolve => setTimeout(resolve, 80));
+      en: {
+        prompt: '📡 0108: What\'s on your mind? >',
+        sos1: '0108 can catch your signal anytime!',
+        sos2: 'Scanning your heart... ',
+        sos3: '🚨 Alert! Virus detected!',
+        sos4: 'Press [Enter] to let 0108 take down the virus!',
+        sos5: '0108 will take down the virus!',
+        sos6: '✅ Virus eliminated! \nHeart status: 150% clean.',
+        lonely1: 'OK. Let’s listen to music with something sweet!',
+        lonely2: 'Enter your favorite song name >',
+        lonely3: ' is now playing in your head!',
+        lonely4: '0108 is always here to sing for you ♪',
+        hate1: 'Past',
+        hate2: 'Future',
+        hate_end: 'Every moment’s full of light. You’re perfect as is.',
+        why1: '0108 is thinking...',
+        why2: 'This program will never stop until you find the answer.'
+      },
+      ja: {
+        prompt: '📡 0108: 調子はどう？ >',
+        sos1: '0108は24時間あなたの信号を受信中！',
+        sos2: 'あなたの心をスキャンしています... ',
+        sos3: '🚨 ウイルス発見！',
+        sos4: '[Enter]を押してウイルス排除しよう！',
+        sos5: '0108がウイルスを排除します！',
+        sos6: '✅ ウイルスをやっつけたぞ！\n心の状態: 150%クリーン。',
+        lonely1: 'よし、甘いものでも食べながら音楽でも聴こう！🥧',
+        lonely2: 'お気に入りの曲の名前を入力してください >',
+        lonely3: ' を脳内再生中...♪',
+        lonely4: '0108はいつでもあなたと一緒に歌います。',
+        hate1: '過去',
+        hate2: '未来',
+        hate_end: 'すべての瞬間が光で溢れてる。あなたはそのままで完璧です。',
+        why1: '0108は考えています…',
+        why2: 'このプログラムは、あなたと答えを見つけるまで止まらない。'
       }
-      element.textContent = newText;
+    };
+
+    let currentLanguage = 'en';
+    const outputElement = document.getElementById('output');
+    const promptElement = document.getElementById('prompt');
+    const inputElement = document.getElementById('user-input');
+
+    const currentKeys = ['sos1','sos2','sos3','sos4','sos5','sos6','lonely1','lonely2','lonely3','lonely4','hate1','hate2','hate_end','why1','why2'];
+
+    function scrambleToText(target, newText) {
+      let iterations = 0;
+      const scrambleInterval = setInterval(() => {
+        const scrambled = newText.split('').map((char, i) => {
+          if (i < iterations) return newText[i];
+          return String.fromCharCode(33 + Math.random() * 94);
+        }).join('');
+        target.textContent = scrambled;
+        if (iterations >= newText.length) clearInterval(scrambleInterval);
+        iterations += 1;
+      }, 20);
     }
 
     function updateLanguage(lang) {
-      const currentNodes = [...output.children];
-      const newMessages = messages[lang];
-      currentNodes.forEach((node, index) => {
-        const newText = newMessages[index] || '';
-        scrambleToText(node, newText);
+      const oldLang = currentLanguage;
+      currentLanguage = lang;
+      promptElement.textContent = translations[lang].prompt;
+      const children = outputElement.childNodes;
+      children.forEach(child => {
+        const originalText = child.textContent;
+        for (const key of currentKeys) {
+          if (originalText.includes(translations[oldLang][key])) {
+            scrambleToText(child, translations[lang][key]);
+            break;
+          }
+        }
       });
-      langJaButton.classList.toggle('active', lang === 'ja');
-      langEnButton.classList.toggle('active', lang === 'en');
     }
 
-    langJaButton.addEventListener('click', () => updateLanguage('ja'));
-    langEnButton.addEventListener('click', () => updateLanguage('en'));
+    function printLine(key) {
+      const line = document.createElement('div');
+      line.textContent = translations[currentLanguage][key];
+      outputElement.appendChild(line);
+    }
+
+    promptElement.textContent = translations[currentLanguage].prompt;
+    printLine('sos1');
+    printLine('sos2');
+    printLine('sos3');
+    printLine('sos4');
+    printLine('sos5');
+    printLine('sos6');
   </script>
 </body>
 </html>
