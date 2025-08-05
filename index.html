@@ -1,4 +1,16 @@
-<!DOCTYPE html>
+@keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .travel-result {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 12px;
+            margin: 20px 0;
+        }<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -321,7 +333,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 80px;
+            font-size: 120px;
             color: #14ffec;
             z-index: 1;
         }
@@ -431,10 +443,8 @@
             color: #00fff2;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
+        .sparkle.white {
+            color: #ffffff;
         }
     </style>
 </head>
@@ -548,24 +558,57 @@
         
         let rankings = [];
         
-        // Load rankings from localStorage
-        function loadRankings() {
+        // Online ranking system using a simple API approach
+        async function loadRankings() {
             try {
-                const saved = localStorage.getItem('hellworld_rankings');
-                if (saved) {
-                    rankings = JSON.parse(saved);
+                // Try to load from online source first
+                const response = await fetch('https://api.jsonbin.io/v3/b/YOUR_BIN_ID', {
+                    headers: {
+                        'X-Master-Key': 'YOUR_API_KEY'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    rankings = data.record || [];
+                } else {
+                    throw new Error('Online fetch failed');
                 }
             } catch (e) {
-                rankings = [];
+                // Fallback to localStorage
+                try {
+                    const saved = localStorage.getItem('hellworld_rankings');
+                    if (saved) {
+                        rankings = JSON.parse(saved);
+                    }
+                } catch (e2) {
+                    rankings = [];
+                }
             }
         }
         
-        // Save rankings to localStorage
-        function saveRankings() {
+        // Save rankings online and locally
+        async function saveRankings() {
+            // Save locally as backup
             try {
                 localStorage.setItem('hellworld_rankings', JSON.stringify(rankings));
             } catch (e) {
-                console.log('Cannot save rankings');
+                console.log('Cannot save locally');
+            }
+            
+            // Save online (for demo purposes, using localStorage as primary)
+            // In production, you would implement a real backend API
+            try {
+                // This would be replaced with your actual API endpoint
+                const response = await fetch('https://api.jsonbin.io/v3/b/YOUR_BIN_ID', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': 'YOUR_API_KEY'
+                    },
+                    body: JSON.stringify(rankings)
+                });
+            } catch (e) {
+                console.log('Cannot save online, using local storage');
             }
         }
         
@@ -593,8 +636,8 @@
             btnJa: document.getElementById('btn-ja')
         };
         
-        window.onload = () => {
-            loadRankings();
+        window.onload = async () => {
+            await loadRankings();
             elements.loaderText.textContent = t('connect');
             setTimeout(() => {
                 elements.loader.style.display = 'none';
@@ -634,14 +677,18 @@
         function showPrompt() {
             elements.promptText.textContent = t('prompt');
             elements.promptSection.style.display = 'block';
+            
+            // Always enable all buttons (no more graying out)
+            elements.btnSos.classList.remove('disabled');
+            elements.btnLonely.classList.remove('disabled');
+            elements.btnHate.classList.remove('disabled');
+            
+            // Only why button requires completion of other tasks
             if (sosDone && lonelyDone && hateDone) {
                 elements.btnWhy.classList.remove('locked', 'disabled');
             } else {
                 elements.btnWhy.classList.add('locked', 'disabled');
             }
-            if (!sosDone) elements.btnSos.classList.remove('disabled');
-            if (!lonelyDone) elements.btnLonely.classList.remove('disabled');
-            if (!hateDone) elements.btnHate.classList.remove('disabled');
         }
         
         function addLog(action) {
@@ -652,28 +699,21 @@
             elements.outputDiv.scrollTop = elements.outputDiv.scrollHeight;
         }
         
-        function createCloseButton(callback, buttonToDisable = null) {
+        function createCloseButton(callback) {
             const closeBtn = document.createElement('button');
             closeBtn.className = 'close-btn';
             closeBtn.textContent = t('close');
-            closeBtn.addEventListener('click', () => {
-                if (buttonToDisable) {
-                    buttonToDisable.classList.add('disabled');
-                    buttonToDisable.style.opacity = '0.3';
-                    buttonToDisable.style.cursor = 'not-allowed';
-                }
-                callback();
-            });
+            closeBtn.addEventListener('click', callback);
             return closeBtn;
         }
         
-        function createSparkles(container) {
+        function createSparkles(container, isWhite = false) {
             const sparkleContainer = document.createElement('div');
             sparkleContainer.className = 'sparkles';
             
             for (let i = 0; i < 15; i++) {
                 const sparkle = document.createElement('div');
-                sparkle.className = 'sparkle';
+                sparkle.className = isWhite ? 'sparkle white' : 'sparkle';
                 sparkle.textContent = '✨';
                 sparkle.style.left = Math.random() * 100 + '%';
                 sparkle.style.top = Math.random() * 100 + '%';
@@ -839,7 +879,7 @@
                         elements.overlay.style.display = 'none';
                         sosDone = true;
                         showPrompt();
-                    }, elements.btnSos);
+                    });
                     elements.overlay.appendChild(closeBtn);
                 });
             }, 4000);
@@ -899,7 +939,7 @@
                     elements.overlay.style.display = 'none';
                     lonelyDone = true;
                     showPrompt();
-                }, elements.btnLonely);
+                });
                 elements.overlay.appendChild(closeBtn);
             });
         });
@@ -945,17 +985,26 @@
                     elements.overlay.appendChild(futureMsg);
                     
                     setTimeout(() => {
+                        // Clear previous content and show travel result
+                        elements.overlay.innerHTML = '';
+                        
+                        const resultContainer = document.createElement('div');
+                        resultContainer.className = 'travel-result';
+                        
                         const endMsg = document.createElement('div');
                         endMsg.textContent = t('hateEnd');
-                        elements.overlay.appendChild(endMsg);
+                        endMsg.style.fontSize = '18px';
+                        endMsg.style.marginBottom = '20px';
+                        resultContainer.appendChild(endMsg);
                         
-                        createSparkles(elements.overlay);
+                        elements.overlay.appendChild(resultContainer);
+                        createSparkles(elements.overlay, true);
                         
                         const closeBtn = createCloseButton(() => {
                             elements.overlay.style.display = 'none';
                             hateDone = true;
                             showPrompt();
-                        }, elements.btnHate);
+                        });
                         elements.overlay.appendChild(closeBtn);
                     }, 3500);
                 }, 2500);
