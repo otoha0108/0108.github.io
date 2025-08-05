@@ -669,6 +669,385 @@
             50% { opacity: 0.7; }
         }
 
+        /* 数字の横流れエフェクト */
+        .number-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .number-stream {
+            position: absolute;
+            color: #ff4444;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            opacity: 0.4;
+            white-space: nowrap;
+            animation: numberStreamRight linear infinite;
+        }
+
+        .number-stream.left {
+            animation: numberStreamLeft linear infinite;
+        }
+
+        .number-stream.future {
+            color: #44ff44;
+        }
+
+        @keyframes numberStreamRight {
+            0% {
+                transform: translateX(-100vw);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateX(100vw);
+                opacity: 0;
+            }
+        }
+
+        @keyframes numberStreamLeft {
+            0% {
+                transform: translateX(100vw);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateX(-100vw);
+                opacity: 0;
+            }
+        }
+
+        /* 未来モード用の緑色スタイル */
+        .future-mode .tokikake-clock {
+            color: #44ff44;
+            box-shadow: 
+                inset 0 0 30px rgba(68, 255, 68, 0.1),
+                0 0 50px rgba(68, 255, 68, 0.2);
+        }
+
+        .future-mode .tokikake-clock::before {
+            background: linear-gradient(90deg, transparent, rgba(68, 255, 68, 0.3), transparent);
+        }
+
+        /* 未来モードのグリッチ効果を緑色に */
+        .future-mode .phase-1 {
+            animation: gentleGlitchGreen 2s ease-in-out infinite;
+        }
+
+        .future-mode .phase-2 {
+            animation: mediumGlitchGreen 1s ease-in-out infinite;
+        }
+
+        .future-mode .phase-3 {
+            animation: strongGlitchGreen 0.3s ease-in-out infinite;
+        }
+
+        @keyframes gentleGlitchGreen {
+            0%, 90% { 
+                transform: translateX(0); 
+                color: #44ff44;
+            }
+            95% { 
+                transform: translateX(-1px); 
+                color: #66ff66;
+            }
+            100% { 
+                transform: translateX(0); 
+                color: #44ff44;
+            }
+        }
+
+        @keyframes mediumGlitchGreen {
+            0%, 80% { 
+                transform: translateX(0) scaleX(1); 
+                color: #44ff44;
+            }
+            85% { 
+                transform: translateX(-2px) scaleX(0.99); 
+                color: #66ff66;
+            }
+            90% { 
+                transform: translateX(2px) scaleX(1.01); 
+                color: #aaff44;
+            }
+            100% { 
+                transform: translateX(0) scaleX(1); 
+                color: #44ff44;
+            }
+        }
+
+        @keyframes strongGlitchGreen {
+            0%, 70% { 
+                transform: translateX(0) scaleX(1); 
+                color: #44ff44;
+                text-shadow: 0 0 10px #44ff44;
+            }
+            75% { 
+                transform: translateX(-3px) scaleX(0.97); 
+                color: #88ff88;
+                text-shadow: 2px 0 #ff8800, -2px 0 #4488ff;
+            }
+            80% { 
+                transform: translateX(4px) scaleX(1.03); 
+                color: #ffff44;
+                text-shadow: -2px 0 #ff4488, 2px 0 #44ffff;
+            }
+            85% { 
+                transform: translateX(-1px) scaleX(0.98); 
+                color: #ffffff;
+                text-shadow: 1px 0 #44ff44, -1px 0 #ff4444;
+            }
+            100% { 
+                transform: translateX(0) scaleX(1); 
+                color: #44ff44;
+                text-shadow: 0 0 10px #44ff44;
+            }
+        }
+
+        /* トラベリングメッセージのスタイル */
+        .traveling-message {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid;
+            font-size: 16px;
+            text-shadow: 0 0 5px;
+            z-index: 20;
+            position: relative;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .traveling-message.past {
+            border-color: #ff6666;
+            color: #ff6666;
+            text-shadow: 0 0 5px #ff6666;
+            box-shadow: 0 0 20px rgba(255, 102, 102, 0.3);
+        }
+
+        .traveling-message.future {
+            border-color: #66ff66;
+            color: #66ff66;
+            text-shadow: 0 0 5px #66ff66;
+            box-shadow: 0 0 20px rgba(102, 255, 102, 0.3);
+        }
+
+        /* タイムトラベル結果表示のスタイル */
+        .travel-result-container {
+            background: linear-gradient(145deg, #000000, #111111);
+            border: 2px solid #14ffec;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 90%;
+            box-shadow: 
+                0 0 30px rgba(20, 255, 236, 0.3),
+                inset 0 0 20px rgba(20, 255, 236, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .travel-result-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #14ffec, #e6007e, #14ffec);
+            border-radius: 12px;
+            z-index: -1;
+            animation: borderGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes borderGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .travel-result-header {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #14ffec;
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .travel-result-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #00ff00;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .travel-result-message {
+            font-size: 20px;
+            color: #ffffff;
+            text-shadow: 0 0 10px #ffffff;
+            line-height: 1.4;
+            text-align: center;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .scan-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(20, 255, 236, 0.03) 2px,
+                rgba(20, 255, 236, 0.03) 4px
+            );
+            pointer-events: none;
+            animation: scanMove 3s linear infinite;
+        }
+
+        @keyframes scanMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(8px); }
+        }
+
+        /* オリジナル時計のスタイル（分解図通りのデザイン） */
+        .original-clock {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            margin: 20px auto;
+        }
+
+        /* 中央の大きな円（文字盤） */
+        .clock-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80px;
+            height: 80px;
+            background: #14ffec;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+            box-shadow: 0 0 30px rgba(20, 255, 236, 0.8);
+        }
+
+        /* 針の基本スタイル */
+        .clock-hand {
+            position: absolute;
+            background: #14ffec;
+            transform-origin: center bottom;
+            box-shadow: 0 0 10px rgba(20, 255, 236, 0.6);
+        }
+
+        /* 細い長い針（秒針） - 左の細い棒 */
+        .second-hand {
+            width: 4px;
+            height: 130px;
+            top: 6.5%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e6007e;
+            z-index: 1;
+            box-shadow: 0 0 8px rgba(230, 0, 126, 0.6);
+        }
+
+        /* 中くらいの針（分針） - 中央の円付き棒 */
+        .minute-hand {
+            width: 8px;
+            height: 110px;
+            top: 13.5%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+
+        /* 分針の先端の円 */
+        .minute-hand::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            background: #14ffec;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 15px rgba(20, 255, 236, 0.8);
+        }
+
+        /* 太い針（時針） - 右の太い丸い棒 */
+        .hour-hand {
+            width: 16px;
+            height: 80px;
+            top: 23%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 8px;
+            z-index: 3;
+        }
+
+        /* 数字のスタイル */
+        .clock-numbers {
+            position: absolute;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 32px;
+            color: #14ffec;
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(20, 255, 236, 1);
+        }
+        .time-travel-btn {
+            padding: 12px 24px;
+            background: #14ffec;
+            color: #151515;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(20, 255, 236, 0.3);
+        }
+
+        .time-travel-btn:hover {
+            background: #00d4c7;
+            box-shadow: 0 0 30px rgba(20, 255, 236, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .time-travel-btn.future {
+            background: #44ff44;
+            color: #000000;
+            box-shadow: 0 0 20px rgba(68, 255, 68, 0.3);
+        }
+
+        .time-travel-btn.future:hover {
+            background: #33cc33;
+            box-shadow: 0 0 30px rgba(68, 255, 68, 0.5);
+        }
+
         /* レスポンシブ対応 */
         @media (max-width: 480px) {
             .tokikake-clock {
@@ -1036,8 +1415,10 @@
                 lonelyWave: ' is now playing in your head!',
                 lonelyEnd: '0108 is always here to sing for you ♪',
                 hatePrompt: '🚗 Time patrol active!',
-                travelPast: 'Traveling to your [ Past ]…',
-                travelFuture: 'Traveling to your [ Future ]…',
+                travelToPast: 'Go to Past',
+                travelToFuture: 'Go to Future',
+                travellingPast: 'Traveling to your [ Past ]…',
+                travellingFuture: 'Traveling to your [ Future ]…',
                 hateEnd: "Every moment's full of light. You're perfect as is✨",
                 whyPrompt: '0108 is thinking…',
                 whyStop: 'This program will never stop until you find the answer.',
@@ -1070,8 +1451,10 @@
                 lonelyWave: ' を脳内再生中...♪',
                 lonelyEnd: '0108はいつでもあなたと一緒に歌います。',
                 hatePrompt: '🚗 タイムパトロール開始！',
-                travelPast: '[ 過去 ] へ移動中...',
-                travelFuture: '[ 未来 ] へ移動中...',
+                travelToPast: '過去へ行く',
+                travelToFuture: '未来へ行く',
+                travellingPast: '[ 過去 ] へ移動中...',
+                travellingFuture: '[ 未来 ] へ移動中...',
                 hateEnd: 'すべての瞬間が光で溢れてる。あなたはそのままで完璧です✨',
                 whyPrompt: '0108は考えています…',
                 whyStop: 'このプログラムは、あなたと答えを見つけるまで止まらない。',
@@ -1143,6 +1526,168 @@
             clockDisplay.textContent = currentTime;
             
             return clockDisplay;
+        }
+
+        // 数字の横流れエフェクト（修正版）
+        function createNumberRain(container, intensity = 12, isFuture = false) {
+            const numberRain = document.createElement('div');
+            numberRain.className = 'number-rain';
+            
+            const numbers = '0123456789';
+            
+            for (let i = 0; i < intensity; i++) {
+                const stream = document.createElement('div');
+                // 過去は左方向、未来は右方向に統一
+                const direction = isFuture ? '' : 'left';
+                stream.className = `number-stream ${direction}${isFuture ? ' future' : ''}`;
+                stream.style.top = Math.random() * 100 + '%';
+                stream.style.animationDelay = Math.random() * 4 + 's';
+                stream.style.animationDuration = (2 + Math.random() * 3) + 's';
+                
+                // 数字の文字列を生成
+                let text = '';
+                for (let j = 0; j < 40; j++) {
+                    text += numbers[Math.floor(Math.random() * numbers.length)] + ' ';
+                }
+                stream.textContent = text;
+                
+                numberRain.appendChild(stream);
+            }
+            
+            container.appendChild(numberRain);
+            return numberRain;
+        }
+
+        // タイムスタンプ生成
+        function getCurrentTimestamp() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            const second = String(now.getSeconds()).padStart(2, '0');
+            return `${year}.${month}.${day}_${hour}:${minute}:${second}`;
+        }
+
+        // オリジナル時計を作成
+        function createOriginalClock() {
+            const clockContainer = document.createElement('div');
+            clockContainer.className = 'original-clock';
+            
+            // 時計の目盛りを作成
+            for (let i = 0; i < 12; i++) {
+                const tick = document.createElement('div');
+                tick.className = 'clock-tick';
+                const angle = (i * 30) - 90; // 12時位置を0度とする
+                tick.style.transform = `rotate(${angle}deg)`;
+                tick.style.top = '10px';
+                tick.style.left = '50%';
+                tick.style.marginLeft = '-1px';
+                clockContainer.appendChild(tick);
+            }
+            
+            // 数字を配置
+            const numbers = ['12', '3', '6', '9'];
+            const positions = [
+                { top: '5px', left: '50%', transform: 'translateX(-50%)' },     // 12
+                { top: '50%', right: '5px', transform: 'translateY(-50%)' },    // 3
+                { bottom: '5px', left: '50%', transform: 'translateX(-50%)' },  // 6
+                { top: '50%', left: '5px', transform: 'translateY(-50%)' }      // 9
+            ];
+            
+            numbers.forEach((num, index) => {
+                const numberEl = document.createElement('div');
+                numberEl.className = 'clock-numbers';
+                numberEl.textContent = num;
+                Object.assign(numberEl.style, positions[index]);
+                clockContainer.appendChild(numberEl);
+            });
+            
+            // 針を作成
+            const hourHand = document.createElement('div');
+            hourHand.className = 'clock-hand hour-hand';
+            hourHand.id = 'hourHand';
+            clockContainer.appendChild(hourHand);
+            
+            const minuteHand = document.createElement('div');
+            minuteHand.className = 'clock-hand minute-hand';
+            minuteHand.id = 'minuteHand';
+            clockContainer.appendChild(minuteHand);
+            
+            const secondHand = document.createElement('div');
+            secondHand.className = 'clock-hand second-hand';
+            secondHand.id = 'secondHand';
+            clockContainer.appendChild(secondHand);
+            
+            // 中央の円
+            const center = document.createElement('div');
+            center.className = 'clock-center';
+            clockContainer.appendChild(center);
+            
+            return clockContainer;
+        }
+
+        // 時計の針を現在時刻に合わせて更新
+        function updateClockHands() {
+            const now = new Date();
+            const hours = now.getHours() % 12;
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            
+            // 角度を計算（12時位置を0度とする）
+            const hourAngle = (hours * 30) + (minutes * 0.5) - 90; // 時針は分単位でも動く
+            const minuteAngle = (minutes * 6) - 90;
+            const secondAngle = (seconds * 6) - 90;
+            
+            const hourHand = document.getElementById('hourHand');
+            const minuteHand = document.getElementById('minuteHand');
+            const secondHand = document.getElementById('secondHand');
+            
+            if (hourHand) hourHand.style.transform = `translateX(-50%) rotate(${hourAngle}deg)`;
+            if (minuteHand) minuteHand.style.transform = `translateX(-50%) rotate(${minuteAngle}deg)`;
+            if (secondHand) secondHand.style.transform = `translateX(-50%) rotate(${secondAngle}deg)`;
+        }
+
+        // タイプライター効果
+        function typewriterEffect(element, text, speed = 50) {
+            element.textContent = '';
+            let i = 0;
+            
+            const interval = setInterval(() => {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, speed);
+        }
+        function createSparkles(container, isWhite = false) {
+            const sparklesContainer = document.createElement('div');
+            sparklesContainer.className = 'sparkles';
+            
+            for (let i = 0; i < 20; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = `sparkle ${isWhite ? 'white' : ''}`;
+                sparkle.textContent = '✨';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+                
+                sparklesContainer.appendChild(sparkle);
+            }
+            
+            container.appendChild(sparklesContainer);
+            
+            // 5秒後に自動削除
+            setTimeout(() => {
+                if (sparklesContainer.parentNode) {
+                    sparklesContainer.parentNode.removeChild(sparklesContainer);
+                }
+            }, 5000);
+            
+            return sparklesContainer;
         }
 
         // 数字の左右流れエフェクト
@@ -1375,8 +1920,6 @@
             closeBtn.addEventListener('click', callback);
             return closeBtn;
         }
-        
-        // キラキラエフェクトは削除
 
         async function displayRankings() {
             const rankingDiv = document.createElement('div');
@@ -1836,12 +2379,8 @@
             elements.overlay.style.flexDirection = 'column';
             elements.overlay.style.justifyContent = 'center';
             elements.overlay.style.alignItems = 'center';
-            elements.overlay.style.background = 'rgba(0, 0, 0, 0.9)';
-            elements.overlay.classList.add('gentle-bg');
+            elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
             elements.overlay.style.gap = '20px';
-            
-            // より穏やかな数字背景
-            const numberRain = createNumberRain(elements.overlay, 8);
             
             // メッセージ
             const msg = document.createElement('div');
@@ -1858,74 +2397,133 @@
             timeDisplay.style.position = 'relative';
             elements.overlay.appendChild(timeDisplay);
             
-            setTimeout(() => {
+            // 過去への旅行確認
+            const pastTravelBtn = document.createElement('button');
+            pastTravelBtn.className = 'time-travel-btn';
+            pastTravelBtn.textContent = '🚗 ' + t('travelToPast');
+            pastTravelBtn.style.zIndex = '20';
+            pastTravelBtn.style.position = 'relative';
+            elements.overlay.appendChild(pastTravelBtn);
+            
+            pastTravelBtn.addEventListener('click', () => {
+                // ボタンを隠す
+                pastTravelBtn.style.display = 'none';
+                
+                // 数字の横流れ背景を開始（過去モード）
+                const numberRain = createNumberRain(elements.overlay, 12, false);
+                
                 const pastMsg = document.createElement('div');
-                pastMsg.textContent = t('travelPast');
-                pastMsg.style.fontSize = '16px';
-                pastMsg.style.color = '#ff6666';
-                pastMsg.style.textShadow = '0 0 5px #ff6666';
-                pastMsg.style.zIndex = '20';
-                pastMsg.style.position = 'relative';
+                pastMsg.className = 'traveling-message past';
+                pastMsg.textContent = t('travellingPast');
                 elements.overlay.appendChild(pastMsg);
                 
                 const pastInterval = animateTimeToPastGentle(timeDisplay);
                 
                 setTimeout(() => {
                     clearInterval(pastInterval);
+                    pastMsg.className = 'traveling-message stopped';
+                    pastMsg.textContent = '時間停止中...';
                     
                     // 時間停止演出（拡大縮小なし）
                     timeDisplay.className = 'tokikake-clock phase-1 no-scale gentle-pulse';
                     
                     setTimeout(() => {
-                        const futureMsg = document.createElement('div');
-                        futureMsg.textContent = t('travelFuture');
-                        futureMsg.style.fontSize = '16px';
-                        futureMsg.style.color = '#66ff66';
-                        futureMsg.style.textShadow = '0 0 5px #66ff66';
-                        futureMsg.style.zIndex = '20';
-                        futureMsg.style.position = 'relative';
-                        elements.overlay.appendChild(futureMsg);
+                        pastMsg.remove();
                         
-                        const futureInterval = animateTimeToFutureGentle(timeDisplay);
+                        // 未来への旅行確認
+                        const futureTravelBtn = document.createElement('button');
+                        futureTravelBtn.className = 'time-travel-btn future';
+                        futureTravelBtn.textContent = '🚀 ' + t('travelToFuture');
+                        futureTravelBtn.style.zIndex = '20';
+                        futureTravelBtn.style.position = 'relative';
+                        elements.overlay.appendChild(futureTravelBtn);
                         
-                        setTimeout(() => {
-                            clearInterval(futureInterval);
+                        futureTravelBtn.addEventListener('click', () => {
+                            // 未来モードに切り替え
+                            elements.overlay.classList.add('future-mode');
+                            futureTravelBtn.style.display = 'none';
                             
-                            // 数字背景削除
+                            // 過去の数字流れを削除して未来の数字流れに切り替え
                             if (numberRain && numberRain.parentNode) {
                                 numberRain.parentNode.removeChild(numberRain);
                             }
+                            const futureNumberRain = createNumberRain(elements.overlay, 12, true);
                             
-                            // 最終演出
-                            elements.overlay.innerHTML = '';
-                            elements.overlay.style.background = 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.95) 70%)';
-                            elements.overlay.classList.remove('gentle-bg');
-                            elements.overlay.style.gap = '30px';
+                            const futureMsg = document.createElement('div');
+                            futureMsg.className = 'traveling-message future';
+                            futureMsg.textContent = t('travellingFuture');
+                            elements.overlay.appendChild(futureMsg);
                             
-                            const endMsg = document.createElement('div');
-                            endMsg.textContent = t('hateEnd');
-                            endMsg.style.fontSize = '20px';
-                            endMsg.style.color = '#ffffff';
-                            endMsg.style.textShadow = '0 0 10px #ffffff';
-                            endMsg.style.lineHeight = '1.4';
-                            endMsg.style.maxWidth = '80%';
-                            endMsg.style.textAlign = 'center';
-                            elements.overlay.appendChild(endMsg);
+                            const futureInterval = animateTimeToFutureGentle(timeDisplay);
                             
-                            createSparkles(elements.overlay, true);
-                            
-                            const closeBtn = createCloseButton(() => {
-                                elements.overlay.style.display = 'none';
-                                elements.overlay.style.background = 'rgba(0, 0, 0, 0.85)';
-                                elements.overlay.style.gap = '';
-                                hateDone = true;
-                                showPrompt();
-                            });
-                            elements.overlay.appendChild(closeBtn);
-                        }, 4000);
-                    }, 1000);
+                            setTimeout(() => {
+                                clearInterval(futureInterval);
+                                
+                                // 数字背景削除
+                                if (futureNumberRain && futureNumberRain.parentNode) {
+                                    futureNumberRain.parentNode.removeChild(futureNumberRain);
+                                }
+                                
+                                // 最終演出（デジタル感のある結果表示）
+                                elements.overlay.innerHTML = '';
+                                elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
+                                elements.overlay.classList.remove('future-mode');
+                                elements.overlay.style.gap = '30px';
+                                
+                                // タイムトラベル結果コンテナ
+                                const resultContainer = document.createElement('div');
+                                resultContainer.className = 'travel-result-container';
+                                
+                                // ヘッダー
+                                const header = document.createElement('div');
+                                header.className = 'travel-result-header';
+                                header.textContent = '=== TIME TRAVEL ANALYSIS COMPLETE ===';
+                                resultContainer.appendChild(header);
+                                
+                                // ステータス
+                                const status = document.createElement('div');
+                                status.className = 'travel-result-status';
+                                status.textContent = '>> STATUS: TEMPORAL DISPLACEMENT SUCCESSFUL';
+                                resultContainer.appendChild(status);
+                                
+                                // データストリーム
+                                const dataStream = document.createElement('div');
+                                dataStream.className = 'data-stream';
+                                dataStream.textContent = getCurrentTimestamp();
+                                resultContainer.appendChild(dataStream);
+                                
+                                // スキャンライン
+                                const scanLines = document.createElement('div');
+                                scanLines.className = 'scan-lines';
+                                resultContainer.appendChild(scanLines);
+                                
+                                // メインメッセージ
+                                const endMsg = document.createElement('div');
+                                endMsg.className = 'travel-result-message';
+                                endMsg.textContent = t('hateEnd');
+                                resultContainer.appendChild(endMsg);
+                                
+                                elements.overlay.appendChild(resultContainer);
+                                
+                                // タイピング効果でメッセージを表示
+                                typewriterEffect(endMsg, t('hateEnd'));
+                                
+                                createSparkles(elements.overlay, true);
+                                
+                                // 閉じるボタンを追加
+                                const closeBtn = createCloseButton(() => {
+                                    elements.overlay.style.display = 'none';
+                                    elements.overlay.style.background = 'rgba(0, 0, 0, 0.85)';
+                                    elements.overlay.style.gap = '';
+                                    hateDone = true;
+                                    showPrompt();
+                                });
+                                elements.overlay.appendChild(closeBtn);
+                            }, 6000); // 未来のトラベル時間を6秒に延長
+                        });
+                    }, 2000);
                 }, 4000);
-            }, 1500);
+            });
         });
         
         // Why button
@@ -1972,21 +2570,41 @@
                     
                     okBtn.addEventListener('click', () => {
                         elements.overlay.innerHTML = '';
+                        elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
                         
-                        const clock = document.createElement('div');
-                        clock.id = 'clockDisplay';
-                        clock.textContent = '00:00:00';
+                        // オリジナル時計を作成して表示
+                        const clock = createOriginalClock();
                         elements.overlay.appendChild(clock);
                         
-                        function updateClock() {
-                            const now = new Date();
-                            const hh = String(now.getHours()).padStart(2, '0');
-                            const mm = String(now.getMinutes()).padStart(2, '0');
-                            const ss = String(now.getSeconds()).padStart(2, '0');
-                            clock.textContent = `${hh}:${mm}:${ss}`;
-                        }
-                        updateClock();
-                        setInterval(updateClock, 1000);
+                        // 時計のアニメーションを開始
+                        const clockInterval = startOriginalClock();
+                        
+                        // 時計が永続的に動き続ける
+                        // ユーザーがオーバーレイを閉じるまで時間を刻み続ける
+                        
+                        // オーバーレイを閉じる際のイベントリスナーを追加
+                        const closeHandler = () => {
+                            clearInterval(clockInterval);
+                        };
+                        
+                        // オーバーレイがクリックされたら閉じる（時計以外の部分）
+                        elements.overlay.addEventListener('click', (e) => {
+                            if (e.target === elements.overlay) {
+                                closeHandler();
+                                elements.overlay.style.display = 'none';
+                                elements.overlay.removeEventListener('click', closeHandler);
+                            }
+                        });
+                        
+                        // ESCキーでも閉じられるように
+                        const escHandler = (e) => {
+                            if (e.key === 'Escape') {
+                                closeHandler();
+                                elements.overlay.style.display = 'none';
+                                document.removeEventListener('keydown', escHandler);
+                            }
+                        };
+                        document.addEventListener('keydown', escHandler);
                     });
                 }
             }, 400);
