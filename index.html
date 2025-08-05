@@ -95,6 +95,58 @@
             0% { width: 0%; }
             100% { width: 100%; }
         }
+        /* Title screen - centered with fade in */
+        #title {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        /* Username screen - centered */
+        #usernameScreen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            text-align: center;
+        }
+        #usernameScreen input {
+            margin: 10px 0;
+            padding: 8px 12px;
+            background: #111;
+            color: #00fff2;
+            border: 1px solid #00fff2;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        #usernameScreen button {
+            padding: 8px 16px;
+            background: #14ffec;
+            color: #151515;
+            border: none;
+            border-radius: 4px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        /* Small title in top right */
+        #smallTitle {
+            position: absolute;
+            top: 8px;
+            right: 120px;
+            font-size: 14px;
+            color: #14ffec;
+            display: none;
+        }
         /* Overlays */
         #overlay {
             position: absolute;
@@ -202,9 +254,16 @@
             font-size: 28px;
             animation: drive 4s linear forwards;
         }
+        .car.reverse {
+            animation: driveReverse 4s linear forwards;
+        }
         @keyframes drive {
             0% { left: -50px; }
             100% { left: calc(100% + 50px); }
+        }
+        @keyframes driveReverse {
+            0% { left: calc(100% + 50px); }
+            100% { left: -50px; }
         }
 
         /* Glitch effect for time travel messages */
@@ -237,14 +296,62 @@
             font-size: 32px;
             margin-top: 16px;
         }
+        /* Sparkle animation */
+        .sparkles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .sparkle {
+            position: absolute;
+            color: #ffff00;
+            font-size: 20px;
+            animation: sparkle 2s infinite;
+        }
+        @keyframes sparkle {
+            0% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1) rotate(180deg); }
+            100% { opacity: 0; transform: scale(0) rotate(360deg); }
+        }
+        /* Close button for overlays */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e6007e;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+        }
+        /* Ranking display */
+        .ranking {
+            margin-top: 16px;
+            text-align: left;
+            font-size: 12px;
+        }
+        .ranking-entry {
+            margin: 2px 0;
+            color: #00fff2;
+        }
     </style>
 </head>
 <body>
     <div id="app">
         <div id="lang-toggle">
-            <button id="btn-en" class="active">EN</button>
-            <button id="btn-ja">JP</button>
+            <button id="btn-en" class="active">ENG</button>
+            <button id="btn-ja">日本語</button>
         </div>
+        
+        <div id="smallTitle">🌐HELL0w0RLD!🌐</div>
+        
         <!-- Loader -->
         <div id="loader">
             <h2 id="loaderText">0108 connecting…</h2>
@@ -253,11 +360,11 @@
             </div>
         </div>
         <!-- Title -->
-        <div id="title" style="display:none;">
+        <div id="title">
             <h1>🌐HELL0w0RLD!🌐</h1>
         </div>
         <!-- Username screen -->
-        <div id="usernameScreen" style="display:none;">
+        <div id="usernameScreen">
             <h2 id="enterNameText">Enter your name:</h2>
             <input type="text" id="usernameInput" placeholder="Your name here" />
             <br>
@@ -298,13 +405,16 @@
             hatePrompt: '🚗 Time patrol active!',
             travelPast: 'Traveling to your [ Past ]…',
             travelFuture: 'Traveling to your [ Future ]…',
-            hateEnd: "Every moment’s full of light. You’re perfect as is✨",
+            hateEnd: "Every moment's full of light. You're perfect as is✨",
             whyPrompt: '0108 is thinking…',
             whyStop: 'This program will never stop until you find the answer.',
             whyOk: 'OK',
+            close: 'Close',
             logPrefix: ': ',
             virusesLeft: 'Viruses left',
             scoreLabel: 'Score',
+            timeLabel: 'Time',
+            rankingTitle: '⭐ TOP RANKINGS ⭐',
             clockLabel: '',
         },
         ja: {
@@ -328,9 +438,12 @@
             whyPrompt: '0108は考えています…',
             whyStop: 'このプログラムは、あなたと答えを見つけるまで止まらない。',
             whyOk: 'OK',
+            close: '閉じる',
             logPrefix: '：',
             virusesLeft: '残りウイルス',
             scoreLabel: 'スコア',
+            timeLabel: '時間',
+            rankingTitle: '⭐ トップランキング ⭐',
             clockLabel: '',
         }
     };
@@ -339,6 +452,16 @@
     let sosDone = false;
     let lonelyDone = false;
     let hateDone = false;
+    
+    // Mock ranking data (in real implementation, this would come from a server)
+    let rankings = [
+        { name: 'Alice', time: 15.7 },
+        { name: 'Bob', time: 18.2 },
+        { name: 'Charlie', time: 22.1 },
+        { name: 'Diana', time: 25.3 },
+        { name: 'Eve', time: 28.9 }
+    ];
+    
     // Helper to translate keys
     function t(key) {
         return translations[currentLang][key] || key;
@@ -347,6 +470,7 @@
     const loader = document.getElementById('loader');
     const loaderText = document.getElementById('loaderText');
     const titleDiv = document.getElementById('title');
+    const smallTitle = document.getElementById('smallTitle');
     const usernameScreen = document.getElementById('usernameScreen');
     const enterNameText = document.getElementById('enterNameText');
     const startBtn = document.getElementById('startBtn');
@@ -365,15 +489,15 @@
     window.onload = () => {
         loaderText.textContent = t('connect');
         setTimeout(() => {
-            // Hide loader, show title
+            // Hide loader, show title with fade in
             loader.style.display = 'none';
-            titleDiv.style.display = 'block';
+            titleDiv.style.display = 'flex';
             setTimeout(() => {
                 titleDiv.style.display = 'none';
-                // Show name screen
+                // Show name screen (centered)
                 enterNameText.textContent = t('enterName');
                 startBtn.textContent = t('start');
-                usernameScreen.style.display = 'block';
+                usernameScreen.style.display = 'flex';
             }, 2000);
         }, 3200);
     };
@@ -388,9 +512,6 @@
         enterNameText.textContent = t('enterName');
         startBtn.textContent = t('start');
         promptText.textContent = t('prompt');
-        // Buttons text remain constant; do not translate the four action buttons
-        // If overlay is visible, update its textual content accordingly
-        // We won't retranslate past logs
     }
     btnEn.addEventListener('click', () => setLanguage('en'));
     btnJa.addEventListener('click', () => setLanguage('ja'));
@@ -400,6 +521,8 @@
         const value = input.value.trim();
         userName = value ? value : 'AAA';
         usernameScreen.style.display = 'none';
+        // Show small title in top right
+        smallTitle.style.display = 'block';
         showPrompt();
     });
     function showPrompt() {
@@ -426,6 +549,67 @@
         outputDiv.appendChild(div);
         outputDiv.scrollTop = outputDiv.scrollHeight;
     }
+    
+    // Create close button for overlays
+    function createCloseButton(callback) {
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-btn';
+        closeBtn.textContent = t('close');
+        closeBtn.addEventListener('click', callback);
+        return closeBtn;
+    }
+    
+    // Create sparkle effect
+    function createSparkles(container) {
+        const sparkleContainer = document.createElement('div');
+        sparkleContainer.className = 'sparkles';
+        
+        for (let i = 0; i < 15; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.textContent = '✨';
+            sparkle.style.left = Math.random() * 100 + '%';
+            sparkle.style.top = Math.random() * 100 + '%';
+            sparkle.style.animationDelay = Math.random() * 2 + 's';
+            sparkleContainer.appendChild(sparkle);
+        }
+        
+        container.appendChild(sparkleContainer);
+        return sparkleContainer;
+    }
+    
+    // Update rankings
+    function updateRankings(newTime) {
+        rankings.push({ name: userName, time: newTime });
+        rankings.sort((a, b) => a.time - b.time);
+        rankings = rankings.slice(0, 10); // Keep top 10
+    }
+    
+    function displayRankings() {
+        const rankingDiv = document.createElement('div');
+        rankingDiv.className = 'ranking';
+        
+        const title = document.createElement('div');
+        title.textContent = t('rankingTitle');
+        title.style.textAlign = 'center';
+        title.style.marginBottom = '8px';
+        title.style.color = '#ffff00';
+        rankingDiv.appendChild(title);
+        
+        rankings.slice(0, 5).forEach((entry, index) => {
+            const entryDiv = document.createElement('div');
+            entryDiv.className = 'ranking-entry';
+            entryDiv.textContent = `${index + 1}. ${entry.name}: ${entry.time.toFixed(1)}s`;
+            if (entry.name === userName) {
+                entryDiv.style.color = '#ffff00';
+                entryDiv.style.fontWeight = 'bold';
+            }
+            rankingDiv.appendChild(entryDiv);
+        });
+        
+        return rankingDiv;
+    }
+    
     // SOS handler
     btnSos.addEventListener('click', async () => {
         if (btnSos.classList.contains('disabled')) return;
@@ -466,17 +650,25 @@
                 busterBtn.addEventListener('click', async () => {
                     // Start game
                     overlay.innerHTML = '';
-                    await startGame();
-                    // After game, show clean message
+                    const gameResult = await startGame();
+                    // After game, show clean message with ranking
                     overlay.innerHTML = '';
                     const cleanMsg = document.createElement('div');
                     cleanMsg.innerHTML = t('virusClean').replace(/\n/g, '<br>');
                     overlay.appendChild(cleanMsg);
-                    setTimeout(() => {
+                    
+                    // Show ranking
+                    updateRankings(gameResult.time);
+                    const rankingDisplay = displayRankings();
+                    overlay.appendChild(rankingDisplay);
+                    
+                    // Add close button
+                    const closeBtn = createCloseButton(() => {
                         overlay.style.display = 'none';
                         sosDone = true;
                         finalizeAction();
-                    }, 2000);
+                    });
+                    overlay.appendChild(closeBtn);
                 });
             }
         }, 300);
@@ -530,12 +722,14 @@
             const endMsg = document.createElement('div');
             endMsg.textContent = t('lonelyEnd');
             overlay.appendChild(endMsg);
-            // Wait some time and finish
-            setTimeout(() => {
+            
+            // Add close button
+            const closeBtn = createCloseButton(() => {
                 overlay.style.display = 'none';
                 lonelyDone = true;
                 finalizeAction();
-            }, 4000);
+            });
+            overlay.appendChild(closeBtn);
         });
     });
     // Hate handler
@@ -548,14 +742,14 @@
         const msg = document.createElement('div');
         msg.textContent = t('hatePrompt');
         overlay.appendChild(msg);
-        // Car animation
-        const carContainer = document.createElement('div');
-        carContainer.className = 'car-container';
-        const car = document.createElement('div');
-        car.className = 'car';
-        car.textContent = '🚗';
-        carContainer.appendChild(car);
-        overlay.appendChild(carContainer);
+        // Car animation (first car going right)
+        const carContainer1 = document.createElement('div');
+        carContainer1.className = 'car-container';
+        const car1 = document.createElement('div');
+        car1.className = 'car';
+        car1.textContent = '🚗';
+        carContainer1.appendChild(car1);
+        overlay.appendChild(carContainer1);
         // Travel messages sequentially
         setTimeout(() => {
             const pastMsg = document.createElement('div');
@@ -563,6 +757,15 @@
             pastMsg.classList.add('glitch');
             overlay.appendChild(pastMsg);
             setTimeout(() => {
+                // Second car going left (reverse)
+                const carContainer2 = document.createElement('div');
+                carContainer2.className = 'car-container';
+                const car2 = document.createElement('div');
+                car2.className = 'car reverse';
+                car2.textContent = '🚗';
+                carContainer2.appendChild(car2);
+                overlay.appendChild(carContainer2);
+                
                 const futureMsg = document.createElement('div');
                 futureMsg.textContent = t('travelFuture');
                 futureMsg.classList.add('glitch');
@@ -571,11 +774,17 @@
                     const endMsg = document.createElement('div');
                     endMsg.textContent = t('hateEnd');
                     overlay.appendChild(endMsg);
-                    setTimeout(() => {
+                    
+                    // Add sparkle effect
+                    const sparkles = createSparkles(overlay);
+                    
+                    // Add close button
+                    const closeBtn = createCloseButton(() => {
                         overlay.style.display = 'none';
                         hateDone = true;
                         finalizeAction();
-                    }, 2000);
+                    });
+                    overlay.appendChild(closeBtn);
                 }, 2500);
             }, 2500);
         }, 1000);
@@ -585,7 +794,7 @@
         if (btnWhy.classList.contains('disabled')) return;
         // Only proceed if unlocked
         addLog('why');
-        // Show thinking overlay
+        // Show thinking overlay with longer thinking time
         overlay.innerHTML = '';
         overlay.style.display = 'flex';
         const msg = document.createElement('div');
@@ -597,10 +806,10 @@
         fill.className = 'scan-fill';
         bar.appendChild(fill);
         overlay.appendChild(bar);
-        // Animate bar to 60% then stop
+        // Animate bar slowly to 60% then stop (longer thinking time)
         let progress = 0;
         const intv = setInterval(() => {
-            progress += 4;
+            progress += 2; // Slower progress (was 4)
             fill.style.width = progress + '%';
             if (progress >= 60) {
                 clearInterval(intv);
@@ -634,7 +843,7 @@
                     setInterval(updateClock, 1000);
                 });
             }
-        }, 200);
+        }, 400); // Slower interval (was 200)
     });
     // Finalize action: show prompt and unlock why if all done
     function finalizeAction() {
@@ -644,6 +853,7 @@
     // Game implementation (spaceship shooter) as asynchronous function
     function startGame() {
         return new Promise(resolve => {
+            const gameStartTime = Date.now();
             overlay.innerHTML = '';
             // Create canvas and scoreboard
             const canvas = document.createElement('canvas');
@@ -657,6 +867,10 @@
             scoreBoard.style.marginTop = '8px';
             scoreBoard.style.color = '#00ffcc';
             overlay.appendChild(scoreBoard);
+            const timeBoard = document.createElement('div');
+            timeBoard.style.marginTop = '4px';
+            timeBoard.style.color = '#00ffcc';
+            overlay.appendChild(timeBoard);
             // Setup game state
             const spaceship = { x: canvas.width / 2 - 15, y: canvas.height - 20, w: 30, h: 10, speed: 4 };
             const bullets = [];
@@ -665,6 +879,7 @@
             const rows = 2;
             let remaining = cols * rows;
             let score = 0;
+            let gameTime = 0;
             // Populate viruses
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
@@ -672,8 +887,9 @@
                 }
             }
             function updateScore() {
-                // Show remaining viruses and score with translated labels
+                gameTime = (Date.now() - gameStartTime) / 1000;
                 scoreBoard.textContent = `${t('virusesLeft')}: ${remaining} | ${t('scoreLabel')}: ${score}`;
+                timeBoard.textContent = `${t('timeLabel')}: ${gameTime.toFixed(1)}s`;
             }
             updateScore();
             let animationId;
@@ -724,6 +940,7 @@
                         }
                     });
                 }
+                updateScore();
                 if (viruses.every(v => v.hit)) {
                     end(true);
                 }
@@ -761,14 +978,15 @@
             function end(success) {
                 if (isOver) return;
                 isOver = true;
+                const finalTime = (Date.now() - gameStartTime) / 1000;
                 cancelAnimationFrame(animationId);
                 canvas.removeEventListener('mousemove', pointerMove);
                 canvas.removeEventListener('mousedown', pointerDown);
                 canvas.removeEventListener('touchmove', pointerMove);
                 canvas.removeEventListener('touchstart', pointerDown);
                 window.removeEventListener('keydown', keyHandler);
-                // Resolve after a slight delay
-                resolve();
+                // Resolve with game results
+                resolve({ success, time: finalTime, score });
             }
         });
     }
