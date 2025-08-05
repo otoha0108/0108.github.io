@@ -130,16 +130,20 @@
         function updateLanguage() {
             console.log('Updating language to:', isJapanese ? 'Japanese' : 'English');
             const lang = isJapanese ? 'ja' : 'en';
-            const elements = [prompt, ...output.children].filter(element => element.textContent !== '🌐 HELL0w0RLD! 🌐');
-            elements.forEach(element => {
-                const currentText = element.textContent;
+            const elements = [prompt, ...output.children].filter(element => element.textContent.trim() !== '🌐 HELL0w0RLD! 🌐');
+            const promises = elements.map(element => {
+                const currentText = element.textContent.trim();
                 const newText = getTranslatedText(currentText, lang);
+                console.log('Checking:', currentText, '->', newText);
                 if (currentText !== newText && newText !== undefined) {
-                    scrambleToText(element, newText);
+                    return scrambleToText(element, newText);
                 }
+                return Promise.resolve();
             });
-            langJaButton.classList.toggle('active', isJapanese);
-            langEnButton.classList.toggle('active', !isJapanese);
+            return Promise.all(promises).then(() => {
+                langJaButton.classList.toggle('active', isJapanese);
+                langEnButton.classList.toggle('active', !isJapanese);
+            });
         }
 
         function getTranslatedText(currentText, lang) {
