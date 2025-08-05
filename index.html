@@ -138,14 +138,18 @@
             font-family: inherit;
             cursor: pointer;
         }
-        /* Small title in top right */
-        #smallTitle {
+        /* Large title at top center */
+        #largeTitle {
             position: absolute;
-            top: 8px;
-            right: 120px;
-            font-size: 14px;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
             color: #14ffec;
             display: none;
+            z-index: 500;
+            text-align: center;
+            text-shadow: 0 0 10px #14ffec;
         }
         /* Overlays */
         #overlay {
@@ -169,6 +173,7 @@
             flex-grow: 1;
             overflow-y: auto;
             margin-bottom: 12px;
+            margin-top: 60px; /* Add space for large title */
             padding-right: 4px;
         }
         .message {
@@ -319,17 +324,26 @@
         }
         /* Close button for overlays */
         .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #e6007e;
+            background: #ff0077;
             color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
+            border: 2px solid #ffff00;
+            padding: 12px 24px;
+            border-radius: 8px;
             cursor: pointer;
             font-family: inherit;
-            font-size: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(255, 0, 119, 0.3);
+            transition: all 0.2s ease;
+        }
+        .close-btn:hover {
+            background: #ff3399;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 0, 119, 0.4);
+        }
+        .close-btn:active {
+            transform: translateY(0);
         }
         /* Ranking display */
         .ranking {
@@ -350,7 +364,7 @@
             <button id="btn-ja">日本語</button>
         </div>
         
-        <div id="smallTitle">🌐HELL0w0RLD!🌐</div>
+        <div id="largeTitle">🌐HELL0w0RLD!🌐</div>
         
         <!-- Loader -->
         <div id="loader">
@@ -470,7 +484,7 @@
     const loader = document.getElementById('loader');
     const loaderText = document.getElementById('loaderText');
     const titleDiv = document.getElementById('title');
-    const smallTitle = document.getElementById('smallTitle');
+    const largeTitle = document.getElementById('largeTitle');
     const usernameScreen = document.getElementById('usernameScreen');
     const enterNameText = document.getElementById('enterNameText');
     const startBtn = document.getElementById('startBtn');
@@ -521,8 +535,8 @@
         const value = input.value.trim();
         userName = value ? value : 'AAA';
         usernameScreen.style.display = 'none';
-        // Show small title in top right
-        smallTitle.style.display = 'block';
+        // Show large title at top center
+        largeTitle.style.display = 'block';
         showPrompt();
     });
     function showPrompt() {
@@ -536,10 +550,10 @@
             btnWhy.classList.add('locked');
             btnWhy.classList.add('disabled');
         }
-        // Re-enable other buttons
-        btnSos.classList.remove('disabled');
-        btnLonely.classList.remove('disabled');
-        btnHate.classList.remove('disabled');
+        // Re-enable other buttons (but not if they're completed)
+        if (!sosDone) btnSos.classList.remove('disabled');
+        if (!lonelyDone) btnLonely.classList.remove('disabled');
+        if (!hateDone) btnHate.classList.remove('disabled');
     }
     // Append a log message to the output
     function addLog(action) {
@@ -551,11 +565,18 @@
     }
     
     // Create close button for overlays
-    function createCloseButton(callback) {
+    function createCloseButton(callback, buttonToDisable = null) {
         const closeBtn = document.createElement('button');
         closeBtn.className = 'close-btn';
-        closeBtn.textContent = t('close');
-        closeBtn.addEventListener('click', callback);
+        closeBtn.textContent = `✕ ${t('close')}`;
+        closeBtn.addEventListener('click', () => {
+            if (buttonToDisable) {
+                buttonToDisable.classList.add('disabled');
+                buttonToDisable.style.opacity = '0.3';
+                buttonToDisable.style.cursor = 'not-allowed';
+            }
+            callback();
+        });
         return closeBtn;
     }
     
@@ -667,7 +688,7 @@
                         overlay.style.display = 'none';
                         sosDone = true;
                         finalizeAction();
-                    });
+                    }, btnSos);
                     overlay.appendChild(closeBtn);
                 });
             }
@@ -728,7 +749,7 @@
                 overlay.style.display = 'none';
                 lonelyDone = true;
                 finalizeAction();
-            });
+            }, btnLonely);
             overlay.appendChild(closeBtn);
         });
     });
@@ -783,7 +804,7 @@
                         overlay.style.display = 'none';
                         hateDone = true;
                         finalizeAction();
-                    });
+                    }, btnHate);
                     overlay.appendChild(closeBtn);
                 }, 2500);
             }, 2500);
