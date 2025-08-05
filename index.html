@@ -1,23 +1,8 @@
-viruses.forEach(v => {
-                    if (!v.hit) {
-                        v.x += v.vx;
-                        if (v.x - v.w/2 < 0 || v.x + v.w/2 > canvas.width) v.vx *= -1;
-                        drawInvader(ctx, v.x, v.y, v.w, v.h, v.type);
-                        // Collision with spaceship
-                        if (v.y + v.h/2 >= spaceship.y && 
-                            v.x + v.w/2 >= spaceship.x && 
-                            v.x - v.w/2 <= spaceship.x + spaceship.w) {
-                            end(false);
-                        }
-                        if (v.y + v.h/2 > canvas.height) {
-                            end(false);
-                        }
-                    }
-                });<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🌐 HELL0w0RLD! 🌐</title>
     <style>
         @font-face {
@@ -447,6 +432,12 @@ viruses.forEach(v => {
             margin: 2px 0;
             color: #00fff2;
         }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -471,7 +462,7 @@ viruses.forEach(v => {
         
         <div id="usernameScreen">
             <h2 id="enterNameText">Enter your name:</h2>
-            <input type="text" id="usernameInput" placeholder="Your name here" />
+            <input type="text" id="usernameInput" placeholder="Your name here">
             <br>
             <button id="startBtn">Start</button>
         </div>
@@ -490,655 +481,687 @@ viruses.forEach(v => {
         
         <div id="overlay"></div>
     </div>
+
     <script>
-    const translations = {
-        en: {
-            connect: '0108 connecting…',
-            enterName: 'Enter your name:',
-            start: 'Start',
-            prompt: "📡 0108: What's on your mind?",
-            scanInit: '0108 can catch your signal anytime!',
-            scanProgress: 'Scanning your heart...',
-            virusDetected: '🚨 Virus detected!',
-            virusBtn: 'Launch Virus Buster!',
-            virusClean: '✅ Virus eliminated!\nHeart status: 150% clean.',
-            lonelyPrompt: "OK. Let's listen to music with something sweet!🥧",
-            lonelyInput: 'Enter your favorite song name >',
-            lonelyWave: ' is now playing in your head!',
-            lonelyEnd: '0108 is always here to sing for you ♪',
-            hatePrompt: '🚗 Time patrol active!',
-            travelPast: 'Traveling to your [ Past ]…',
-            travelFuture: 'Traveling to your [ Future ]…',
-            hateEnd: "Every moment's full of light. You're perfect as is✨",
-            whyPrompt: '0108 is thinking…',
-            whyStop: 'This program will never stop until you find the answer.',
-            whyOk: 'OK',
-            close: 'Close',
-            logPrefix: ': ',
-            virusesLeft: 'Viruses left',
-            scoreLabel: 'Score',
-            timeLabel: 'Time',
-            rankingTitle: '⭐ TOP RANKINGS ⭐',
-            clockLabel: '',
-        },
-        ja: {
-            connect: '0108 接続中…',
-            enterName: '名前を入力してください:',
-            start: 'スタート',
-            prompt: '📡 0108: 調子はどう？',
-            scanInit: '0108はいつでもあなたの信号を受信できます！',
-            scanProgress: 'あなたの心をスキャンしています...',
-            virusDetected: '🚨 ウイルス発見！',
-            virusBtn: 'ウイルスバスター起動！',
-            virusClean: '✅ ウイルスをやっつけたぞ！\n心の状態: 150%クリーン。',
-            lonelyPrompt: 'よし、甘いものでも食べながら音楽でも聴こう！🥧',
-            lonelyInput: 'お気に入りの曲の名前を入力してください >',
-            lonelyWave: ' を脳内再生中...♪',
-            lonelyEnd: '0108はいつでもあなたと一緒に歌います。',
-            hatePrompt: '🚗 タイムパトロール開始！',
-            travelPast: '[ 過去 ] へ移動中...',
-            travelFuture: '[ 未来 ] へ移動中...',
-            hateEnd: 'すべての瞬間が光で溢れてる。あなたはそのままで完璧です✨',
-            whyPrompt: '0108は考えています…',
-            whyStop: 'このプログラムは、あなたと答えを見つけるまで止まらない。',
-            whyOk: 'OK',
-            close: '閉じる',
-            logPrefix: '：',
-            virusesLeft: '残りウイルス',
-            scoreLabel: 'スコア',
-            timeLabel: '時間',
-            rankingTitle: '⭐ トップランキング ⭐',
-            clockLabel: '',
+        const translations = {
+            en: {
+                connect: '0108 connecting…',
+                enterName: 'Enter your name:',
+                start: 'Start',
+                prompt: "📡 0108: What's on your mind?",
+                scanInit: '0108 can catch your signal anytime!',
+                scanProgress: 'Scanning your heart...',
+                virusDetected: '🚨 Virus detected!',
+                virusBtn: 'Launch Virus Buster!',
+                virusClean: '✅ Virus eliminated!\nHeart status: 150% clean.',
+                lonelyPrompt: "OK. Let's listen to music with something sweet!🥧",
+                lonelyInput: 'Enter your favorite song name >',
+                lonelyWave: ' is now playing in your head!',
+                lonelyEnd: '0108 is always here to sing for you ♪',
+                hatePrompt: '🚗 Time patrol active!',
+                travelPast: 'Traveling to your [ Past ]…',
+                travelFuture: 'Traveling to your [ Future ]…',
+                hateEnd: "Every moment's full of light. You're perfect as is✨",
+                whyPrompt: '0108 is thinking…',
+                whyStop: 'This program will never stop until you find the answer.',
+                whyOk: 'OK',
+                close: 'Close',
+                logPrefix: ': ',
+                virusesLeft: 'Viruses left',
+                scoreLabel: 'Score',
+                timeLabel: 'Time',
+                rankingTitle: '⭐ TOP RANKINGS ⭐'
+            },
+            ja: {
+                connect: '0108 接続中…',
+                enterName: '名前を入力してください:',
+                start: 'スタート',
+                prompt: '📡 0108: 調子はどう？',
+                scanInit: '0108はいつでもあなたの信号を受信できます！',
+                scanProgress: 'あなたの心をスキャンしています...',
+                virusDetected: '🚨 ウイルス発見！',
+                virusBtn: 'ウイルスバスター起動！',
+                virusClean: '✅ ウイルスをやっつけたぞ！\n心の状態: 150%クリーン。',
+                lonelyPrompt: 'よし、甘いものでも食べながら音楽でも聴こう！🥧',
+                lonelyInput: 'お気に入りの曲の名前を入力してください >',
+                lonelyWave: ' を脳内再生中...♪',
+                lonelyEnd: '0108はいつでもあなたと一緒に歌います。',
+                hatePrompt: '🚗 タイムパトロール開始！',
+                travelPast: '[ 過去 ] へ移動中...',
+                travelFuture: '[ 未来 ] へ移動中...',
+                hateEnd: 'すべての瞬間が光で溢れてる。あなたはそのままで完璧です✨',
+                whyPrompt: '0108は考えています…',
+                whyStop: 'このプログラムは、あなたと答えを見つけるまで止まらない。',
+                whyOk: 'OK',
+                close: '閉じる',
+                logPrefix: '：',
+                virusesLeft: '残りウイルス',
+                scoreLabel: 'スコア',
+                timeLabel: '時間',
+                rankingTitle: '⭐ トップランキング ⭐'
+            }
+        };
+        
+        let currentLang = 'en';
+        let userName = 'AAA';
+        let sosDone = false;
+        let lonelyDone = false;
+        let hateDone = false;
+        
+        let rankings = [
+            { name: 'Alice', time: 15.7 },
+            { name: 'Bob', time: 18.2 },
+            { name: 'Charlie', time: 22.1 },
+            { name: 'Diana', time: 25.3 },
+            { name: 'Eve', time: 28.9 }
+        ];
+        
+        function t(key) {
+            return translations[currentLang][key] || key;
         }
-    };
-    
-    let currentLang = 'en';
-    let userName = 'AAA';
-    let sosDone = false;
-    let lonelyDone = false;
-    let hateDone = false;
-    
-    let rankings = [
-        { name: 'Alice', time: 15.7 },
-        { name: 'Bob', time: 18.2 },
-        { name: 'Charlie', time: 22.1 },
-        { name: 'Diana', time: 25.3 },
-        { name: 'Eve', time: 28.9 }
-    ];
-    
-    function t(key) {
-        return translations[currentLang][key] || key;
-    }
-    
-    const loader = document.getElementById('loader');
-    const loaderText = document.getElementById('loaderText');
-    const titleDiv = document.getElementById('title');
-    const largeTitle = document.getElementById('largeTitle');
-    const usernameScreen = document.getElementById('usernameScreen');
-    const enterNameText = document.getElementById('enterNameText');
-    const startBtn = document.getElementById('startBtn');
-    const outputDiv = document.getElementById('output');
-    const promptSection = document.getElementById('promptSection');
-    const promptText = document.getElementById('promptText');
-    const buttonsDiv = document.getElementById('buttons');
-    const overlay = document.getElementById('overlay');
-    const btnSos = document.getElementById('btn-sos');
-    const btnLonely = document.getElementById('btn-lonely');
-    const btnHate = document.getElementById('btn-hate');
-    const btnWhy = document.getElementById('btn-why');
-    const btnEn = document.getElementById('btn-en');
-    const btnJa = document.getElementById('btn-ja');
-    
-    window.onload = () => {
-        loaderText.textContent = t('connect');
-        setTimeout(() => {
-            loader.style.display = 'none';
-            titleDiv.style.display = 'flex';
+        
+        const elements = {
+            loader: document.getElementById('loader'),
+            loaderText: document.getElementById('loaderText'),
+            titleDiv: document.getElementById('title'),
+            largeTitle: document.getElementById('largeTitle'),
+            usernameScreen: document.getElementById('usernameScreen'),
+            enterNameText: document.getElementById('enterNameText'),
+            startBtn: document.getElementById('startBtn'),
+            outputDiv: document.getElementById('output'),
+            promptSection: document.getElementById('promptSection'),
+            promptText: document.getElementById('promptText'),
+            overlay: document.getElementById('overlay'),
+            btnSos: document.getElementById('btn-sos'),
+            btnLonely: document.getElementById('btn-lonely'),
+            btnHate: document.getElementById('btn-hate'),
+            btnWhy: document.getElementById('btn-why'),
+            btnEn: document.getElementById('btn-en'),
+            btnJa: document.getElementById('btn-ja')
+        };
+        
+        window.onload = () => {
+            elements.loaderText.textContent = t('connect');
             setTimeout(() => {
-                titleDiv.style.display = 'none';
-                enterNameText.textContent = t('enterName');
-                startBtn.textContent = t('start');
-                usernameScreen.style.display = 'flex';
-            }, 2000);
-        }, 3200);
-    };
-    
-    function setLanguage(lang) {
-        if (currentLang === lang) return;
-        currentLang = lang;
-        btnEn.classList.toggle('active', currentLang === 'en');
-        btnJa.classList.toggle('active', currentLang === 'ja');
-        loaderText.textContent = t('connect');
-        enterNameText.textContent = t('enterName');
-        startBtn.textContent = t('start');
-        promptText.textContent = t('prompt');
-    }
-    
-    btnEn.addEventListener('click', () => setLanguage('en'));
-    btnJa.addEventListener('click', () => setLanguage('ja'));
-    
-    startBtn.addEventListener('click', () => {
-        const input = document.getElementById('usernameInput');
-        const value = input.value.trim();
-        userName = value ? value : 'AAA';
-        usernameScreen.style.display = 'none';
-        largeTitle.style.display = 'block';
-        showPrompt();
-    });
-    
-    function showPrompt() {
-        promptText.textContent = t('prompt');
-        promptSection.style.display = 'block';
-        if (sosDone && lonelyDone && hateDone) {
-            btnWhy.classList.remove('locked');
-            btnWhy.classList.remove('disabled');
-        } else {
-            btnWhy.classList.add('locked');
-            btnWhy.classList.add('disabled');
-        }
-        if (!sosDone) btnSos.classList.remove('disabled');
-        if (!lonelyDone) btnLonely.classList.remove('disabled');
-        if (!hateDone) btnHate.classList.remove('disabled');
-    }
-    
-    function addLog(action) {
-        const div = document.createElement('div');
-        div.className = 'message log';
-        div.textContent = `${userName}${t('logPrefix')}${action}`;
-        outputDiv.appendChild(div);
-        outputDiv.scrollTop = outputDiv.scrollHeight;
-    }
-    
-    function createCloseButton(callback, buttonToDisable = null) {
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'close-btn';
-        closeBtn.textContent = `✕ ${t('close')}`;
-        closeBtn.addEventListener('click', () => {
-            if (buttonToDisable) {
-                buttonToDisable.classList.add('disabled');
-                buttonToDisable.style.opacity = '0.3';
-                buttonToDisable.style.cursor = 'not-allowed';
-            }
-            callback();
-        });
-        return closeBtn;
-    }
-    
-    function createSparkles(container) {
-        const sparkleContainer = document.createElement('div');
-        sparkleContainer.className = 'sparkles';
+                elements.loader.style.display = 'none';
+                elements.titleDiv.style.display = 'flex';
+                setTimeout(() => {
+                    elements.titleDiv.style.display = 'none';
+                    elements.enterNameText.textContent = t('enterName');
+                    elements.startBtn.textContent = t('start');
+                    elements.usernameScreen.style.display = 'flex';
+                }, 2000);
+            }, 3200);
+        };
         
-        for (let i = 0; i < 15; i++) {
-            const sparkle = document.createElement('div');
-            sparkle.className = 'sparkle';
-            sparkle.textContent = '✨';
-            sparkle.style.left = Math.random() * 100 + '%';
-            sparkle.style.top = Math.random() * 100 + '%';
-            sparkle.style.animationDelay = Math.random() * 2 + 's';
-            sparkleContainer.appendChild(sparkle);
+        function setLanguage(lang) {
+            if (currentLang === lang) return;
+            currentLang = lang;
+            elements.btnEn.classList.toggle('active', currentLang === 'en');
+            elements.btnJa.classList.toggle('active', currentLang === 'ja');
+            elements.loaderText.textContent = t('connect');
+            elements.enterNameText.textContent = t('enterName');
+            elements.startBtn.textContent = t('start');
+            elements.promptText.textContent = t('prompt');
         }
         
-        container.appendChild(sparkleContainer);
-        return sparkleContainer;
-    }
-    
-    function updateRankings(newTime) {
-        rankings.push({ name: userName, time: newTime });
-        rankings.sort((a, b) => a.time - b.time);
-        rankings = rankings.slice(0, 10);
-    }
-    
-    function displayRankings() {
-        const rankingDiv = document.createElement('div');
-        rankingDiv.className = 'ranking';
+        elements.btnEn.addEventListener('click', () => setLanguage('en'));
+        elements.btnJa.addEventListener('click', () => setLanguage('ja'));
         
-        const title = document.createElement('div');
-        title.textContent = t('rankingTitle');
-        title.style.textAlign = 'center';
-        title.style.marginBottom = '8px';
-        title.style.color = '#ffff00';
-        rankingDiv.appendChild(title);
-        
-        rankings.slice(0, 5).forEach((entry, index) => {
-            const entryDiv = document.createElement('div');
-            entryDiv.className = 'ranking-entry';
-            entryDiv.textContent = `${index + 1}. ${entry.name}: ${entry.time.toFixed(1)}s`;
-            if (entry.name === userName) {
-                entryDiv.style.color = '#ffff00';
-                entryDiv.style.fontWeight = 'bold';
-            }
-            rankingDiv.appendChild(entryDiv);
+        elements.startBtn.addEventListener('click', () => {
+            const input = document.getElementById('usernameInput');
+            const value = input.value.trim();
+            userName = value ? value : 'AAA';
+            elements.usernameScreen.style.display = 'none';
+            elements.largeTitle.style.display = 'block';
+            showPrompt();
         });
         
-        return rankingDiv;
-    }
-    
-    btnSos.addEventListener('click', async () => {
-        if (btnSos.classList.contains('disabled')) return;
-        btnSos.classList.add('disabled');
-        addLog('sos');
-        overlay.innerHTML = '';
-        overlay.style.display = 'flex';
-        const msg = document.createElement('div');
-        msg.textContent = t('scanInit');
-        overlay.appendChild(msg);
+        function showPrompt() {
+            elements.promptText.textContent = t('prompt');
+            elements.promptSection.style.display = 'block';
+            if (sosDone && lonelyDone && hateDone) {
+                elements.btnWhy.classList.remove('locked', 'disabled');
+            } else {
+                elements.btnWhy.classList.add('locked', 'disabled');
+            }
+            if (!sosDone) elements.btnSos.classList.remove('disabled');
+            if (!lonelyDone) elements.btnLonely.classList.remove('disabled');
+            if (!hateDone) elements.btnHate.classList.remove('disabled');
+        }
         
-        const progressMsg = document.createElement('div');
-        progressMsg.style.marginTop = '8px';
-        progressMsg.textContent = t('scanProgress');
-        overlay.appendChild(progressMsg);
+        function addLog(action) {
+            const div = document.createElement('div');
+            div.className = 'message log';
+            div.textContent = `${userName}${t('logPrefix')}${action}`;
+            elements.outputDiv.appendChild(div);
+            elements.outputDiv.scrollTop = elements.outputDiv.scrollHeight;
+        }
         
-        const heartScanner = document.createElement('div');
-        heartScanner.className = 'heart-scanner';
+        function createCloseButton(callback, buttonToDisable = null) {
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'close-btn';
+            closeBtn.textContent = `✕ ${t('close')}`;
+            closeBtn.addEventListener('click', () => {
+                if (buttonToDisable) {
+                    buttonToDisable.classList.add('disabled');
+                    buttonToDisable.style.opacity = '0.3';
+                    buttonToDisable.style.cursor = 'not-allowed';
+                }
+                callback();
+            });
+            return closeBtn;
+        }
         
-        const heartDisplay = document.createElement('div');
-        heartDisplay.className = 'heart-display';
-        heartDisplay.textContent = '💖';
-        heartScanner.appendChild(heartDisplay);
-        
-        const scanGrid = document.createElement('div');
-        scanGrid.className = 'scan-grid';
-        heartScanner.appendChild(scanGrid);
-        
-        const scanLine = document.createElement('div');
-        scanLine.className = 'scan-line';
-        heartScanner.appendChild(scanLine);
-        
-        overlay.appendChild(heartScanner);
-        
-        // Wait for scanning animation (4 seconds for 2 complete scans)
-        setTimeout(() => {
-            msg.textContent = t('virusDetected');
-            progressMsg.remove();
-            heartScanner.remove();
+        function createSparkles(container) {
+            const sparkleContainer = document.createElement('div');
+            sparkleContainer.className = 'sparkles';
             
-            // Add large virus/invader icon
-            const virusIcon = document.createElement('div');
-            virusIcon.style.fontSize = '120px';
-            virusIcon.style.margin = '20px 0';
-            virusIcon.style.animation = 'pulse 0.5s infinite';
-            virusIcon.textContent = '👾';
-            overlay.appendChild(virusIcon);
+            for (let i = 0; i < 15; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.textContent = '✨';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+                sparkleContainer.appendChild(sparkle);
+            }
             
-            // Add pulse animation for virus icon
-            if (!document.getElementById('pulseStyle')) {
-                const style = document.createElement('style');
-                style.id = 'pulseStyle';
-                style.textContent = `
-                    @keyframes pulse {
-                        0% { transform: scale(1); opacity: 1; }
-                        50% { transform: scale(1.1); opacity: 0.8; }
-                        100% { transform: scale(1); opacity: 1; }
+            container.appendChild(sparkleContainer);
+            return sparkleContainer;
+        }
+        
+        function updateRankings(newTime) {
+            rankings.push({ name: userName, time: newTime });
+            rankings.sort((a, b) => a.time - b.time);
+            rankings = rankings.slice(0, 10);
+        }
+        
+        function displayRankings() {
+            const rankingDiv = document.createElement('div');
+            rankingDiv.className = 'ranking';
+            
+            const title = document.createElement('div');
+            title.textContent = t('rankingTitle');
+            title.style.textAlign = 'center';
+            title.style.marginBottom = '8px';
+            title.style.color = '#ffff00';
+            rankingDiv.appendChild(title);
+            
+            rankings.slice(0, 5).forEach((entry, index) => {
+                const entryDiv = document.createElement('div');
+                entryDiv.className = 'ranking-entry';
+                entryDiv.textContent = `${index + 1}. ${entry.name}: ${entry.time.toFixed(1)}s`;
+                if (entry.name === userName) {
+                    entryDiv.style.color = '#ffff00';
+                    entryDiv.style.fontWeight = 'bold';
+                }
+                rankingDiv.appendChild(entryDiv);
+            });
+            
+            return rankingDiv;
+        }
+        
+        function drawInvader(ctx, x, y, w, h, type) {
+            const pixelSize = 2;
+            ctx.fillStyle = '#00ffcc';
+            
+            const patterns = [
+                [
+                    [0,0,1,0,0,0,1,0],
+                    [0,0,0,1,0,1,0,0],
+                    [0,0,1,1,1,1,1,0],
+                    [0,1,1,0,1,0,1,1],
+                    [1,1,1,1,1,1,1,1],
+                    [1,0,1,1,1,1,0,1],
+                    [1,0,1,0,0,1,0,1],
+                    [0,0,0,1,1,0,0,0]
+                ],
+                [
+                    [0,0,0,1,1,0,0,0],
+                    [0,0,1,1,1,1,0,0],
+                    [0,1,1,1,1,1,1,0],
+                    [1,1,0,1,1,0,1,1],
+                    [1,1,1,1,1,1,1,1],
+                    [0,1,0,1,1,0,1,0],
+                    [1,0,0,0,0,0,0,1],
+                    [0,1,0,0,0,0,1,0]
+                ],
+                [
+                    [0,0,1,0,0,1,0,0],
+                    [0,0,0,1,1,0,0,0],
+                    [0,0,1,1,1,1,0,0],
+                    [0,1,1,0,0,1,1,0],
+                    [1,1,1,1,1,1,1,1],
+                    [1,0,1,1,1,1,0,1],
+                    [1,0,1,0,0,1,0,1],
+                    [0,0,1,1,1,1,0,0]
+                ]
+            ];
+            
+            const pattern = patterns[type];
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if (pattern[row][col]) {
+                        ctx.fillRect(
+                            x - w/2 + col * pixelSize, 
+                            y - h/2 + row * pixelSize, 
+                            pixelSize, 
+                            pixelSize
+                        );
                     }
-                `;
-                document.head.appendChild(style);
+                }
             }
+        }
+        
+        elements.btnSos.addEventListener('click', async () => {
+            if (elements.btnSos.classList.contains('disabled')) return;
+            elements.btnSos.classList.add('disabled');
+            addLog('sos');
             
-            const busterBtn = document.createElement('button');
-            busterBtn.textContent = t('virusBtn');
-            busterBtn.style.marginTop = '12px';
-            overlay.appendChild(busterBtn);
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            
+            const msg = document.createElement('div');
+            msg.textContent = t('scanInit');
+            elements.overlay.appendChild(msg);
+            
+            const progressMsg = document.createElement('div');
+            progressMsg.style.marginTop = '8px';
+            progressMsg.textContent = t('scanProgress');
+            elements.overlay.appendChild(progressMsg);
+            
+            const heartScanner = document.createElement('div');
+            heartScanner.className = 'heart-scanner';
+            
+            const heartDisplay = document.createElement('div');
+            heartDisplay.className = 'heart-display';
+            heartDisplay.textContent = '💖';
+            heartScanner.appendChild(heartDisplay);
+            
+            const scanGrid = document.createElement('div');
+            scanGrid.className = 'scan-grid';
+            heartScanner.appendChild(scanGrid);
+            
+            const scanLine = document.createElement('div');
+            scanLine.className = 'scan-line';
+            heartScanner.appendChild(scanLine);
+            
+            elements.overlay.appendChild(heartScanner);
+            
+            setTimeout(() => {
+                msg.textContent = t('virusDetected');
+                progressMsg.remove();
+                heartScanner.remove();
+                
+                const virusIcon = document.createElement('div');
+                virusIcon.style.fontSize = '120px';
+                virusIcon.style.margin = '20px 0';
+                virusIcon.style.animation = 'pulse 0.5s infinite';
+                virusIcon.textContent = '👾';
+                elements.overlay.appendChild(virusIcon);
+                
+                const busterBtn = document.createElement('button');
+                busterBtn.textContent = t('virusBtn');
+                busterBtn.style.marginTop = '12px';
+                elements.overlay.appendChild(busterBtn);
+                
                 busterBtn.addEventListener('click', async () => {
-                    overlay.innerHTML = '';
+                    elements.overlay.innerHTML = '';
                     const gameResult = await startGame();
-                    overlay.innerHTML = '';
+                    elements.overlay.innerHTML = '';
+                    
                     const cleanMsg = document.createElement('div');
                     cleanMsg.innerHTML = t('virusClean').replace(/\n/g, '<br>');
-                    overlay.appendChild(cleanMsg);
+                    elements.overlay.appendChild(cleanMsg);
                     
                     updateRankings(gameResult.time);
                     const rankingDisplay = displayRankings();
-                    overlay.appendChild(rankingDisplay);
+                    elements.overlay.appendChild(rankingDisplay);
                     
                     const closeBtn = createCloseButton(() => {
-                        overlay.style.display = 'none';
+                        elements.overlay.style.display = 'none';
                         sosDone = true;
-                        finalizeAction();
-                    }, btnSos);
-                    overlay.appendChild(closeBtn);
+                        showPrompt();
+                    }, elements.btnSos);
+                    elements.overlay.appendChild(closeBtn);
                 });
-            }
-        }, 300);
-    });
-    
-    btnLonely.addEventListener('click', async () => {
-        if (btnLonely.classList.contains('disabled')) return;
-        btnLonely.classList.add('disabled');
-        addLog('lonely');
-        overlay.innerHTML = '';
-        overlay.style.display = 'flex';
-        const msg = document.createElement('div');
-        msg.textContent = t('lonelyPrompt');
-        overlay.appendChild(msg);
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.placeholder = t('lonelyInput');
-        input.style.marginTop = '12px';
-        input.style.padding = '6px 10px';
-        input.style.background = '#111';
-        input.style.color = '#00fff2';
-        input.style.border = '1px solid #00fff2';
-        input.style.fontFamily = 'inherit';
-        overlay.appendChild(input);
-        const okBtn = document.createElement('button');
-        okBtn.textContent = t('whyOk');
-        okBtn.style.marginTop = '8px';
-        overlay.appendChild(okBtn);
-        okBtn.addEventListener('click', () => {
-            const song = input.value.trim() || (currentLang === 'en' ? 'Unknown song' : '不明な曲');
-            overlay.innerHTML = '';
-            const waveMsg = document.createElement('div');
-            const suffix = t('lonelyWave');
-            waveMsg.textContent = song + suffix;
-            overlay.appendChild(waveMsg);
-            const waveContainer = document.createElement('div');
-            waveContainer.className = 'wave-container';
-            for (let i = 0; i < 20; i++) {
-                const barEl = document.createElement('div');
-                barEl.className = 'wave-bar';
-                barEl.style.animationDelay = (i * 0.1) + 's';
-                waveContainer.appendChild(barEl);
-            }
-            overlay.appendChild(waveContainer);
-            const endMsg = document.createElement('div');
-            endMsg.textContent = t('lonelyEnd');
-            overlay.appendChild(endMsg);
-            
-            const closeBtn = createCloseButton(() => {
-                overlay.style.display = 'none';
-                lonelyDone = true;
-                finalizeAction();
-            }, btnLonely);
-            overlay.appendChild(closeBtn);
+            }, 4000);
         });
-    });
-    
-    btnHate.addEventListener('click', async () => {
-        if (btnHate.classList.contains('disabled')) return;
-        btnHate.classList.add('disabled');
-        addLog('hate myself');
-        overlay.innerHTML = '';
-        overlay.style.display = 'flex';
-        const msg = document.createElement('div');
-        msg.textContent = t('hatePrompt');
-        overlay.appendChild(msg);
-        const carContainer1 = document.createElement('div');
-        carContainer1.className = 'car-container';
-        const car1 = document.createElement('div');
-        car1.className = 'car';
-        car1.textContent = '🚗';
-        carContainer1.appendChild(car1);
-        overlay.appendChild(carContainer1);
-        setTimeout(() => {
-            const pastMsg = document.createElement('div');
-            pastMsg.textContent = t('travelPast');
-            pastMsg.classList.add('glitch');
-            overlay.appendChild(pastMsg);
-            setTimeout(() => {
-                const carContainer2 = document.createElement('div');
-                carContainer2.className = 'car-container';
-                const car2 = document.createElement('div');
-                car2.className = 'car reverse';
-                car2.textContent = '🚗';
-                carContainer2.appendChild(car2);
-                overlay.appendChild(carContainer2);
+        
+        elements.btnLonely.addEventListener('click', async () => {
+            if (elements.btnLonely.classList.contains('disabled')) return;
+            elements.btnLonely.classList.add('disabled');
+            addLog('lonely');
+            
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            
+            const msg = document.createElement('div');
+            msg.textContent = t('lonelyPrompt');
+            elements.overlay.appendChild(msg);
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = t('lonelyInput');
+            input.style.marginTop = '12px';
+            input.style.padding = '6px 10px';
+            input.style.background = '#111';
+            input.style.color = '#00fff2';
+            input.style.border = '1px solid #00fff2';
+            input.style.fontFamily = 'inherit';
+            elements.overlay.appendChild(input);
+            
+            const okBtn = document.createElement('button');
+            okBtn.textContent = t('whyOk');
+            okBtn.style.marginTop = '8px';
+            elements.overlay.appendChild(okBtn);
+            
+            okBtn.addEventListener('click', () => {
+                const song = input.value.trim() || (currentLang === 'en' ? 'Unknown song' : '不明な曲');
+                elements.overlay.innerHTML = '';
                 
-                const futureMsg = document.createElement('div');
-                futureMsg.textContent = t('travelFuture');
-                futureMsg.classList.add('glitch');
-                overlay.appendChild(futureMsg);
+                const waveMsg = document.createElement('div');
+                waveMsg.textContent = song + t('lonelyWave');
+                elements.overlay.appendChild(waveMsg);
+                
+                const waveContainer = document.createElement('div');
+                waveContainer.className = 'wave-container';
+                for (let i = 0; i < 20; i++) {
+                    const barEl = document.createElement('div');
+                    barEl.className = 'wave-bar';
+                    barEl.style.animationDelay = (i * 0.1) + 's';
+                    waveContainer.appendChild(barEl);
+                }
+                elements.overlay.appendChild(waveContainer);
+                
+                const endMsg = document.createElement('div');
+                endMsg.textContent = t('lonelyEnd');
+                elements.overlay.appendChild(endMsg);
+                
+                const closeBtn = createCloseButton(() => {
+                    elements.overlay.style.display = 'none';
+                    lonelyDone = true;
+                    showPrompt();
+                }, elements.btnLonely);
+                elements.overlay.appendChild(closeBtn);
+            });
+        });
+        
+        elements.btnHate.addEventListener('click', async () => {
+            if (elements.btnHate.classList.contains('disabled')) return;
+            elements.btnHate.classList.add('disabled');
+            addLog('hate myself');
+            
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            
+            const msg = document.createElement('div');
+            msg.textContent = t('hatePrompt');
+            elements.overlay.appendChild(msg);
+            
+            const carContainer1 = document.createElement('div');
+            carContainer1.className = 'car-container';
+            const car1 = document.createElement('div');
+            car1.className = 'car';
+            car1.textContent = '🚗';
+            carContainer1.appendChild(car1);
+            elements.overlay.appendChild(carContainer1);
+            
+            setTimeout(() => {
+                const pastMsg = document.createElement('div');
+                pastMsg.textContent = t('travelPast');
+                pastMsg.classList.add('glitch');
+                elements.overlay.appendChild(pastMsg);
+                
                 setTimeout(() => {
-                    const endMsg = document.createElement('div');
-                    endMsg.textContent = t('hateEnd');
-                    overlay.appendChild(endMsg);
+                    const carContainer2 = document.createElement('div');
+                    carContainer2.className = 'car-container';
+                    const car2 = document.createElement('div');
+                    car2.className = 'car reverse';
+                    car2.textContent = '🚗';
+                    carContainer2.appendChild(car2);
+                    elements.overlay.appendChild(carContainer2);
                     
-                    const sparkles = createSparkles(overlay);
+                    const futureMsg = document.createElement('div');
+                    futureMsg.textContent = t('travelFuture');
+                    futureMsg.classList.add('glitch');
+                    elements.overlay.appendChild(futureMsg);
                     
-                    const closeBtn = createCloseButton(() => {
-                        overlay.style.display = 'none';
-                        hateDone = true;
-                        finalizeAction();
-                    }, btnHate);
-                    overlay.appendChild(closeBtn);
+                    setTimeout(() => {
+                        const endMsg = document.createElement('div');
+                        endMsg.textContent = t('hateEnd');
+                        elements.overlay.appendChild(endMsg);
+                        
+                        createSparkles(elements.overlay);
+                        
+                        const closeBtn = createCloseButton(() => {
+                            elements.overlay.style.display = 'none';
+                            hateDone = true;
+                            showPrompt();
+                        }, elements.btnHate);
+                        elements.overlay.appendChild(closeBtn);
+                    }, 2500);
                 }, 2500);
-            }, 2500);
-        }, 1000);
-    });
-    
-    btnWhy.addEventListener('click', async () => {
-        if (btnWhy.classList.contains('disabled')) return;
-        addLog('why');
-        overlay.innerHTML = '';
-        overlay.style.display = 'flex';
-        const msg = document.createElement('div');
-        msg.textContent = t('whyPrompt');
-        overlay.appendChild(msg);
-        const bar = document.createElement('div');
-        bar.className = 'scan-bar';
-        const fill = document.createElement('div');
-        fill.className = 'scan-fill';
-        bar.appendChild(fill);
-        overlay.appendChild(bar);
-        let progress = 0;
-        const intv = setInterval(() => {
-            progress += 2;
-            fill.style.width = progress + '%';
-            if (progress >= 60) {
-                clearInterval(intv);
-                const stopMsg = document.createElement('div');
-                stopMsg.style.marginTop = '8px';
-                stopMsg.textContent = t('whyStop');
-                overlay.appendChild(stopMsg);
-                const okBtn = document.createElement('button');
-                okBtn.textContent = t('whyOk');
-                okBtn.style.marginTop = '8px';
-                overlay.appendChild(okBtn);
-                okBtn.addEventListener('click', () => {
-                    overlay.innerHTML = '';
-                    const clockMsg = document.createElement('div');
-                    clockMsg.textContent = '';
-                    overlay.appendChild(clockMsg);
-                    const clock = document.createElement('div');
-                    clock.id = 'clockDisplay';
-                    clock.textContent = '00:00:00';
-                    overlay.appendChild(clock);
-                    function updateClock() {
-                        const now = new Date();
-                        const hh = String(now.getHours()).padStart(2, '0');
-                        const mm = String(now.getMinutes()).padStart(2, '0');
-                        const ss = String(now.getSeconds()).padStart(2, '0');
-                        clock.textContent = `${hh}:${mm}:${ss}`;
-                    }
-                    updateClock();
-                    setInterval(updateClock, 1000);
-                });
-            }
-        }, 400);
-    });
-    
-    function finalizeAction() {
-        showPrompt();
-    }
-    
-    function startGame() {
-        return new Promise(resolve => {
-            const gameStartTime = Date.now();
-            overlay.innerHTML = '';
-            const canvas = document.createElement('canvas');
-            canvas.width = 320;
-            canvas.height = 240;
-            canvas.style.background = '#001b1a';
-            canvas.style.border = '2px solid #00ffcc';
-            overlay.appendChild(canvas);
-            const ctx = canvas.getContext('2d');
-            const scoreBoard = document.createElement('div');
-            scoreBoard.style.marginTop = '8px';
-            scoreBoard.style.color = '#00ffcc';
-            overlay.appendChild(scoreBoard);
-            const timeBoard = document.createElement('div');
-            timeBoard.style.marginTop = '4px';
-            timeBoard.style.color = '#00ffcc';
-            overlay.appendChild(timeBoard);
-            const spaceship = { x: canvas.width / 2 - 15, y: canvas.height - 20, w: 30, h: 10, speed: 4 };
-            const bullets = [];
-            const viruses = [];
-            const cols = 6;
-            const rows = 2;
-            let remaining = cols * rows;
-            let score = 0;
-            let gameTime = 0;
-            for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) {
-                    viruses.push({ 
-                        x: 30 + c * 40, 
-                        y: 20 + r * 30, 
-                        w: 20, 
-                        h: 16, 
-                        vx: 1 * (Math.random() > 0.5 ? 1 : -1), 
-                        hit: false,
-                        type: Math.floor(Math.random() * 3) // 3 different invader types
+            }, 1000);
+        });
+        
+        elements.btnWhy.addEventListener('click', async () => {
+            if (elements.btnWhy.classList.contains('disabled')) return;
+            addLog('why');
+            
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            
+            const msg = document.createElement('div');
+            msg.textContent = t('whyPrompt');
+            elements.overlay.appendChild(msg);
+            
+            const bar = document.createElement('div');
+            bar.className = 'scan-bar';
+            const fill = document.createElement('div');
+            fill.className = 'scan-fill';
+            bar.appendChild(fill);
+            elements.overlay.appendChild(bar);
+            
+            let progress = 0;
+            const intv = setInterval(() => {
+                progress += 2;
+                fill.style.width = progress + '%';
+                if (progress >= 60) {
+                    clearInterval(intv);
+                    
+                    const stopMsg = document.createElement('div');
+                    stopMsg.style.marginTop = '8px';
+                    stopMsg.textContent = t('whyStop');
+                    elements.overlay.appendChild(stopMsg);
+                    
+                    const okBtn = document.createElement('button');
+                    okBtn.textContent = t('whyOk');
+                    okBtn.style.marginTop = '8px';
+                    elements.overlay.appendChild(okBtn);
+                    
+                    okBtn.addEventListener('click', () => {
+                        elements.overlay.innerHTML = '';
+                        
+                        const clock = document.createElement('div');
+                        clock.id = 'clockDisplay';
+                        clock.textContent = '00:00:00';
+                        elements.overlay.appendChild(clock);
+                        
+                        function updateClock() {
+                            const now = new Date();
+                            const hh = String(now.getHours()).padStart(2, '0');
+                            const mm = String(now.getMinutes()).padStart(2, '0');
+                            const ss = String(now.getSeconds()).padStart(2, '0');
+                            clock.textContent = `${hh}:${mm}:${ss}`;
+                        }
+                        updateClock();
+                        setInterval(updateClock, 1000);
                     });
                 }
-            }
-            function updateScore() {
-                gameTime = (Date.now() - gameStartTime) / 1000;
-                scoreBoard.textContent = `${t('virusesLeft')}: ${remaining} | ${t('scoreLabel')}: ${score}`;
-                timeBoard.textContent = `${t('timeLabel')}: ${gameTime.toFixed(1)}s`;
-            }
-            updateScore();
-            let animationId;
-            let isOver = false;
-            function draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#ff0077';
-                ctx.fillRect(spaceship.x, spaceship.y, spaceship.w, spaceship.h);
-            function drawInvader(ctx, x, y, w, h, type) {
-                const pixelSize = 2;
-                ctx.fillStyle = '#00ffcc';
+            }, 400);
+        });
+        
+        function startGame() {
+            return new Promise(resolve => {
+                const gameStartTime = Date.now();
+                elements.overlay.innerHTML = '';
                 
-                // Invader pattern arrays (8x8 pixels)
-                const patterns = [
-                    // Type 0: Classic invader
-                    [
-                        [0,0,1,0,0,0,1,0],
-                        [0,0,0,1,0,1,0,0],
-                        [0,0,1,1,1,1,1,0],
-                        [0,1,1,0,1,0,1,1],
-                        [1,1,1,1,1,1,1,1],
-                        [1,0,1,1,1,1,0,1],
-                        [1,0,1,0,0,1,0,1],
-                        [0,0,0,1,1,0,0,0]
-                    ],
-                    // Type 1: Spider-like
-                    [
-                        [0,0,0,1,1,0,0,0],
-                        [0,0,1,1,1,1,0,0],
-                        [0,1,1,1,1,1,1,0],
-                        [1,1,0,1,1,0,1,1],
-                        [1,1,1,1,1,1,1,1],
-                        [0,1,0,1,1,0,1,0],
-                        [1,0,0,0,0,0,0,1],
-                        [0,1,0,0,0,0,1,0]
-                    ],
-                    // Type 2: Crab-like
-                    [
-                        [0,0,1,0,0,1,0,0],
-                        [0,0,0,1,1,0,0,0],
-                        [0,0,1,1,1,1,0,0],
-                        [0,1,1,0,0,1,1,0],
-                        [1,1,1,1,1,1,1,1],
-                        [1,0,1,1,1,1,0,1],
-                        [1,0,1,0,0,1,0,1],
-                        [0,0,1,1,1,1,0,0]
-                    ]
-                ];
+                const canvas = document.createElement('canvas');
+                canvas.width = 320;
+                canvas.height = 240;
+                canvas.style.background = '#001b1a';
+                canvas.style.border = '2px solid #00ffcc';
+                elements.overlay.appendChild(canvas);
                 
-                const pattern = patterns[type];
-                for (let row = 0; row < 8; row++) {
-                    for (let col = 0; col < 8; col++) {
-                        if (pattern[row][col]) {
-                            ctx.fillRect(
-                                x - w/2 + col * pixelSize, 
-                                y - h/2 + row * pixelSize, 
-                                pixelSize, 
-                                pixelSize
-                            );
-                        }
+                const ctx = canvas.getContext('2d');
+                
+                const scoreBoard = document.createElement('div');
+                scoreBoard.style.marginTop = '8px';
+                scoreBoard.style.color = '#00ffcc';
+                elements.overlay.appendChild(scoreBoard);
+                
+                const timeBoard = document.createElement('div');
+                timeBoard.style.marginTop = '4px';
+                timeBoard.style.color = '#00ffcc';
+                elements.overlay.appendChild(timeBoard);
+                
+                const spaceship = { x: canvas.width / 2 - 15, y: canvas.height - 20, w: 30, h: 10, speed: 4 };
+                const bullets = [];
+                const viruses = [];
+                const cols = 6;
+                const rows = 2;
+                let remaining = cols * rows;
+                let score = 0;
+                
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        viruses.push({ 
+                            x: 30 + c * 40, 
+                            y: 20 + r * 30, 
+                            w: 20, 
+                            h: 16, 
+                            vx: 1 * (Math.random() > 0.5 ? 1 : -1), 
+                            hit: false,
+                            type: Math.floor(Math.random() * 3)
+                        });
                     }
                 }
-            }
-                for (let i = bullets.length - 1; i >= 0; i--) {
-                    const b = bullets[i];
-                    b.y -= 4;
-                    ctx.fillStyle = '#ffff00';
-                    ctx.fillRect(b.x - 1, b.y - 8, 2, 8);
-                    if (b.y < 0) {
-                        bullets.splice(i, 1);
-                        continue;
-                    }
+                
+                function updateScore() {
+                    const gameTime = (Date.now() - gameStartTime) / 1000;
+                    scoreBoard.textContent = `${t('virusesLeft')}: ${remaining} | ${t('scoreLabel')}: ${score}`;
+                    timeBoard.textContent = `${t('timeLabel')}: ${gameTime.toFixed(1)}s`;
+                }
+                
+                let animationId;
+                let isOver = false;
+                
+                function draw() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    ctx.fillStyle = '#ff0077';
+                    ctx.fillRect(spaceship.x, spaceship.y, spaceship.w, spaceship.h);
+                    
                     viruses.forEach(v => {
                         if (!v.hit) {
-                            // Check collision with invader hitbox
-                            if (b.x >= v.x - v.w/2 && b.x <= v.x + v.w/2 && 
-                                b.y >= v.y - v.h/2 && b.y <= v.y + v.h/2) {
-                                v.hit = true;
-                                remaining--;
-                                score++;
-                                updateScore();
-                                bullets.splice(i, 1);
+                            v.x += v.vx;
+                            if (v.x - v.w/2 < 0 || v.x + v.w/2 > canvas.width) v.vx *= -1;
+                            drawInvader(ctx, v.x, v.y, v.w, v.h, v.type);
+                            
+                            if (v.y + v.h/2 >= spaceship.y && 
+                                v.x + v.w/2 >= spaceship.x && 
+                                v.x - v.w/2 <= spaceship.x + spaceship.w) {
+                                end(false);
+                            }
+                            if (v.y + v.h/2 > canvas.height) {
+                                end(false);
                             }
                         }
                     });
+                    
+                    for (let i = bullets.length - 1; i >= 0; i--) {
+                        const b = bullets[i];
+                        b.y -= 4;
+                        ctx.fillStyle = '#ffff00';
+                        ctx.fillRect(b.x - 1, b.y - 8, 2, 8);
+                        
+                        if (b.y < 0) {
+                            bullets.splice(i, 1);
+                            continue;
+                        }
+                        
+                        viruses.forEach(v => {
+                            if (!v.hit) {
+                                if (b.x >= v.x - v.w/2 && b.x <= v.x + v.w/2 && 
+                                    b.y >= v.y - v.h/2 && b.y <= v.y + v.h/2) {
+                                    v.hit = true;
+                                    remaining--;
+                                    score++;
+                                    bullets.splice(i, 1);
+                                }
+                            }
+                        });
+                    }
+                    
+                    updateScore();
+                    
+                    if (viruses.every(v => v.hit)) {
+                        end(true);
+                    }
+                    
+                    if (!isOver) animationId = requestAnimationFrame(draw);
                 }
-                updateScore();
-                if (viruses.every(v => v.hit)) {
-                    end(true);
+                
+                function move(dir) {
+                    spaceship.x += dir * spaceship.speed;
+                    if (spaceship.x < 0) spaceship.x = 0;
+                    if (spaceship.x + spaceship.w > canvas.width) spaceship.x = canvas.width - spaceship.w;
                 }
-                if (!isOver) animationId = requestAnimationFrame(draw);
-            }
-            draw();
-            function move(dir) {
-                spaceship.x += dir * spaceship.speed;
-                if (spaceship.x < 0) spaceship.x = 0;
-                if (spaceship.x + spaceship.w > canvas.width) spaceship.x = canvas.width - spaceship.w;
-            }
-            function shoot() {
-                bullets.push({ x: spaceship.x + spaceship.w / 2, y: spaceship.y });
-            }
-            function pointerMove(e) {
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-                spaceship.x = x - spaceship.w / 2;
-                if (spaceship.x < 0) spaceship.x = 0;
-                if (spaceship.x + spaceship.w > canvas.width) spaceship.x = canvas.width - spaceship.w;
-            }
-            function pointerDown() {
-                shoot();
-            }
-            canvas.addEventListener('mousemove', pointerMove);
-            canvas.addEventListener('mousedown', pointerDown);
-            canvas.addEventListener('touchmove', pointerMove);
-            canvas.addEventListener('touchstart', pointerDown);
-            function keyHandler(e) {
-                if (e.key === 'ArrowLeft') move(-1);
-                else if (e.key === 'ArrowRight') move(1);
-                else if (e.key === ' ') shoot();
-            }
-            window.addEventListener('keydown', keyHandler);
-            function end(success) {
-                if (isOver) return;
-                isOver = true;
-                const finalTime = (Date.now() - gameStartTime) / 1000;
-                cancelAnimationFrame(animationId);
-                canvas.removeEventListener('mousemove', pointerMove);
-                canvas.removeEventListener('mousedown', pointerDown);
-                canvas.removeEventListener('touchmove', pointerMove);
-                canvas.removeEventListener('touchstart', pointerDown);
-                window.removeEventListener('keydown', keyHandler);
-                resolve({ success, time: finalTime, score });
-            }
-        });
-    }
+                
+                function shoot() {
+                    bullets.push({ x: spaceship.x + spaceship.w / 2, y: spaceship.y });
+                }
+                
+                function pointerMove(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+                    spaceship.x = x - spaceship.w / 2;
+                    if (spaceship.x < 0) spaceship.x = 0;
+                    if (spaceship.x + spaceship.w > canvas.width) spaceship.x = canvas.width - spaceship.w;
+                }
+                
+                function pointerDown() { shoot(); }
+                
+                canvas.addEventListener('mousemove', pointerMove);
+                canvas.addEventListener('mousedown', pointerDown);
+                canvas.addEventListener('touchmove', pointerMove);
+                canvas.addEventListener('touchstart', pointerDown);
+                
+                function keyHandler(e) {
+                    if (e.key === 'ArrowLeft') move(-1);
+                    else if (e.key === 'ArrowRight') move(1);
+                    else if (e.key === ' ') shoot();
+                }
+                window.addEventListener('keydown', keyHandler);
+                
+                function end(success) {
+                    if (isOver) return;
+                    isOver = true;
+                    const finalTime = (Date.now() - gameStartTime) / 1000;
+                    cancelAnimationFrame(animationId);
+                    canvas.removeEventListener('mousemove', pointerMove);
+                    canvas.removeEventListener('mousedown', pointerDown);
+                    canvas.removeEventListener('touchmove', pointerMove);
+                    canvas.removeEventListener('touchstart', pointerDown);
+                    window.removeEventListener('keydown', keyHandler);
+                    resolve({ success, time: finalTime, score });
+                }
+                
+                draw();
+            });
+        }
     </script>
 </body>
 </html>
