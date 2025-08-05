@@ -827,6 +827,8 @@
             border-radius: 8px;
             border: 1px solid;
             font-size: 16px;
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
+            font-weight: bold;
             text-shadow: 0 0 5px;
             z-index: 20;
             position: relative;
@@ -880,9 +882,29 @@
             100% { opacity: 1; }
         }
 
+        /* タイムトラベル結果表示のスタイル */
+        .travel-result-container {
+            background: linear-gradient(145deg, #000000, #111111);
+            border: 2px solid #14ffec;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 90%;
+            box-shadow: 
+                0 0 30px rgba(20, 255, 236, 0.3),
+                inset 0 0 20px rgba(20, 255, 236, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes borderGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
         .travel-result-header {
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
             font-size: 14px;
+            font-weight: bold;
             color: #14ffec;
             margin-bottom: 15px;
             text-align: center;
@@ -891,8 +913,9 @@
         }
 
         .travel-result-status {
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
             font-size: 12px;
+            font-weight: bold;
             color: #00ff00;
             margin-bottom: 20px;
             text-align: center;
@@ -900,12 +923,13 @@
         }
 
         .travel-result-message {
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
             font-size: 20px;
+            font-weight: bold;
             color: #ffffff;
             text-shadow: 0 0 10px #ffffff;
             line-height: 1.4;
             text-align: center;
-            font-weight: 300;
             letter-spacing: 1px;
         }
 
@@ -944,13 +968,13 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 80px;
-            height: 80px;
+            width: 50px;
+            height: 50px;
             background: #14ffec;
             border-radius: 50%;
             transform: translate(-50%, -50%);
             z-index: 4;
-            box-shadow: 0 0 30px rgba(20, 255, 236, 0.8);
+            box-shadow: 0 0 25px rgba(20, 255, 236, 0.8);
         }
 
         /* 針の基本スタイル */
@@ -2569,42 +2593,111 @@
                     elements.overlay.appendChild(okBtn);
                     
                     okBtn.addEventListener('click', () => {
+                        console.log('🎯 WHYボタンのOKが押されました！');
+                        
                         elements.overlay.innerHTML = '';
                         elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
                         
+                        console.log('🏗️ 時計を作成中...');
+                        
                         // オリジナル時計を作成して表示
                         const clock = createOriginalClock();
+                        console.log('⏰ 時計要素:', clock);
+                        
                         elements.overlay.appendChild(clock);
+                        console.log('📍 時計をDOMに追加完了');
                         
                         // 時計のアニメーションを開始
-                        const clockInterval = startOriginalClock();
-                        
-                        // 時計が永続的に動き続ける
-                        // ユーザーがオーバーレイを閉じるまで時間を刻み続ける
-                        
-                        // オーバーレイを閉じる際のイベントリスナーを追加
-                        const closeHandler = () => {
-                            clearInterval(clockInterval);
-                        };
-                        
-                        // オーバーレイがクリックされたら閉じる（時計以外の部分）
-                        elements.overlay.addEventListener('click', (e) => {
-                            if (e.target === elements.overlay) {
-                                closeHandler();
-                                elements.overlay.style.display = 'none';
-                                elements.overlay.removeEventListener('click', closeHandler);
+                        console.log('🚀 時計アニメーション開始...');
+                        try {
+                            // 関数が存在するかチェック
+                            if (typeof startOriginalClock === 'undefined') {
+                                console.error('❌ startOriginalClock 関数が定義されていません！');
+                                
+                                // 直接ここで時計を動かす
+                                console.log('🔧 直接時計を開始します...');
+                                
+                                function updateClock() {
+                                    try {
+                                        const now = new Date();
+                                        const japanTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Tokyo"}));
+                                        
+                                        const hours = japanTime.getHours() % 12;
+                                        const minutes = japanTime.getMinutes();
+                                        const seconds = japanTime.getSeconds();
+                                        
+                                        const hourAngle = (hours * 30) + (minutes * 0.5);
+                                        const minuteAngle = (minutes * 6);  
+                                        const secondAngle = (seconds * 6);
+                                        
+                                        const hourHand = document.getElementById('hourHand');
+                                        const minuteHand = document.getElementById('minuteHand');
+                                        const secondHand = document.getElementById('secondHand');
+                                        
+                                        if (hourHand) {
+                                            hourHand.style.transform = `translateX(-50%) rotate(${hourAngle}deg)`;
+                                            hourHand.style.transformOrigin = 'center bottom';
+                                        }
+                                        if (minuteHand) {
+                                            minuteHand.style.transform = `translateX(-50%) rotate(${minuteAngle}deg)`;
+                                            minuteHand.style.transformOrigin = 'center bottom';
+                                        }
+                                        if (secondHand) {
+                                            secondHand.style.transform = `translateX(-50%) rotate(${secondAngle}deg)`;
+                                            secondHand.style.transformOrigin = 'center bottom';
+                                        }
+                                        
+                                        console.log(`⏰ 時計更新: ${hours}:${minutes}:${seconds}`);
+                                        
+                                    } catch (error) {
+                                        console.error('❌ 時計更新エラー:', error);
+                                    }
+                                }
+                                
+                                // 初回実行
+                                updateClock();
+                                
+                                // 1秒間隔で実行
+                                const clockInterval = setInterval(updateClock, 1000);
+                                console.log('✅ 直接時計アニメーション設定完了, intervalID:', clockInterval);
+                                
+                                // 閉じるハンドラー
+                                const closeHandler = () => {
+                                    console.log('⏹️ 時計を停止中...');
+                                    clearInterval(clockInterval);
+                                    console.log('✅ 時計停止完了');
+                                };
+                                
+                                // イベントリスナー設定
+                                elements.overlay.addEventListener('click', (e) => {
+                                    if (e.target === elements.overlay) {
+                                        closeHandler();
+                                        elements.overlay.style.display = 'none';
+                                    }
+                                });
+                                
+                                const escHandler = (e) => {
+                                    if (e.key === 'Escape') {
+                                        closeHandler();
+                                        elements.overlay.style.display = 'none';
+                                        document.removeEventListener('keydown', escHandler);
+                                    }
+                                };
+                                document.addEventListener('keydown', escHandler);
+                                
+                            } else {
+                                // 関数が存在する場合は通常通り実行
+                                const clockInterval = startOriginalClock();
+                                console.log('✅ 時計アニメーション設定完了, intervalID:', clockInterval);
                             }
-                        });
+                            
+                        } catch (error) {
+                            console.error('❌ 時計アニメーション開始エラー:', error);
+                            console.error('エラーの詳細:', error.message);
+                            console.error('エラーのスタック:', error.stack);
+                        }
                         
-                        // ESCキーでも閉じられるように
-                        const escHandler = (e) => {
-                            if (e.key === 'Escape') {
-                                closeHandler();
-                                elements.overlay.style.display = 'none';
-                                document.removeEventListener('keydown', escHandler);
-                            }
-                        };
-                        document.addEventListener('keydown', escHandler);
+                        console.log('🎉 時計表示処理完了！');
                     });
                 }
             }, 400);
