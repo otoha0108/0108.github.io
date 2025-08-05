@@ -1,25 +1,9 @@
-/* Scanning bar for why (keep original for why function) */
-        .scan-bar {
-            width: 300px;
-            height: 15px;
-            border: 1px solid #00fff2;
-            margin-top: 12px;
-            position: relative;
-            overflow: hidden;
-        }
-        .scan-fill {
-            height: 100%;
-            background: #00fff2;
-            width: 0%;
-        }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>🌐 HELL0w0RLD! 🌐</title>
-    <!-- Use Google Fonts for the Pixel Mplus 10 font. Fallbacks include Press Start 2P and system emoji fonts. -->
-    <!-- Embed the full PixelMplus10 font so Japanese and English characters render correctly.
-         The accompanying font file (PixelMplus10-Regular-gen.woff) must sit next to this HTML file. -->
     <style>
         @font-face {
             font-family: 'PixelMplus10';
@@ -27,8 +11,7 @@
             font-weight: normal;
             font-style: normal;
         }
-    </style>
-    <style>
+        
         body {
             background: #0f0f0f;
             color: #00fff2;
@@ -40,6 +23,7 @@
             align-items: flex-start;
             min-height: 100vh;
         }
+        
         #app {
             width: 95%;
             max-width: 640px;
@@ -53,12 +37,13 @@
             height: 90vh;
             position: relative;
         }
+        
         h1 {
             margin: 0;
             color: #14ffec;
             text-align: center;
         }
-        /* Language toggle */
+        
         #lang-toggle {
             position: absolute;
             top: 8px;
@@ -67,6 +52,7 @@
             gap: 4px;
             z-index: 1000;
         }
+        
         #lang-toggle button {
             font-family: inherit;
             font-size: 12px;
@@ -77,11 +63,12 @@
             cursor: pointer;
             border-radius: 4px;
         }
+        
         #lang-toggle button.active {
             background-color: #14ffec;
             color: #151515;
         }
-        /* Loader */
+        
         #loader {
             display: flex;
             flex-direction: column;
@@ -90,6 +77,7 @@
             flex-grow: 1;
             text-align: center;
         }
+        
         #loader .bar {
             width: 300px;
             height: 15px;
@@ -98,17 +86,19 @@
             position: relative;
             overflow: hidden;
         }
+        
         #loader .bar-fill {
             height: 100%;
             background: #00fff2;
             width: 0%;
             animation: loadbar 3s forwards;
         }
+        
         @keyframes loadbar {
             0% { width: 0%; }
             100% { width: 100%; }
         }
-        /* Title screen - centered with fade in */
+        
         #title {
             display: none;
             flex-direction: column;
@@ -119,11 +109,12 @@
             opacity: 0;
             animation: fadeIn 1s forwards;
         }
+        
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        /* Username screen - centered */
+        
         #usernameScreen {
             display: none;
             flex-direction: column;
@@ -132,6 +123,7 @@
             flex-grow: 1;
             text-align: center;
         }
+        
         #usernameScreen input {
             margin: 10px 0;
             padding: 8px 12px;
@@ -142,6 +134,7 @@
             font-family: inherit;
             font-size: 14px;
         }
+        
         #usernameScreen button {
             padding: 8px 16px;
             background: #14ffec;
@@ -151,7 +144,7 @@
             font-family: inherit;
             cursor: pointer;
         }
-        /* Large title at top center */
+        
         #largeTitle {
             position: absolute;
             top: 16px;
@@ -164,7 +157,7 @@
             text-align: center;
             text-shadow: 0 0 10px #14ffec;
         }
-        /* Overlays */
+        
         #overlay {
             position: absolute;
             top: 0;
@@ -181,14 +174,15 @@
             padding: 20px;
             color: #00fff2;
         }
-        /* Chat/output area */
+        
         #output {
             flex-grow: 1;
             overflow-y: auto;
             margin-bottom: 12px;
-            margin-top: 60px; /* Add space for large title */
+            margin-top: 60px;
             padding-right: 4px;
         }
+        
         .message {
             margin: 4px 0;
             padding: 6px 10px;
@@ -197,23 +191,27 @@
             max-width: 90%;
             word-wrap: break-word;
         }
+        
         .log {
             background-color: #073b3a;
             color: #14ffec;
             align-self: flex-start;
         }
-        /* Buttons area */
+        
         #promptSection {
             display: none;
         }
+        
         #promptText {
             margin: 0 0 8px;
         }
+        
         #buttons {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 8px;
         }
+        
         #buttons button {
             background: #14ffec;
             color: #151515;
@@ -224,15 +222,18 @@
             cursor: pointer;
             font-family: inherit;
         }
+        
         #buttons button.disabled {
             opacity: 0.4;
             cursor: not-allowed;
         }
+        
         #buttons button.locked {
             opacity: 0.4;
             cursor: not-allowed;
             position: relative;
         }
+        
         #buttons button.locked::after {
             content: '🔒';
             position: absolute;
@@ -240,12 +241,13 @@
             right: 8px;
             transform: translateY(-50%);
         }
-        /* Wave animation for lonely */
+        
         .wave-container {
             display: flex;
             gap: 4px;
             margin: 20px 0;
         }
+        
         .wave-bar {
             width: 5px;
             height: 30px;
@@ -253,11 +255,12 @@
             animation: wave 1s infinite;
             animation-timing-function: ease-in-out;
         }
+        
         @keyframes wave {
             0%, 100% { transform: scaleY(0.5); }
             50% { transform: scaleY(1.3); }
         }
-        /* Car animation */
+        
         .car-container {
             width: 100%;
             height: 50px;
@@ -265,6 +268,7 @@
             overflow: hidden;
             margin: 20px 0;
         }
+        
         .car {
             position: absolute;
             left: -50px;
@@ -272,19 +276,21 @@
             font-size: 28px;
             animation: drive 4s linear forwards;
         }
+        
         .car.reverse {
             animation: driveReverse 4s linear forwards;
         }
+        
         @keyframes drive {
             0% { left: -50px; }
             100% { left: calc(100% + 50px); }
         }
+        
         @keyframes driveReverse {
             0% { left: calc(100% + 50px); }
             100% { left: -50px; }
         }
-
-        /* Glitch effect for time travel messages */
+        
         @keyframes glitch {
             0% { text-shadow: 2px 0 #ff0077, -2px 0 #00ffcc; }
             25% { text-shadow: -2px 0 #ff0077, 2px 0 #00ffcc; }
@@ -292,10 +298,11 @@
             75% { text-shadow: -2px 0 #ff0077, 2px 0 #00ffcc; }
             100% { text-shadow: 2px 0 #ff0077, -2px 0 #00ffcc; }
         }
+        
         .glitch {
             animation: glitch 0.5s infinite;
         }
-        /* Heart scanning animation */
+        
         .heart-scanner {
             position: relative;
             width: 200px;
@@ -306,6 +313,7 @@
             border-radius: 8px;
             overflow: hidden;
         }
+        
         .heart-display {
             position: absolute;
             top: 50%;
@@ -315,6 +323,7 @@
             color: #ff0077;
             z-index: 1;
         }
+        
         .scan-line {
             position: absolute;
             top: -5px;
@@ -326,10 +335,12 @@
             animation: heartScan 2s linear infinite;
             z-index: 2;
         }
+        
         @keyframes heartScan {
             0% { top: -5px; }
             100% { top: 205px; }
         }
+        
         .scan-grid {
             position: absolute;
             top: 0;
@@ -341,12 +352,27 @@
                 linear-gradient(90deg, rgba(0, 255, 242, 0.1) 1px, transparent 1px);
             background-size: 20px 20px;
         }
-        /* Clock display for why */
+        
+        .scan-bar {
+            width: 300px;
+            height: 15px;
+            border: 1px solid #00fff2;
+            margin-top: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scan-fill {
+            height: 100%;
+            background: #00fff2;
+            width: 0%;
+        }
+        
         #clockDisplay {
             font-size: 32px;
             margin-top: 16px;
         }
-        /* Sparkle animation */
+        
         .sparkles {
             position: absolute;
             top: 0;
@@ -356,18 +382,20 @@
             pointer-events: none;
             overflow: hidden;
         }
+        
         .sparkle {
             position: absolute;
             color: #ffff00;
             font-size: 20px;
             animation: sparkle 2s infinite;
         }
+        
         @keyframes sparkle {
             0% { opacity: 0; transform: scale(0) rotate(0deg); }
             50% { opacity: 1; transform: scale(1) rotate(180deg); }
             100% { opacity: 0; transform: scale(0) rotate(360deg); }
         }
-        /* Close button for overlays */
+        
         .close-btn {
             background: #ff0077;
             color: white;
@@ -383,20 +411,23 @@
             transition: all 0.2s ease;
             align-self: center;
         }
+        
         .close-btn:hover {
             background: #ff3399;
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(255, 0, 119, 0.4);
         }
+        
         .close-btn:active {
             transform: translateY(0);
         }
-        /* Ranking display */
+        
         .ranking {
             margin-top: 16px;
             text-align: left;
             font-size: 12px;
         }
+        
         .ranking-entry {
             margin: 2px 0;
             color: #00fff2;
@@ -412,27 +443,26 @@
         
         <div id="largeTitle">🌐HELL0w0RLD!🌐</div>
         
-        <!-- Loader -->
         <div id="loader">
             <h2 id="loaderText">0108 connecting…</h2>
             <div class="bar">
                 <div class="bar-fill"></div>
             </div>
         </div>
-        <!-- Title -->
+        
         <div id="title">
             <h1>🌐HELL0w0RLD!🌐</h1>
         </div>
-        <!-- Username screen -->
+        
         <div id="usernameScreen">
             <h2 id="enterNameText">Enter your name:</h2>
             <input type="text" id="usernameInput" placeholder="Your name here" />
             <br>
             <button id="startBtn">Start</button>
         </div>
-        <!-- Chat log -->
+        
         <div id="output"></div>
-        <!-- Prompt and buttons -->
+        
         <div id="promptSection">
             <h2 id="promptText">📡 0108: What's on your mind?</h2>
             <div id="buttons">
@@ -442,11 +472,10 @@
                 <button id="btn-why" class="locked">why</button>
             </div>
         </div>
-        <!-- Overlay for scanning, game, wave, car, why clock etc. -->
+        
         <div id="overlay"></div>
     </div>
     <script>
-    // Translation dictionary
     const translations = {
         en: {
             connect: '0108 connecting…',
@@ -507,13 +536,13 @@
             clockLabel: '',
         }
     };
+    
     let currentLang = 'en';
     let userName = 'AAA';
     let sosDone = false;
     let lonelyDone = false;
     let hateDone = false;
     
-    // Mock ranking data (in real implementation, this would come from a server)
     let rankings = [
         { name: 'Alice', time: 15.7 },
         { name: 'Bob', time: 18.2 },
@@ -522,11 +551,10 @@
         { name: 'Eve', time: 28.9 }
     ];
     
-    // Helper to translate keys
     function t(key) {
         return translations[currentLang][key] || key;
     }
-    // Cache elements
+    
     const loader = document.getElementById('loader');
     const loaderText = document.getElementById('loaderText');
     const titleDiv = document.getElementById('title');
@@ -545,50 +573,47 @@
     const btnWhy = document.getElementById('btn-why');
     const btnEn = document.getElementById('btn-en');
     const btnJa = document.getElementById('btn-ja');
-    // Initialize loader and transition sequence
+    
     window.onload = () => {
         loaderText.textContent = t('connect');
         setTimeout(() => {
-            // Hide loader, show title with fade in
             loader.style.display = 'none';
             titleDiv.style.display = 'flex';
             setTimeout(() => {
                 titleDiv.style.display = 'none';
-                // Show name screen (centered)
                 enterNameText.textContent = t('enterName');
                 startBtn.textContent = t('start');
                 usernameScreen.style.display = 'flex';
             }, 2000);
         }, 3200);
     };
-    // Language switching
+    
     function setLanguage(lang) {
         if (currentLang === lang) return;
         currentLang = lang;
         btnEn.classList.toggle('active', currentLang === 'en');
         btnJa.classList.toggle('active', currentLang === 'ja');
-        // Update static texts based on language
         loaderText.textContent = t('connect');
         enterNameText.textContent = t('enterName');
         startBtn.textContent = t('start');
         promptText.textContent = t('prompt');
     }
+    
     btnEn.addEventListener('click', () => setLanguage('en'));
     btnJa.addEventListener('click', () => setLanguage('ja'));
-    // Save username and start prompt
+    
     startBtn.addEventListener('click', () => {
         const input = document.getElementById('usernameInput');
         const value = input.value.trim();
         userName = value ? value : 'AAA';
         usernameScreen.style.display = 'none';
-        // Show large title at top center
         largeTitle.style.display = 'block';
         showPrompt();
     });
+    
     function showPrompt() {
         promptText.textContent = t('prompt');
         promptSection.style.display = 'block';
-        // Update button lock states
         if (sosDone && lonelyDone && hateDone) {
             btnWhy.classList.remove('locked');
             btnWhy.classList.remove('disabled');
@@ -596,12 +621,11 @@
             btnWhy.classList.add('locked');
             btnWhy.classList.add('disabled');
         }
-        // Re-enable other buttons (but not if they're completed)
         if (!sosDone) btnSos.classList.remove('disabled');
         if (!lonelyDone) btnLonely.classList.remove('disabled');
         if (!hateDone) btnHate.classList.remove('disabled');
     }
-    // Append a log message to the output
+    
     function addLog(action) {
         const div = document.createElement('div');
         div.className = 'message log';
@@ -610,7 +634,6 @@
         outputDiv.scrollTop = outputDiv.scrollHeight;
     }
     
-    // Create close button for overlays
     function createCloseButton(callback, buttonToDisable = null) {
         const closeBtn = document.createElement('button');
         closeBtn.className = 'close-btn';
@@ -626,7 +649,6 @@
         return closeBtn;
     }
     
-    // Create sparkle effect
     function createSparkles(container) {
         const sparkleContainer = document.createElement('div');
         sparkleContainer.className = 'sparkles';
@@ -645,11 +667,10 @@
         return sparkleContainer;
     }
     
-    // Update rankings
     function updateRankings(newTime) {
         rankings.push({ name: userName, time: newTime });
         rankings.sort((a, b) => a.time - b.time);
-        rankings = rankings.slice(0, 10); // Keep top 10
+        rankings = rankings.slice(0, 10);
     }
     
     function displayRankings() {
@@ -677,12 +698,10 @@
         return rankingDiv;
     }
     
-    // SOS handler
     btnSos.addEventListener('click', async () => {
         if (btnSos.classList.contains('disabled')) return;
         btnSos.classList.add('disabled');
         addLog('sos');
-        // Show scanning overlay
         overlay.innerHTML = '';
         overlay.style.display = 'flex';
         const msg = document.createElement('div');
@@ -694,13 +713,12 @@
         fill.className = 'scan-fill';
         bar.appendChild(fill);
         overlay.appendChild(bar);
-        // Show scanning progress message with heart scanner
+        
         const progressMsg = document.createElement('div');
         progressMsg.style.marginTop = '8px';
         progressMsg.textContent = t('scanProgress');
         overlay.appendChild(progressMsg);
         
-        // Create heart scanner animation
         const heartScanner = document.createElement('div');
         heartScanner.className = 'heart-scanner';
         
@@ -718,38 +736,32 @@
         heartScanner.appendChild(scanLine);
         
         overlay.appendChild(heartScanner);
+        
         let progress = 0;
         const interval = setInterval(() => {
             progress += 5;
             fill.style.width = progress + '%';
             if (progress >= 100) {
                 clearInterval(interval);
-                // Virus detected
                 msg.textContent = t('virusDetected');
-                // Remove progress message and heart scanner
                 progressMsg.remove();
                 heartScanner.remove();
-                // Show button to launch buster
                 const busterBtn = document.createElement('button');
                 busterBtn.textContent = t('virusBtn');
                 busterBtn.style.marginTop = '12px';
                 overlay.appendChild(busterBtn);
                 busterBtn.addEventListener('click', async () => {
-                    // Start game
                     overlay.innerHTML = '';
                     const gameResult = await startGame();
-                    // After game, show clean message with ranking
                     overlay.innerHTML = '';
                     const cleanMsg = document.createElement('div');
                     cleanMsg.innerHTML = t('virusClean').replace(/\n/g, '<br>');
                     overlay.appendChild(cleanMsg);
                     
-                    // Show ranking
                     updateRankings(gameResult.time);
                     const rankingDisplay = displayRankings();
                     overlay.appendChild(rankingDisplay);
                     
-                    // Add close button
                     const closeBtn = createCloseButton(() => {
                         overlay.style.display = 'none';
                         sosDone = true;
@@ -760,18 +772,16 @@
             }
         }, 300);
     });
-    // Lonely handler
+    
     btnLonely.addEventListener('click', async () => {
         if (btnLonely.classList.contains('disabled')) return;
         btnLonely.classList.add('disabled');
         addLog('lonely');
-        // Show prompt message and input
         overlay.innerHTML = '';
         overlay.style.display = 'flex';
         const msg = document.createElement('div');
         msg.textContent = t('lonelyPrompt');
         overlay.appendChild(msg);
-        // Input field
         const input = document.createElement('input');
         input.type = 'text';
         input.placeholder = t('lonelyInput');
@@ -782,23 +792,19 @@
         input.style.border = '1px solid #00fff2';
         input.style.fontFamily = 'inherit';
         overlay.appendChild(input);
-        // OK button
         const okBtn = document.createElement('button');
         okBtn.textContent = t('whyOk');
         okBtn.style.marginTop = '8px';
         overlay.appendChild(okBtn);
         okBtn.addEventListener('click', () => {
             const song = input.value.trim() || (currentLang === 'en' ? 'Unknown song' : '不明な曲');
-            // Show wave animation
             overlay.innerHTML = '';
             const waveMsg = document.createElement('div');
-            // Compose song message (song + lonelyWave suffix)
             const suffix = t('lonelyWave');
             waveMsg.textContent = song + suffix;
             overlay.appendChild(waveMsg);
             const waveContainer = document.createElement('div');
             waveContainer.className = 'wave-container';
-            // Create bars
             for (let i = 0; i < 20; i++) {
                 const barEl = document.createElement('div');
                 barEl.className = 'wave-bar';
@@ -810,7 +816,6 @@
             endMsg.textContent = t('lonelyEnd');
             overlay.appendChild(endMsg);
             
-            // Add close button
             const closeBtn = createCloseButton(() => {
                 overlay.style.display = 'none';
                 lonelyDone = true;
@@ -819,7 +824,7 @@
             overlay.appendChild(closeBtn);
         });
     });
-    // Hate handler
+    
     btnHate.addEventListener('click', async () => {
         if (btnHate.classList.contains('disabled')) return;
         btnHate.classList.add('disabled');
@@ -829,7 +834,6 @@
         const msg = document.createElement('div');
         msg.textContent = t('hatePrompt');
         overlay.appendChild(msg);
-        // Car animation (first car going right)
         const carContainer1 = document.createElement('div');
         carContainer1.className = 'car-container';
         const car1 = document.createElement('div');
@@ -837,14 +841,12 @@
         car1.textContent = '🚗';
         carContainer1.appendChild(car1);
         overlay.appendChild(carContainer1);
-        // Travel messages sequentially
         setTimeout(() => {
             const pastMsg = document.createElement('div');
             pastMsg.textContent = t('travelPast');
             pastMsg.classList.add('glitch');
             overlay.appendChild(pastMsg);
             setTimeout(() => {
-                // Second car going left (reverse)
                 const carContainer2 = document.createElement('div');
                 carContainer2.className = 'car-container';
                 const car2 = document.createElement('div');
@@ -862,10 +864,8 @@
                     endMsg.textContent = t('hateEnd');
                     overlay.appendChild(endMsg);
                     
-                    // Add sparkle effect
                     const sparkles = createSparkles(overlay);
                     
-                    // Add close button
                     const closeBtn = createCloseButton(() => {
                         overlay.style.display = 'none';
                         hateDone = true;
@@ -876,12 +876,10 @@
             }, 2500);
         }, 1000);
     });
-    // Why handler
+    
     btnWhy.addEventListener('click', async () => {
         if (btnWhy.classList.contains('disabled')) return;
-        // Only proceed if unlocked
         addLog('why');
-        // Show thinking overlay with longer thinking time
         overlay.innerHTML = '';
         overlay.style.display = 'flex';
         const msg = document.createElement('div');
@@ -893,14 +891,12 @@
         fill.className = 'scan-fill';
         bar.appendChild(fill);
         overlay.appendChild(bar);
-        // Animate bar slowly to 60% then stop (longer thinking time)
         let progress = 0;
         const intv = setInterval(() => {
-            progress += 2; // Slower progress (was 4)
+            progress += 2;
             fill.style.width = progress + '%';
             if (progress >= 60) {
                 clearInterval(intv);
-                // Show stop message and OK button
                 const stopMsg = document.createElement('div');
                 stopMsg.style.marginTop = '8px';
                 stopMsg.textContent = t('whyStop');
@@ -910,7 +906,6 @@
                 okBtn.style.marginTop = '8px';
                 overlay.appendChild(okBtn);
                 okBtn.addEventListener('click', () => {
-                    // Show digital clock
                     overlay.innerHTML = '';
                     const clockMsg = document.createElement('div');
                     clockMsg.textContent = '';
@@ -930,19 +925,17 @@
                     setInterval(updateClock, 1000);
                 });
             }
-        }, 400); // Slower interval (was 200)
+        }, 400);
     });
-    // Finalize action: show prompt and unlock why if all done
+    
     function finalizeAction() {
-        // After finishing an action, show the prompt again
         showPrompt();
     }
-    // Game implementation (spaceship shooter) as asynchronous function
+    
     function startGame() {
         return new Promise(resolve => {
             const gameStartTime = Date.now();
             overlay.innerHTML = '';
-            // Create canvas and scoreboard
             const canvas = document.createElement('canvas');
             canvas.width = 320;
             canvas.height = 240;
@@ -958,7 +951,6 @@
             timeBoard.style.marginTop = '4px';
             timeBoard.style.color = '#00ffcc';
             overlay.appendChild(timeBoard);
-            // Setup game state
             const spaceship = { x: canvas.width / 2 - 15, y: canvas.height - 20, w: 30, h: 10, speed: 4 };
             const bullets = [];
             const viruses = [];
@@ -967,7 +959,6 @@
             let remaining = cols * rows;
             let score = 0;
             let gameTime = 0;
-            // Populate viruses
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     viruses.push({ x: 30 + c * 40, y: 20 + r * 30, r: 8, vx: 1 * (Math.random() > 0.5 ? 1 : -1), hit: false });
@@ -983,10 +974,8 @@
             let isOver = false;
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                // Draw spaceship
                 ctx.fillStyle = '#ff0077';
                 ctx.fillRect(spaceship.x, spaceship.y, spaceship.w, spaceship.h);
-                // Draw viruses
                 viruses.forEach(v => {
                     if (!v.hit) {
                         v.x += v.vx;
@@ -995,7 +984,6 @@
                         ctx.beginPath();
                         ctx.arc(v.x, v.y, v.r, 0, 2 * Math.PI);
                         ctx.fill();
-                        // Collision with spaceship
                         if (v.y + v.r >= spaceship.y && v.x + v.r >= spaceship.x && v.x - v.r <= spaceship.x + spaceship.w) {
                             end(false);
                         }
@@ -1004,7 +992,6 @@
                         }
                     }
                 });
-                // Bullets
                 for (let i = bullets.length - 1; i >= 0; i--) {
                     const b = bullets[i];
                     b.y -= 4;
@@ -1072,7 +1059,6 @@
                 canvas.removeEventListener('touchmove', pointerMove);
                 canvas.removeEventListener('touchstart', pointerDown);
                 window.removeEventListener('keydown', keyHandler);
-                // Resolve with game results
                 resolve({ success, time: finalTime, score });
             }
         });
