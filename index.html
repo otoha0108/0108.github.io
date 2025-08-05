@@ -470,26 +470,134 @@
         }
         
         .time-display {
-            font-family: Arial, sans-serif;
-            font-size: 24px;
-            color: #14ffec;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 10px 20px;
+            font-family: 'Courier New', 'Roboto Mono', monospace;
+            font-size: 48px;
+            color: #ff0000;
+            background: #000000;
+            padding: 20px 40px;
             border-radius: 8px;
             margin: 20px 0;
-            letter-spacing: 2px;
+            letter-spacing: 8px;
+            text-shadow: 
+                0 0 5px #ff0000,
+                0 0 10px #ff0000,
+                0 0 15px #ff0000,
+                0 0 20px #ff0000;
+            box-shadow: 
+                inset 0 0 20px rgba(255, 0, 0, 0.3),
+                0 0 30px rgba(255, 0, 0, 0.5);
+            border: 2px solid #ff0000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .time-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.2), transparent);
+            animation: scan 3s infinite;
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
         
         .time-glitch {
-            animation: timeGlitch 0.1s infinite;
+            animation: timeGlitch 0.08s infinite;
         }
         
         @keyframes timeGlitch {
-            0% { transform: translateX(0); color: #14ffec; }
-            25% { transform: translateX(-2px); color: #ff0077; }
-            50% { transform: translateX(2px); color: #00ffcc; }
-            75% { transform: translateX(-1px); color: #ffff00; }
-            100% { transform: translateX(0); color: #14ffec; }
+            0% { 
+                transform: translateX(0) scaleX(1); 
+                color: #ff0000; 
+                text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000;
+            }
+            20% { 
+                transform: translateX(-3px) scaleX(0.95); 
+                color: #ff3300; 
+                text-shadow: 2px 0 #00ff00, -2px 0 #0000ff;
+            }
+            40% { 
+                transform: translateX(2px) scaleX(1.05); 
+                color: #ffff00; 
+                text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff;
+            }
+            60% { 
+                transform: translateX(-1px) scaleX(0.98); 
+                color: #ffffff; 
+                text-shadow: 1px 0 #ff0000, -1px 0 #00ff00;
+            }
+            80% { 
+                transform: translateX(1px) scaleX(1.02); 
+                color: #ff0066; 
+                text-shadow: 0 0 3px #ff0000, 0 0 8px #ff0000;
+            }
+            100% { 
+                transform: translateX(0) scaleX(1); 
+                color: #ff0000; 
+                text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000;
+            }
+        }
+
+        .matrix-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .matrix-rain {
+            position: absolute;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 0.7;
+            animation: matrixFall 3s linear infinite;
+        }
+
+        @keyframes matrixFall {
+            0% { 
+                top: -100px; 
+                opacity: 0; 
+            }
+            10% { 
+                opacity: 1; 
+            }
+            90% { 
+                opacity: 1; 
+            }
+            100% { 
+                top: 100vh; 
+                opacity: 0; 
+            }
+        }
+
+        .temporal-distortion {
+            position: relative;
+            background: radial-gradient(circle, rgba(255,0,0,0.1) 0%, rgba(0,0,0,0.9) 70%);
+            border-radius: 50%;
+            animation: distort 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes distort {
+            0% { 
+                transform: scale(1) rotate(0deg);
+                box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+            }
+            100% { 
+                transform: scale(1.1) rotate(2deg);
+                box-shadow: 0 0 40px rgba(255, 0, 0, 0.6);
+            }
         }
 
         .connection-status {
@@ -1134,11 +1242,38 @@
         
         function createTimeDisplay() {
             const timeDisplay = document.createElement('div');
-            timeDisplay.className = 'time-display';
+            timeDisplay.className = 'time-display temporal-distortion';
             const now = new Date();
-            const currentTime = `${now.getFullYear()}:${String(now.getMonth() + 1).padStart(2, '0')}:${String(now.getDate()).padStart(2, '0')}:${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
             timeDisplay.textContent = currentTime;
             return timeDisplay;
+        }
+
+        function createMatrixRain(container) {
+            const matrixBg = document.createElement('div');
+            matrixBg.className = 'matrix-bg';
+            
+            const chars = '0123456789ABCDEF時間過去未来タイムトラベル';
+            
+            for (let i = 0; i < 15; i++) {
+                const rain = document.createElement('div');
+                rain.className = 'matrix-rain';
+                rain.style.left = Math.random() * 100 + '%';
+                rain.style.animationDelay = Math.random() * 3 + 's';
+                rain.style.animationDuration = (2 + Math.random() * 3) + 's';
+                
+                let text = '';
+                for (let j = 0; j < 10; j++) {
+                    text += chars[Math.floor(Math.random() * chars.length)] + '\n';
+                }
+                rain.textContent = text;
+                
+                matrixBg.appendChild(rain);
+            }
+            
+            container.style.position = 'relative';
+            container.appendChild(matrixBg);
+            return matrixBg;
         }
         
         function animateTimeToPast(timeDisplay) {
@@ -1147,17 +1282,25 @@
             let date = new Date().getDate();
             let hour = new Date().getHours();
             let minute = new Date().getMinutes();
+            let second = new Date().getSeconds();
+            
             const interval = setInterval(() => {
-                if (Math.random() < 0.3) year -= Math.floor(Math.random() * 100) + 1;
-                if (Math.random() < 0.4) month = Math.floor(Math.random() * 12) + 1;
-                if (Math.random() < 0.4) date = Math.floor(Math.random() * 28) + 1;
-                if (Math.random() < 0.5) hour = Math.floor(Math.random() * 24);
-                if (Math.random() < 0.5) minute = Math.floor(Math.random() * 60);
-                if (year > 0) year -= Math.floor(Math.random() * 50) + 10;
-                if (year < -5000) year = -Math.floor(Math.random() * 10000) - 1000;
-                timeDisplay.textContent = `${year}:${String(month).padStart(2, '0')}:${String(date).padStart(2, '0')}:${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-                timeDisplay.className = 'time-display time-glitch';
-            }, 100);
+                // より劇的な時間変化
+                if (Math.random() < 0.4) year -= Math.floor(Math.random() * 200) + 50;
+                if (Math.random() < 0.5) month = Math.floor(Math.random() * 12) + 1;
+                if (Math.random() < 0.5) date = Math.floor(Math.random() * 28) + 1;
+                if (Math.random() < 0.6) hour = Math.floor(Math.random() * 24);
+                if (Math.random() < 0.6) minute = Math.floor(Math.random() * 60);
+                if (Math.random() < 0.8) second = Math.floor(Math.random() * 60);
+                
+                // 深い過去へ
+                if (year > 0) year -= Math.floor(Math.random() * 100) + 20;
+                if (year < -10000) year = -Math.floor(Math.random() * 50000) - 1000;
+                
+                const timeString = `${year < 0 ? year : String(year).padStart(4, '0')}:${String(month).padStart(2, '0')}:${String(date).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
+                timeDisplay.textContent = timeString;
+                timeDisplay.className = 'time-display time-glitch temporal-distortion';
+            }, 80);
             return interval;
         }
         
@@ -1167,17 +1310,25 @@
             let date = new Date().getDate();
             let hour = new Date().getHours();
             let minute = new Date().getMinutes();
+            let second = new Date().getSeconds();
+            
             const interval = setInterval(() => {
-                if (Math.random() < 0.3) year += Math.floor(Math.random() * 100) + 1;
-                if (Math.random() < 0.4) month = Math.floor(Math.random() * 12) + 1;
-                if (Math.random() < 0.4) date = Math.floor(Math.random() * 28) + 1;
-                if (Math.random() < 0.5) hour = Math.floor(Math.random() * 24);
-                if (Math.random() < 0.5) minute = Math.floor(Math.random() * 60);
-                if (year < 10000) year += Math.floor(Math.random() * 100) + 50;
-                if (year > 10000) year += Math.floor(Math.random() * 1000) + 100;
-                timeDisplay.textContent = `${year}:${String(month).padStart(2, '0')}:${String(date).padStart(2, '0')}:${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-                timeDisplay.className = 'time-display time-glitch';
-            }, 100);
+                // 未来への加速
+                if (Math.random() < 0.4) year += Math.floor(Math.random() * 500) + 100;
+                if (Math.random() < 0.5) month = Math.floor(Math.random() * 12) + 1;
+                if (Math.random() < 0.5) date = Math.floor(Math.random() * 28) + 1;
+                if (Math.random() < 0.6) hour = Math.floor(Math.random() * 24);
+                if (Math.random() < 0.6) minute = Math.floor(Math.random() * 60);
+                if (Math.random() < 0.8) second = Math.floor(Math.random() * 60);
+                
+                // 遠い未来へ
+                if (year < 50000) year += Math.floor(Math.random() * 1000) + 200;
+                if (year > 50000) year += Math.floor(Math.random() * 10000) + 1000;
+                
+                const timeString = `${String(year).padStart(5, '0')}:${String(month).padStart(2, '0')}:${String(date).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
+                timeDisplay.textContent = timeString;
+                timeDisplay.className = 'time-display time-glitch temporal-distortion';
+            }, 70);
             return interval;
         }
         
@@ -1775,16 +1926,23 @@
             
             elements.overlay.innerHTML = '';
             elements.overlay.style.display = 'flex';
+            elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
             
             const msg = document.createElement('div');
             msg.textContent = t('hatePrompt');
+            msg.style.fontSize = '20px';
+            msg.style.marginBottom = '20px';
             elements.overlay.appendChild(msg);
+            
+            // マトリックス背景追加
+            createMatrixRain(elements.overlay);
             
             const carContainer1 = document.createElement('div');
             carContainer1.className = 'car-container';
             const car1 = document.createElement('div');
             car1.className = 'car';
             car1.textContent = '🚗';
+            car1.style.fontSize = '36px';
             carContainer1.appendChild(car1);
             elements.overlay.appendChild(carContainer1);
             
@@ -1795,52 +1953,76 @@
                 const pastMsg = document.createElement('div');
                 pastMsg.textContent = t('travelPast');
                 pastMsg.classList.add('glitch');
+                pastMsg.style.fontSize = '18px';
+                pastMsg.style.color = '#ff0000';
+                pastMsg.style.textShadow = '0 0 10px #ff0000';
+                pastMsg.style.marginTop = '20px';
                 elements.overlay.appendChild(pastMsg);
                 
                 const pastInterval = animateTimeToPast(timeDisplay);
                 
                 setTimeout(() => {
                     clearInterval(pastInterval);
-                    const carContainer2 = document.createElement('div');
-                    carContainer2.className = 'car-container';
-                    const car2 = document.createElement('div');
-                    car2.className = 'car reverse';
-                    car2.textContent = '🚗';
-                    carContainer2.appendChild(car2);
-                    elements.overlay.appendChild(carContainer2);
                     
-                    const futureMsg = document.createElement('div');
-                    futureMsg.textContent = t('travelFuture');
-                    futureMsg.classList.add('glitch');
-                    elements.overlay.appendChild(futureMsg);
-                    
-                    const futureInterval = animateTimeToFuture(timeDisplay);
+                    // 時間停止演出
+                    timeDisplay.className = 'time-display temporal-distortion';
+                    timeDisplay.style.animation = 'pulse 0.5s infinite';
                     
                     setTimeout(() => {
-                        clearInterval(futureInterval);
-                        elements.overlay.innerHTML = '';
+                        const carContainer2 = document.createElement('div');
+                        carContainer2.className = 'car-container';
+                        const car2 = document.createElement('div');
+                        car2.className = 'car reverse';
+                        car2.textContent = '🚗';
+                        car2.style.fontSize = '36px';
+                        carContainer2.appendChild(car2);
+                        elements.overlay.appendChild(carContainer2);
                         
-                        const resultContainer = document.createElement('div');
-                        resultContainer.className = 'travel-result';
+                        const futureMsg = document.createElement('div');
+                        futureMsg.textContent = t('travelFuture');
+                        futureMsg.classList.add('glitch');
+                        futureMsg.style.fontSize = '18px';
+                        futureMsg.style.color = '#00ff00';
+                        futureMsg.style.textShadow = '0 0 10px #00ff00';
+                        futureMsg.style.marginTop = '20px';
+                        elements.overlay.appendChild(futureMsg);
                         
-                        const endMsg = document.createElement('div');
-                        endMsg.textContent = t('hateEnd');
-                        endMsg.style.fontSize = '18px';
-                        endMsg.style.marginBottom = '20px';
-                        resultContainer.appendChild(endMsg);
+                        const futureInterval = animateTimeToFuture(timeDisplay);
                         
-                        elements.overlay.appendChild(resultContainer);
-                        createSparkles(elements.overlay, true);
-                        
-                        const closeBtn = createCloseButton(() => {
-                            elements.overlay.style.display = 'none';
-                            hateDone = true;
-                            showPrompt();
-                        });
-                        elements.overlay.appendChild(closeBtn);
-                    }, 3000);
-                }, 3000);
-            }, 1000);
+                        setTimeout(() => {
+                            clearInterval(futureInterval);
+                            
+                            // 最終演出
+                            elements.overlay.innerHTML = '';
+                            elements.overlay.style.background = 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.95) 70%)';
+                            
+                            const resultContainer = document.createElement('div');
+                            resultContainer.className = 'travel-result';
+                            resultContainer.style.background = 'rgba(255, 255, 255, 0.05)';
+                            resultContainer.style.border = '2px solid rgba(255, 255, 255, 0.3)';
+                            
+                            const endMsg = document.createElement('div');
+                            endMsg.textContent = t('hateEnd');
+                            endMsg.style.fontSize = '24px';
+                            endMsg.style.marginBottom = '20px';
+                            endMsg.style.color = '#ffffff';
+                            endMsg.style.textShadow = '0 0 20px #ffffff';
+                            resultContainer.appendChild(endMsg);
+                            
+                            elements.overlay.appendChild(resultContainer);
+                            createSparkles(elements.overlay, true);
+                            
+                            const closeBtn = createCloseButton(() => {
+                                elements.overlay.style.display = 'none';
+                                elements.overlay.style.background = 'rgba(0, 0, 0, 0.85)';
+                                hateDone = true;
+                                showPrompt();
+                            });
+                            elements.overlay.appendChild(closeBtn);
+                        }, 4000);
+                    }, 1000);
+                }, 4000);
+            }, 1500);
         });
         
         // Why button
