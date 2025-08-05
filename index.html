@@ -1,4 +1,19 @@
-<!DOCTYPE html>
+viruses.forEach(v => {
+                    if (!v.hit) {
+                        v.x += v.vx;
+                        if (v.x - v.w/2 < 0 || v.x + v.w/2 > canvas.width) v.vx *= -1;
+                        drawInvader(ctx, v.x, v.y, v.w, v.h, v.type);
+                        // Collision with spaceship
+                        if (v.y + v.h/2 >= spaceship.y && 
+                            v.x + v.w/2 >= spaceship.x && 
+                            v.x - v.w/2 <= spaceship.x + spaceship.w) {
+                            end(false);
+                        }
+                        if (v.y + v.h/2 > canvas.height) {
+                            end(false);
+                        }
+                    }
+                });<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -707,12 +722,6 @@
         const msg = document.createElement('div');
         msg.textContent = t('scanInit');
         overlay.appendChild(msg);
-        const bar = document.createElement('div');
-        bar.className = 'scan-bar';
-        const fill = document.createElement('div');
-        fill.className = 'scan-fill';
-        bar.appendChild(fill);
-        overlay.appendChild(bar);
         
         const progressMsg = document.createElement('div');
         progressMsg.style.marginTop = '8px';
@@ -737,19 +746,38 @@
         
         overlay.appendChild(heartScanner);
         
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 5;
-            fill.style.width = progress + '%';
-            if (progress >= 100) {
-                clearInterval(interval);
-                msg.textContent = t('virusDetected');
-                progressMsg.remove();
-                heartScanner.remove();
-                const busterBtn = document.createElement('button');
-                busterBtn.textContent = t('virusBtn');
-                busterBtn.style.marginTop = '12px';
-                overlay.appendChild(busterBtn);
+        // Wait for scanning animation (4 seconds for 2 complete scans)
+        setTimeout(() => {
+            msg.textContent = t('virusDetected');
+            progressMsg.remove();
+            heartScanner.remove();
+            
+            // Add large virus/invader icon
+            const virusIcon = document.createElement('div');
+            virusIcon.style.fontSize = '120px';
+            virusIcon.style.margin = '20px 0';
+            virusIcon.style.animation = 'pulse 0.5s infinite';
+            virusIcon.textContent = '👾';
+            overlay.appendChild(virusIcon);
+            
+            // Add pulse animation for virus icon
+            if (!document.getElementById('pulseStyle')) {
+                const style = document.createElement('style');
+                style.id = 'pulseStyle';
+                style.textContent = `
+                    @keyframes pulse {
+                        0% { transform: scale(1); opacity: 1; }
+                        50% { transform: scale(1.1); opacity: 0.8; }
+                        100% { transform: scale(1); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            const busterBtn = document.createElement('button');
+            busterBtn.textContent = t('virusBtn');
+            busterBtn.style.marginTop = '12px';
+            overlay.appendChild(busterBtn);
                 busterBtn.addEventListener('click', async () => {
                     overlay.innerHTML = '';
                     const gameResult = await startGame();
@@ -961,7 +989,15 @@
             let gameTime = 0;
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
-                    viruses.push({ x: 30 + c * 40, y: 20 + r * 30, r: 8, vx: 1 * (Math.random() > 0.5 ? 1 : -1), hit: false });
+                    viruses.push({ 
+                        x: 30 + c * 40, 
+                        y: 20 + r * 30, 
+                        w: 20, 
+                        h: 16, 
+                        vx: 1 * (Math.random() > 0.5 ? 1 : -1), 
+                        hit: false,
+                        type: Math.floor(Math.random() * 3) // 3 different invader types
+                    });
                 }
             }
             function updateScore() {
@@ -976,22 +1012,61 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = '#ff0077';
                 ctx.fillRect(spaceship.x, spaceship.y, spaceship.w, spaceship.h);
-                viruses.forEach(v => {
-                    if (!v.hit) {
-                        v.x += v.vx;
-                        if (v.x - v.r < 0 || v.x + v.r > canvas.width) v.vx *= -1;
-                        ctx.fillStyle = '#00ffcc';
-                        ctx.beginPath();
-                        ctx.arc(v.x, v.y, v.r, 0, 2 * Math.PI);
-                        ctx.fill();
-                        if (v.y + v.r >= spaceship.y && v.x + v.r >= spaceship.x && v.x - v.r <= spaceship.x + spaceship.w) {
-                            end(false);
-                        }
-                        if (v.y + v.r > canvas.height) {
-                            end(false);
+            function drawInvader(ctx, x, y, w, h, type) {
+                const pixelSize = 2;
+                ctx.fillStyle = '#00ffcc';
+                
+                // Invader pattern arrays (8x8 pixels)
+                const patterns = [
+                    // Type 0: Classic invader
+                    [
+                        [0,0,1,0,0,0,1,0],
+                        [0,0,0,1,0,1,0,0],
+                        [0,0,1,1,1,1,1,0],
+                        [0,1,1,0,1,0,1,1],
+                        [1,1,1,1,1,1,1,1],
+                        [1,0,1,1,1,1,0,1],
+                        [1,0,1,0,0,1,0,1],
+                        [0,0,0,1,1,0,0,0]
+                    ],
+                    // Type 1: Spider-like
+                    [
+                        [0,0,0,1,1,0,0,0],
+                        [0,0,1,1,1,1,0,0],
+                        [0,1,1,1,1,1,1,0],
+                        [1,1,0,1,1,0,1,1],
+                        [1,1,1,1,1,1,1,1],
+                        [0,1,0,1,1,0,1,0],
+                        [1,0,0,0,0,0,0,1],
+                        [0,1,0,0,0,0,1,0]
+                    ],
+                    // Type 2: Crab-like
+                    [
+                        [0,0,1,0,0,1,0,0],
+                        [0,0,0,1,1,0,0,0],
+                        [0,0,1,1,1,1,0,0],
+                        [0,1,1,0,0,1,1,0],
+                        [1,1,1,1,1,1,1,1],
+                        [1,0,1,1,1,1,0,1],
+                        [1,0,1,0,0,1,0,1],
+                        [0,0,1,1,1,1,0,0]
+                    ]
+                ];
+                
+                const pattern = patterns[type];
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        if (pattern[row][col]) {
+                            ctx.fillRect(
+                                x - w/2 + col * pixelSize, 
+                                y - h/2 + row * pixelSize, 
+                                pixelSize, 
+                                pixelSize
+                            );
                         }
                     }
-                });
+                }
+            }
                 for (let i = bullets.length - 1; i >= 0; i--) {
                     const b = bullets[i];
                     b.y -= 4;
@@ -1003,8 +1078,9 @@
                     }
                     viruses.forEach(v => {
                         if (!v.hit) {
-                            const dist = Math.hypot(v.x - b.x, v.y - b.y);
-                            if (dist < v.r) {
+                            // Check collision with invader hitbox
+                            if (b.x >= v.x - v.w/2 && b.x <= v.x + v.w/2 && 
+                                b.y >= v.y - v.h/2 && b.y <= v.y + v.h/2) {
                                 v.hit = true;
                                 remaining--;
                                 score++;
