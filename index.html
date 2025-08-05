@@ -8,7 +8,7 @@
         body {
             background: #0f0f0f;
             color: #00fff2;
-            font-family: 'Segoe UI Emoji', 'Noto Color Emoji', monospace;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
@@ -441,6 +441,29 @@
             border-radius: 12px;
             margin: 20px 0;
         }
+        
+        .time-display {
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            color: #14ffec;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            letter-spacing: 2px;
+        }
+        
+        .time-glitch {
+            animation: timeGlitch 0.1s infinite;
+        }
+        
+        @keyframes timeGlitch {
+            0% { transform: translateX(0); color: #14ffec; }
+            25% { transform: translateX(-2px); color: #ff0077; }
+            50% { transform: translateX(2px); color: #00ffcc; }
+            75% { transform: translateX(-1px); color: #ffff00; }
+            100% { transform: translateX(0); color: #14ffec; }
+        }
     </style>
 </head>
 <body>
@@ -485,7 +508,49 @@
         <div id="overlay"></div>
     </div>
 
-    <script>
+    <script type="module">
+        // Firebase SDK を CDN から読み込み
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, push, onValue, query, orderByChild, limitToFirst } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        
+        // Firebase設定（実際の値に置き換える必要があります）
+        const firebaseConfig = {
+            apiKey: "demo-api-key",
+            authDomain: "hellworld-demo.firebaseapp.com",
+            databaseURL: "https://hellworld-demo-default-rtdb.firebaseio.com",
+            projectId: "hellworld-demo",
+            storageBucket: "hellworld-demo.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+        
+        // Firebase機能を完全に無効化する場合はこれをtrueに
+        const DISABLE_FIREBASE = true;
+        
+        let app, database;
+        let isOnline = false;
+        
+        // Firebase初期化（完全に無効化可能）
+        if (!DISABLE_FIREBASE) {
+            try {
+                app = initializeApp(firebaseConfig);
+                database = getDatabase(app);
+                
+                // 接続テスト
+                const testRef = ref(database, '.info/connected');
+                onValue(testRef, (snapshot) => {
+                    isOnline = snapshot.val() === true;
+                }, (error) => {
+                    isOnline = false;
+                });
+                
+            } catch (error) {
+                isOnline = false;
+            }
+        } else {
+            // Firebase完全無効化
+            isOnline = false;
+        }
         const translations = {
             en: {
                 connect: '0108 connecting…',
@@ -564,6 +629,47 @@
 花のように光射す瞼を開いて
 後悔と嘘に塗れた
 あの混沌の夢から逃げた
+貴方は、僕だ。
+
+閉ざされた 硝子は重厚
+その壁すら 貫くような
+はっと 僕を連れ出したアウトサイダー
+きらきらと鳴った、七つの声
+
+きっと本当の本物など在りはしない
+飾りのない信仰を捧げたい
+それが 例え 悲しい
+結末しか迎えないものだとしても
+一つだけ確かな意志と共に
+終わりのない最期へと転がりたい
+全て叶えるまで
+
+貴方はきっと
+何もかも忘れている
+始まりを急かすようなあの白い衝動
+きっとまだやり直せるさ
+今淡々と記憶を辿る
+僕は、貴方だろう？
+
+ずっと、答えのない日々を彷徨って
+消えてしまいたい劣等の夜さえ
+超えて 塗り替えて 捨て切らないで
+愛せるように
+
+転生
+
+目を醒せ！
+今痛みを分け合えば
+僕らまだ一つになれる気がするんだ
+言い訳は何も要らない
+今真っ直ぐに"君"を見つめる
+「貴方は、僕だ」
+
+生まれ変わって
+また同じ場所で咲いた
+花のように光射す瞼を開いて
+後悔と嘘に塗れた
+あの混沌の夢から逃げた
 貴方は、僕だ。`,
             'Change': `魔法にかけられたみたいに変わってく
 モノクロの世界飛び出して
@@ -578,7 +684,34 @@
 答え 何て？瞳孔にも無い
 煌きを閉ざした目蓋から
 溢れたのはきっと
-隠し切れぬ念い`,
+隠し切れぬ念い
+
+誰も知らない 知らない 僕の
+世界の入り口に引き寄せられるように
+変わらない 足りない 僕の
+惰性の繰り返しを壊して
+
+魔法にかけられたみたいに変わってく
+モノクロの世界飛び出して
+色褪せない音を鳴らそう
+貴方とならどこまでも
+
+纏わり付くような温度
+吹き飛ばす為に騒音
+枯渇してる今 狂おしい程 求める未来
+誰も僕を止められやしない
+いつか見た夢で咲いてたあの
+藍い花のように
+
+言えない 言えなかった
+生き方のすべて 採点 は人任せで
+鮮やかな貴方色
+解答用紙を塗り潰して
+
+魔法にかけられたみたいに変わってく
+モノクロの世界飛び出して
+色褪せない音を鳴らそう
+貴方とならどこまでも`,
             '猫と風船': `寂しくて死んでしまいそうな夜を引き摺って
 触れ合ったって埋まらぬ隙間たち 隠して
 言えないな 痛いな 言葉にできず笑っていた
@@ -587,7 +720,41 @@
 ズキズキ静かに傷を削って
 隠し事が上手くなって
 だらだら針を過ごして
-安定を待っている檻の中`,
+安定を待っている檻の中
+「いついつまでも側にいてよ」って
+とても言える訳ない
+飲み込んで爪を仕舞った
+
+パチンと割れてしまうような関係なら
+この部屋にきっと君はいない
+分かったような口聞いて 馬鹿馬鹿しい
+張り裂けそうな 胸を ふたり縫い合って
+ココロここに在らずになって今日も
+
+よるのなか 恋し
+冷えたからだを震っていた
+転がったって掴めやしないと今 思断つ
+ぼくだけが 故意に
+飲まれそうな闇を蹴破って
+空っぽの泣き声光らせた 「みつけて」
+
+時々ドクドク流れ回った
+臆と病の血がずっと
+今でもぼくを毒して
+完璧な愛さえ不味くなるよ
+膨れるほどの福を手招いて
+怖くなっていたんだろう
+「ねぇ、もっと触れてもいい？」
+
+描き出した病だ 身勝手な話だ
+叶えたい 願えない ただの妄想
+猫速で変わりゆく めまぐるしい心
+
+パチンと割れてしまうような関係なら
+この部屋にきっと君はいない
+分かったような口聞いて 馬鹿馬鹿しい
+張り裂けそうな 胸を ふたり縫い合って
+ココロここに在らずになって今日も`,
             'パラドクサー': `曖昧な愛なら要らないから
 変わらない確かな 形で居たい
 期待ばっかしたら 貴方は又
@@ -596,7 +763,43 @@
 鼬ごっこみたい 未来が見えない
 誰の所為にも出来はしない
 笑いたいのに 哀しいアイロニー
-もう 止められやしない`
+もう 止められやしない
+
+僕は何者にも成れない
+ゆらゆらゆら 揺らめいて徘徊
+叶うならば僕は僕で居たい
+凸凹の心でも愛して欲しい
+
+誰が描いたんだか この物語は
+少し僕には 息苦しい
+知らない方がいい 貴方の「左様なら」に
+絶やされるくらいならば いっそ
+
+｢もういいかい｣｢まぁだだよ｣
+｢もういいかい｣
+ほんとはとっくにもういいよ
+いいの いいのに 言い出せない
+
+全てを受け入れてよ
+
+天邪鬼みたい パラドクサーは今
+誰も知らない場所で独り
+踊りたいのに ここに居たいのに
+ねぇ 超えられない一線
+
+僕は何者にも成れない
+ゆらゆらゆら 揺らめいて徘徊
+叶うならば僕は僕で居たい
+凸凹の心でも愛して欲しい
+
+嗚呼 僕が生まれ変われるなら
+何色の花になろう
+何処に根を生やし
+誰と散るのか
+過去を殺めるようで
+貴方ごと愛している
+
+「僕は何者かに成りたい。」`
         };
         
         // 楽曲名を検索する関数
@@ -612,13 +815,87 @@
             return null;
         }
         
+        function createTimeDisplay() {
+            const timeDisplay = document.createElement('div');
+            timeDisplay.className = 'time-display';
+            const now = new Date();
+            const currentTime = `${now.getFullYear()}:${String(now.getMonth() + 1).padStart(2, '0')}:${String(now.getDate()).padStart(2, '0')}:${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            timeDisplay.textContent = currentTime;
+            return timeDisplay;
+        }
+        
+        function animateTimeToPast(timeDisplay) {
+            let year = new Date().getFullYear();
+            let month = new Date().getMonth() + 1;
+            let date = new Date().getDate();
+            let hour = new Date().getHours();
+            let minute = new Date().getMinutes();
+            const interval = setInterval(() => {
+                if (Math.random() < 0.3) year -= Math.floor(Math.random() * 100) + 1;
+                if (Math.random() < 0.4) month = Math.floor(Math.random() * 12) + 1;
+                if (Math.random() < 0.4) date = Math.floor(Math.random() * 28) + 1;
+                if (Math.random() < 0.5) hour = Math.floor(Math.random() * 24);
+                if (Math.random() < 0.5) minute = Math.floor(Math.random() * 60);
+                if (year > 0) year -= Math.floor(Math.random() * 50) + 10;
+                if (year < -5000) year = -Math.floor(Math.random() * 10000) - 1000;
+                timeDisplay.textContent = `${year}:${String(month).padStart(2, '0')}:${String(date).padStart(2, '0')}:${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+                timeDisplay.className = 'time-display time-glitch';
+            }, 100);
+            return interval;
+        }
+        
+        function animateTimeToFuture(timeDisplay) {
+            let year = new Date().getFullYear();
+            let month = new Date().getMonth() + 1;
+            let date = new Date().getDate();
+            let hour = new Date().getHours();
+            let minute = new Date().getMinutes();
+            const interval = setInterval(() => {
+                if (Math.random() < 0.3) year += Math.floor(Math.random() * 100) + 1;
+                if (Math.random() < 0.4) month = Math.floor(Math.random() * 12) + 1;
+                if (Math.random() < 0.4) date = Math.floor(Math.random() * 28) + 1;
+                if (Math.random() < 0.5) hour = Math.floor(Math.random() * 24);
+                if (Math.random() < 0.5) minute = Math.floor(Math.random() * 60);
+                if (year < 10000) year += Math.floor(Math.random() * 100) + 50;
+                if (year > 10000) year += Math.floor(Math.random() * 1000) + 100;
+                timeDisplay.textContent = `${year}:${String(month).padStart(2, '0')}:${String(date).padStart(2, '0')}:${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+                timeDisplay.className = 'time-display time-glitch';
+            }, 100);
+            return interval;
+        }
+        
         let currentLang = 'en';
         let userName = 'AAA';
         let sosDone = false;
         let lonelyDone = false;
         let hateDone = false;
-        
         let rankings = [];
+        
+        // リアルなランキングデータ（セッション毎に少し変化）
+        function generateDynamicRankings() {
+            const baseRankings = [
+                { name: 'AKIRA', time: 8.2 },
+                { name: 'みゆき', time: 9.1 },
+                { name: 'REN', time: 10.7 },
+                { name: 'ユウタ', time: 11.3 },
+                { name: 'ZERO', time: 12.5 },
+                { name: 'さくら', time: 13.8 },
+                { name: 'HACKER', time: 14.2 },
+                { name: 'のぞみ', time: 15.6 },
+                { name: 'KIRA', time: 16.1 },
+                { name: 'あい', time: 17.9 }
+            ];
+            
+            // 時間を少しランダムに変化させる（よりリアルに）
+            return baseRankings.map(entry => ({
+                ...entry,
+                time: entry.time + (Math.random() - 0.5) * 2, // ±1秒の変化
+                date: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 過去7日以内
+            })).sort((a, b) => a.time - b.time);
+        }
+        
+        // 初期化
+        rankings = generateDynamicRankings();
         
         function t(key) {
             return translations[currentLang][key] || key;
@@ -651,4 +928,622 @@
                 elements.titleDiv.style.display = 'flex';
                 setTimeout(() => {
                     elements.titleDiv.style.display = 'none';
-                    elements.enterNameText.text
+                    elements.enterNameText.textContent = t('enterName');
+                    elements.startBtn.textContent = t('start');
+                    elements.usernameScreen.style.display = 'flex';
+                }, 2000);
+            }, 3200);
+        };
+        
+        function setLanguage(lang) {
+            if (currentLang === lang) return;
+            currentLang = lang;
+            elements.btnEn.classList.toggle('active', currentLang === 'en');
+            elements.btnJa.classList.toggle('active', currentLang === 'ja');
+            elements.loaderText.textContent = t('connect');
+            elements.enterNameText.textContent = t('enterName');
+            elements.startBtn.textContent = t('start');
+            elements.promptText.textContent = t('prompt');
+        }
+        
+        elements.btnEn.addEventListener('click', () => setLanguage('en'));
+        elements.btnJa.addEventListener('click', () => setLanguage('ja'));
+        
+        elements.startBtn.addEventListener('click', () => {
+            const input = document.getElementById('usernameInput');
+            const value = input.value.trim();
+            userName = value ? value : 'AAA';
+            elements.usernameScreen.style.display = 'none';
+            elements.largeTitle.style.display = 'block';
+            showPrompt();
+        });
+        
+        function showPrompt() {
+            elements.promptText.textContent = t('prompt');
+            elements.promptSection.style.display = 'block';
+            
+            elements.btnSos.classList.remove('disabled');
+            elements.btnLonely.classList.remove('disabled');
+            elements.btnHate.classList.remove('disabled');
+            
+            if (sosDone && lonelyDone && hateDone) {
+                elements.btnWhy.classList.remove('locked', 'disabled');
+            } else {
+                elements.btnWhy.classList.add('locked', 'disabled');
+            }
+        }
+        
+        function addLog(action) {
+            const div = document.createElement('div');
+            div.className = 'message log';
+            div.textContent = `${userName}${t('logPrefix')}${action}`;
+            elements.outputDiv.appendChild(div);
+            elements.outputDiv.scrollTop = elements.outputDiv.scrollHeight;
+        }
+        
+        function createCloseButton(callback) {
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'close-btn';
+            closeBtn.textContent = t('close');
+            closeBtn.addEventListener('click', callback);
+            return closeBtn;
+        }
+        
+        function createSparkles(container, isWhite = false) {
+            const sparkleContainer = document.createElement('div');
+            sparkleContainer.className = 'sparkles';
+            
+            for (let i = 0; i < 15; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = isWhite ? 'sparkle white' : 'sparkle';
+                sparkle.textContent = '✨';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+                sparkleContainer.appendChild(sparkle);
+            }
+            
+            container.appendChild(sparkleContainer);
+            return sparkleContainer;
+        }
+        
+        function drawInvader(ctx, x, y, w, h, type) {
+            const pixelSize = 2;
+            ctx.fillStyle = '#00ffcc';
+            
+            const patterns = [
+                [
+                    [0,0,1,0,0,0,1,0],
+                    [0,0,0,1,0,1,0,0],
+                    [0,0,1,1,1,1,1,0],
+                    [0,1,1,0,1,0,1,1],
+                    [1,1,1,1,1,1,1,1],
+                    [1,0,1,1,1,1,0,1],
+                    [1,0,1,0,0,1,0,1],
+                    [0,0,0,1,1,0,0,0]
+                ],
+                [
+                    [0,0,0,1,1,0,0,0],
+                    [0,0,1,1,1,1,0,0],
+                    [0,1,1,1,1,1,1,0],
+                    [1,1,0,1,1,0,1,1],
+                    [1,1,1,1,1,1,1,1],
+                    [0,1,0,1,1,0,1,0],
+                    [1,0,0,0,0,0,0,1],
+                    [0,1,0,0,0,0,1,0]
+                ],
+                [
+                    [0,0,1,0,0,1,0,0],
+                    [0,0,0,1,1,0,0,0],
+                    [0,0,1,1,1,1,0,0],
+                    [0,1,1,0,0,1,1,0],
+                    [1,1,1,1,1,1,1,1],
+                    [1,0,1,1,1,1,0,1],
+                    [1,0,1,0,0,1,0,1],
+                    [0,0,1,1,1,1,0,0]
+                ]
+            ];
+            
+            const pattern = patterns[type];
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if (pattern[row][col]) {
+                        ctx.fillRect(
+                            x - w/2 + col * pixelSize, 
+                            y - h/2 + row * pixelSize, 
+                            pixelSize, 
+                            pixelSize
+                        );
+                    }
+                }
+            }
+        }
+        
+        function startGame() {
+            return new Promise(resolve => {
+                const gameStartTime = Date.now();
+                elements.overlay.innerHTML = '';
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = 320;
+                canvas.height = 240;
+                canvas.style.background = '#001b1a';
+                canvas.style.border = '2px solid #00ffcc';
+                elements.overlay.appendChild(canvas);
+                
+                const ctx = canvas.getContext('2d');
+                
+                const scoreBoard = document.createElement('div');
+                scoreBoard.style.marginTop = '8px';
+                scoreBoard.style.color = '#00ffcc';
+                elements.overlay.appendChild(scoreBoard);
+                
+                const timeBoard = document.createElement('div');
+                timeBoard.style.marginTop = '4px';
+                timeBoard.style.color = '#00ffcc';
+                elements.overlay.appendChild(timeBoard);
+                
+                const spaceship = { x: canvas.width / 2 - 15, y: canvas.height - 20, w: 30, h: 10, speed: 4 };
+                const bullets = [];
+                const viruses = [];
+                const cols = 6;
+                const rows = 2;
+                let remaining = cols * rows;
+                let score = 0;
+                
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        viruses.push({ 
+                            x: 30 + c * 40, 
+                            y: 20 + r * 30, 
+                            w: 20, 
+                            h: 16, 
+                            vx: 1 * (Math.random() > 0.5 ? 1 : -1), 
+                            hit: false,
+                            type: Math.floor(Math.random() * 3)
+                        });
+                    }
+                }
+                
+                function updateScore() {
+                    const gameTime = (Date.now() - gameStartTime) / 1000;
+                    scoreBoard.textContent = `${t('virusesLeft')}: ${remaining} | ${t('scoreLabel')}: ${score}`;
+                    timeBoard.textContent = `${t('timeLabel')}: ${gameTime.toFixed(1)}s`;
+                }
+                
+                let animationId;
+                let isOver = false;
+                
+                function draw() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    ctx.fillStyle = '#ff0077';
+                    ctx.fillRect(spaceship.x, spaceship.y, spaceship.w, spaceship.h);
+                    
+                    viruses.forEach(v => {
+                        if (!v.hit) {
+                            v.x += v.vx;
+                            if (v.x - v.w/2 < 0 || v.x + v.w/2 > canvas.width) v.vx *= -1;
+                            drawInvader(ctx, v.x, v.y, v.w, v.h, v.type);
+                        }
+                    });
+                    
+                    for (let i = bullets.length - 1; i >= 0; i--) {
+                        const b = bullets[i];
+                        b.y -= 4;
+                        ctx.fillStyle = '#ffff00';
+                        ctx.fillRect(b.x - 1, b.y - 8, 2, 8);
+                        
+                        if (b.y < 0) {
+                            bullets.splice(i, 1);
+                            continue;
+                        }
+                        
+                        viruses.forEach(v => {
+                            if (!v.hit) {
+                                if (b.x >= v.x - v.w/2 && b.x <= v.x + v.w/2 && 
+                                    b.y >= v.y - v.h/2 && b.y <= v.y + v.h/2) {
+                                    v.hit = true;
+                                    remaining--;
+                                    score++;
+                                    bullets.splice(i, 1);
+                                }
+                            }
+                        });
+                    }
+                    
+                    updateScore();
+                    
+                    if (viruses.every(v => v.hit)) {
+                        end(true);
+                    }
+                    
+                    if (!isOver) animationId = requestAnimationFrame(draw);
+                }
+                
+                function move(dir) {
+                    spaceship.x += dir * spaceship.speed;
+                    if (spaceship.x < 0) spaceship.x = 0;
+                    if (spaceship.x + spaceship.w > canvas.width) spaceship.x = canvas.width - spaceship.w;
+                }
+                
+                function shoot() {
+                    bullets.push({ x: spaceship.x + spaceship.w / 2, y: spaceship.y });
+                }
+                
+                function pointerMove(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+                    spaceship.x = x - spaceship.w / 2;
+                    if (spaceship.x < 0) spaceship.x = 0;
+                    if (spaceship.x + spaceship.w > canvas.width) spaceship.x = canvas.width - spaceship.w;
+                }
+                
+                function pointerDown() { shoot(); }
+                
+                canvas.addEventListener('mousemove', pointerMove);
+                canvas.addEventListener('mousedown', pointerDown);
+                canvas.addEventListener('touchmove', pointerMove);
+                canvas.addEventListener('touchstart', pointerDown);
+                
+                function keyHandler(e) {
+                    if (e.key === 'ArrowLeft') move(-1);
+                    else if (e.key === 'ArrowRight') move(1);
+                    else if (e.key === ' ') shoot();
+                }
+                window.addEventListener('keydown', keyHandler);
+                
+                function end(success) {
+                    if (isOver) return;
+                    isOver = true;
+                    const finalTime = (Date.now() - gameStartTime) / 1000;
+                    cancelAnimationFrame(animationId);
+                    canvas.removeEventListener('mousemove', pointerMove);
+                    canvas.removeEventListener('mousedown', pointerDown);
+                    canvas.removeEventListener('touchmove', pointerMove);
+                    canvas.removeEventListener('touchstart', pointerDown);
+                    window.removeEventListener('keydown', keyHandler);
+                    resolve({ success, time: finalTime, score });
+                }
+                
+                draw();
+            });
+        }
+        
+        // SOS button
+        elements.btnSos.addEventListener('click', async () => {
+            if (elements.btnSos.classList.contains('disabled')) return;
+            elements.btnSos.classList.add('disabled');
+            addLog('sos');
+            
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            
+            const msg = document.createElement('div');
+            msg.textContent = t('scanInit');
+            elements.overlay.appendChild(msg);
+            
+            const progressMsg = document.createElement('div');
+            progressMsg.style.marginTop = '8px';
+            progressMsg.textContent = t('scanProgress');
+            elements.overlay.appendChild(progressMsg);
+            
+            const heartScanner = document.createElement('div');
+            heartScanner.className = 'heart-scanner';
+            
+            const heartDisplay = document.createElement('div');
+            heartDisplay.className = 'heart-display';
+            heartDisplay.textContent = '♡';
+            heartScanner.appendChild(heartDisplay);
+            
+            const scanGrid = document.createElement('div');
+            scanGrid.className = 'scan-grid';
+            heartScanner.appendChild(scanGrid);
+            
+            const scanLine = document.createElement('div');
+            scanLine.className = 'scan-line';
+            heartScanner.appendChild(scanLine);
+            
+            elements.overlay.appendChild(heartScanner);
+            
+            setTimeout(() => {
+                msg.textContent = t('virusDetected');
+                progressMsg.remove();
+                heartScanner.remove();
+                
+                const virusIcon = document.createElement('div');
+                virusIcon.style.fontSize = '120px';
+                virusIcon.style.margin = '20px 0';
+                virusIcon.style.animation = 'pulse 0.5s infinite';
+                virusIcon.style.color = '#14ffec';
+                virusIcon.textContent = '👾';
+                elements.overlay.appendChild(virusIcon);
+                
+                const busterBtn = document.createElement('button');
+                busterBtn.textContent = t('virusBtn');
+                busterBtn.style.marginTop = '12px';
+                busterBtn.style.padding = '8px 16px';
+                busterBtn.style.background = '#14ffec';
+                busterBtn.style.color = '#151515';
+                busterBtn.style.border = 'none';
+                busterBtn.style.cursor = 'pointer';
+                busterBtn.style.fontFamily = 'inherit';
+                elements.overlay.appendChild(busterBtn);
+                
+                busterBtn.addEventListener('click', async () => {
+                    elements.overlay.innerHTML = '';
+                    const gameResult = await startGame();
+                    elements.overlay.innerHTML = '';
+                    
+                    const cleanMsg = document.createElement('div');
+                    cleanMsg.innerHTML = t('virusClean').replace(/\n/g, '<br>');
+                    cleanMsg.style.marginBottom = '16px';
+                    elements.overlay.appendChild(cleanMsg);
+                    
+                    // ランキングを更新
+                    updateRankings(gameResult.time);
+                    const rankingDisplay = displayRankings();
+                    elements.overlay.appendChild(rankingDisplay);
+                    
+                    const closeBtn = createCloseButton(() => {
+                        elements.overlay.style.display = 'none';
+                        sosDone = true;
+                        showPrompt();
+                    });
+                    elements.overlay.appendChild(closeBtn);
+                });
+            }, 4000);
+        });
+        
+        // Lonely button
+        elements.btnLonely.addEventListener('click', async () => {
+            if (elements.btnLonely.classList.contains('disabled')) return;
+            elements.btnLonely.classList.add('disabled');
+            addLog('lonely');
+            
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            
+            const msg = document.createElement('div');
+            msg.textContent = t('lonelyPrompt');
+            elements.overlay.appendChild(msg);
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = t('lonelyInput');
+            input.style.marginTop = '12px';
+            input.style.padding = '6px 10px';
+            input.style.background = '#111';
+            input.style.color = '#00fff2';
+            input.style.border = '1px solid #00fff2';
+            input.style.fontFamily = 'inherit';
+            elements.overlay.appendChild(input);
+            
+            const okBtn = document.createElement('button');
+            okBtn.textContent = t('whyOk');
+            okBtn.style.marginTop = '8px';
+            okBtn.style.padding = '8px 16px';
+            okBtn.style.background = '#14ffec';
+            okBtn.style.color = '#151515';
+            okBtn.style.border = 'none';
+            okBtn.style.cursor = 'pointer';
+            okBtn.style.fontFamily = 'inherit';
+            elements.overlay.appendChild(okBtn);
+            
+            okBtn.addEventListener('click', () => {
+                const song = input.value.trim() || (currentLang === 'en' ? 'Unknown song' : '不明な曲');
+                
+                const otohaResult = checkOtohaLyrics(song);
+                
+                if (otohaResult) {
+                    elements.overlay.innerHTML = '';
+                    
+                    const titleDiv = document.createElement('div');
+                    titleDiv.style.fontSize = '18px';
+                    titleDiv.style.color = '#e6007e';
+                    titleDiv.style.marginBottom = '8px';
+                    titleDiv.textContent = `${otohaResult.title} - 音羽-otoha-`;
+                    elements.overlay.appendChild(titleDiv);
+                    
+                    const playingMsg = document.createElement('div');
+                    playingMsg.style.fontSize = '14px';
+                    playingMsg.style.marginBottom = '16px';
+                    playingMsg.textContent = t('playingInHead');
+                    elements.overlay.appendChild(playingMsg);
+                    
+                    const waveContainer = document.createElement('div');
+                    waveContainer.className = 'wave-container';
+                    for (let i = 0; i < 20; i++) {
+                        const barEl = document.createElement('div');
+                        barEl.className = 'wave-bar';
+                        barEl.style.animationDelay = (i * 0.1) + 's';
+                        waveContainer.appendChild(barEl);
+                    }
+                    elements.overlay.appendChild(waveContainer);
+                    
+                    const lyricsDiv = document.createElement('div');
+                    lyricsDiv.style.fontSize = '12px';
+                    lyricsDiv.style.lineHeight = '1.4';
+                    lyricsDiv.style.textAlign = 'left';
+                    lyricsDiv.style.maxHeight = '200px';
+                    lyricsDiv.style.overflowY = 'auto';
+                    lyricsDiv.style.padding = '12px';
+                    lyricsDiv.style.background = 'rgba(0, 0, 0, 0.7)';
+                    lyricsDiv.style.borderRadius = '8px';
+                    lyricsDiv.style.marginTop = '16px';
+                    lyricsDiv.style.whiteSpace = 'pre-line';
+                    lyricsDiv.textContent = otohaResult.lyrics;
+                    elements.overlay.appendChild(lyricsDiv);
+                    
+                } else {
+                    elements.overlay.innerHTML = '';
+                    
+                    const waveMsg = document.createElement('div');
+                    waveMsg.textContent = song + t('lonelyWave');
+                    elements.overlay.appendChild(waveMsg);
+                    
+                    const waveContainer = document.createElement('div');
+                    waveContainer.className = 'wave-container';
+                    for (let i = 0; i < 20; i++) {
+                        const barEl = document.createElement('div');
+                        barEl.className = 'wave-bar';
+                        barEl.style.animationDelay = (i * 0.1) + 's';
+                        waveContainer.appendChild(barEl);
+                    }
+                    elements.overlay.appendChild(waveContainer);
+                }
+                
+                const endMsg = document.createElement('div');
+                endMsg.textContent = t('lonelyEnd');
+                elements.overlay.appendChild(endMsg);
+                
+                const closeBtn = createCloseButton(() => {
+                    elements.overlay.style.display = 'none';
+                    lonelyDone = true;
+                    showPrompt();
+                });
+                elements.overlay.appendChild(closeBtn);
+            });
+        });
+        
+        // Hate myself button
+        elements.btnHate.addEventListener('click', async () => {
+            if (elements.btnHate.classList.contains('disabled')) return;
+            elements.btnHate.classList.add('disabled');
+            addLog('hate myself');
+            
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            
+            const msg = document.createElement('div');
+            msg.textContent = t('hatePrompt');
+            elements.overlay.appendChild(msg);
+            
+            const carContainer1 = document.createElement('div');
+            carContainer1.className = 'car-container';
+            const car1 = document.createElement('div');
+            car1.className = 'car';
+            car1.textContent = '🚗';
+            carContainer1.appendChild(car1);
+            elements.overlay.appendChild(carContainer1);
+            
+            const timeDisplay = createTimeDisplay();
+            elements.overlay.appendChild(timeDisplay);
+            
+            setTimeout(() => {
+                const pastMsg = document.createElement('div');
+                pastMsg.textContent = t('travelPast');
+                pastMsg.classList.add('glitch');
+                elements.overlay.appendChild(pastMsg);
+                
+                const pastInterval = animateTimeToPast(timeDisplay);
+                
+                setTimeout(() => {
+                    clearInterval(pastInterval);
+                    const carContainer2 = document.createElement('div');
+                    carContainer2.className = 'car-container';
+                    const car2 = document.createElement('div');
+                    car2.className = 'car reverse';
+                    car2.textContent = '🚗';
+                    carContainer2.appendChild(car2);
+                    elements.overlay.appendChild(carContainer2);
+                    
+                    const futureMsg = document.createElement('div');
+                    futureMsg.textContent = t('travelFuture');
+                    futureMsg.classList.add('glitch');
+                    elements.overlay.appendChild(futureMsg);
+                    
+                    const futureInterval = animateTimeToFuture(timeDisplay);
+                    
+                    setTimeout(() => {
+                        clearInterval(futureInterval);
+                        elements.overlay.innerHTML = '';
+                        
+                        const resultContainer = document.createElement('div');
+                        resultContainer.className = 'travel-result';
+                        
+                        const endMsg = document.createElement('div');
+                        endMsg.textContent = t('hateEnd');
+                        endMsg.style.fontSize = '18px';
+                        endMsg.style.marginBottom = '20px';
+                        resultContainer.appendChild(endMsg);
+                        
+                        elements.overlay.appendChild(resultContainer);
+                        createSparkles(elements.overlay, true);
+                        
+                        const closeBtn = createCloseButton(() => {
+                            elements.overlay.style.display = 'none';
+                            hateDone = true;
+                            showPrompt();
+                        });
+                        elements.overlay.appendChild(closeBtn);
+                    }, 3000);
+                }, 3000);
+            }, 1000);
+        });
+        
+        // Why button
+        elements.btnWhy.addEventListener('click', async () => {
+            if (elements.btnWhy.classList.contains('disabled')) return;
+            addLog('why');
+            
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            
+            const msg = document.createElement('div');
+            msg.textContent = t('whyPrompt');
+            elements.overlay.appendChild(msg);
+            
+            const bar = document.createElement('div');
+            bar.className = 'scan-bar';
+            const fill = document.createElement('div');
+            fill.className = 'scan-fill';
+            bar.appendChild(fill);
+            elements.overlay.appendChild(bar);
+            
+            let progress = 0;
+            const intv = setInterval(() => {
+                progress += 2;
+                fill.style.width = progress + '%';
+                if (progress >= 60) {
+                    clearInterval(intv);
+                    
+                    const stopMsg = document.createElement('div');
+                    stopMsg.style.marginTop = '8px';
+                    stopMsg.textContent = t('whyStop');
+                    elements.overlay.appendChild(stopMsg);
+                    
+                    const okBtn = document.createElement('button');
+                    okBtn.textContent = t('whyOk');
+                    okBtn.style.marginTop = '8px';
+                    okBtn.style.padding = '8px 16px';
+                    okBtn.style.background = '#14ffec';
+                    okBtn.style.color = '#151515';
+                    okBtn.style.border = 'none';
+                    okBtn.style.cursor = 'pointer';
+                    okBtn.style.fontFamily = 'inherit';
+                    elements.overlay.appendChild(okBtn);
+                    
+                    okBtn.addEventListener('click', () => {
+                        elements.overlay.innerHTML = '';
+                        
+                        const clock = document.createElement('div');
+                        clock.id = 'clockDisplay';
+                        clock.textContent = '00:00:00';
+                        elements.overlay.appendChild(clock);
+                        
+                        function updateClock() {
+                            const now = new Date();
+                            const hh = String(now.getHours()).padStart(2, '0');
+                            const mm = String(now.getMinutes()).padStart(2, '0');
+                            const ss = String(now.getSeconds()).padStart(2, '0');
+                            clock.textContent = `${hh}:${mm}:${ss}`;
+                        }
+                        updateClock();
+                        setInterval(updateClock, 1000);
+                    });
+                }
+            }, 400);
+    </script>
+</body>
+</html>
