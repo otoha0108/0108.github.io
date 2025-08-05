@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>🌐 HELL0w0RLD! 🌐</title>
+    <!-- Use Google Fonts for the Pixel Mplus 10 font. Fallbacks include Press Start 2P and system emoji fonts. -->
+    <!-- Embed the full PixelMplus10 font so Japanese and English characters render correctly.
+         The accompanying font file (PixelMplus10-Regular-gen.woff) must sit next to this HTML file. -->
+    <style>
+        @font-face {
+            font-family: 'PixelMplus10';
+            src: url('PixelMplus10-Regular-gen.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+    </style>
+    <style>
+        body {
+            background: #0f0f0f;
+            color: #00fff2;
+            font-family: 'PixelMplus10', 'Press Start 2P', 'Segoe UI Emoji', 'Noto Color Emoji', monospace;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        #app {
+            width: 95%;
+            max-width: 640px;
+            border: 2px solid #14ffec;
+            border-radius: 8px;
+            background: #151515;
+            padding: 16px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            position: relative;
+        }
+        h1 {
+            margin: 0;
+            color: #14ffec;
+            text-align: center;
+        }
+        /* Language toggle */
+        #lang-toggle {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            z-index: 1000;
+        }
+        #lang-toggle button {
+            font-family: inherit;
+            font-size: 12px;
+            padding: 2px 6px;
+            background-color: #e6007e;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        #lang-toggle button.active {
+            background-color: #14ffec;
+            color: #151515;
+        }
+        /* Loader */
+        #loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            text-align: center;
+        }
+        #loader .bar {
+            width: 300px;
+            height: 15px;
+            border: 1px solid #00fff2;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        #loader .bar-fill {
+            height: 100%;
+            background: #00fff2;
+            width: 0%;
+            animation: loadbar 3s forwards;
+        }
+        @keyframes loadbar {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        /* Overlays */
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 900;
+            text-align: center;
+            padding: 20px;
+            color: #00fff2;
+        }
+        /* Chat/output area */
+        #output {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            padding-right: 4px;
+        }
+        .message {
+            margin: 4px 0;
+            padding: 6px 10px;
+            border-radius: 8px;
+            line-height: 1.4;
+            max-width: 90%;
+            word-wrap: break-word;
+        }
+        .log {
+            background-color: #073b3a;
+            color: #14ffec;
+            align-self: flex-start;
+        }
+        /* Buttons area */
+        #promptSection {
+            display: none;
+        }
+        #promptText {
+            margin: 0 0 8px;
+        }
+        #buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        #buttons button {
+            background: #14ffec;
+            color: #151515;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        #buttons button.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        #buttons button.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+            position: relative;
+        }
+        #buttons button.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+        }
+        /* Wave animation for lonely */
+        .wave-container {
+            display: flex;
+            gap: 4px;
+            margin: 20px 0;
+        }
+        .wave-bar {
+            width: 5px;
+            height: 30px;
+            background: #00fff2;
+            animation: wave 1s infinite;
+            animation-timing-function: ease-in-out;
+        }
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1.3); }
+        }
+        /* Car animation */
+        .car-container {
+            width: 100%;
+            height: 50px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .car {
+            position: absolute;
+            left: -50px;
+            top: 10px;
+            font-size: 28px;
+            animation: drive 4s linear forwards;
+        }
+        @keyframes drive {
+            0% { left: -50px; }
+            100% { left: calc(100% + 50px); }
+        }
+
+        /* Glitch effect for time travel messages */
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 #ff0077, -2px 0 #00ffcc; }
+            25% { text-shadow: -2px 0 #ff0077, 2px 0 #00ffcc; }
+            50% { text-shadow: 2px 0 #ff0077, -2px 0 #00ffcc; }
+            75% { text-shadow: -2px 0 #ff0077, 2px 0 #00ffcc; }
+            100% { text-shadow: 2px 0 #ff0077, -2px 0 #00ffcc; }
+        }
+        .glitch {
+            animation: glitch 0.5s infinite;
+        }
+        /* Scanning bar for SOS and why */
+        .scan-bar {
+            width: 300px;
+            height: 15px;
+            border: 1px solid #00fff2;
+            margin-top: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .scan-fill {
+            height: 100%;
+            background: #00fff2;
+            width: 0%;
+        }
+        /* Clock display for why */
+        #clockDisplay {
+            font-size: 32px;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="lang-toggle">
+            <button id="btn-en" class="active">EN</button>
+            <button id="btn-ja">JP</button>
+        </div>
+        <!-- Loader -->
+        <div id="loader">
+            <h2 id="loaderText">0108 connecting…</h2>
+            <div class="bar">
+                <div class="bar-fill"></div>
+            </div>
+        </div>
+        <!-- Title -->
+        <div id="title" style="display:none;">
+            <h1>🌐HELL0w0RLD!🌐</h1>
+        </div>
+        <!-- Username screen -->
+        <div id="usernameScreen" style="display:none;">
+            <h2 id="enterNameText">Enter your name:</h2>
+            <input type="text" id="usernameInput" placeholder="Your name here" />
+            <br>
+            <button id="startBtn">Start</button>
+        </div>
+        <!-- Chat log -->
+        <div id="output"></div>
+        <!-- Prompt and buttons -->
+        <div id="promptSection">
+            <h2 id="promptText">📡 0108: What's on your mind?</h2>
+            <div id="buttons">
+                <button id="btn-sos">sos</button>
+                <button id="btn-lonely">lonely</button>
+                <button id="btn-hate">hate myself</button>
+                <button id="btn-why" class="locked">why</button>
+            </div>
+        </div>
+        <!-- Overlay for scanning, game, wave, car, why clock etc. -->
+        <div id="overlay"></div>
+    </div>
+    <script>
+    // Translation dictionary
+    const translations = {
+        en: {
+            connect: '0108 connecting…',
+            enterName: 'Enter your name:',
+            start: 'Start',
+            prompt: "📡 0108: What's on your mind?",
+            scanInit: '0108 can catch your signal anytime!',
+            scanProgress: 'Scanning your heart...',
+            virusDetected: '🚨 Virus detected!',
+            virusBtn: 'Launch Virus Buster!',
+            virusClean: '✅ Virus eliminated!\nHeart status: 150% clean.',
+            lonelyPrompt: "OK. Let's listen to music with something sweet!🥧",
+            lonelyInput: 'Enter your favorite song name >',
+            lonelyWave: ' is now playing in your head!',
+            lonelyEnd: '0108 is always here to sing for you ♪',
+            hatePrompt: '🚗 Time patrol active!',
+            travelPast: 'Traveling to your [ Past ]…',
+            travelFuture: 'Traveling to your [ Future ]…',
+            hateEnd: "Every moment’s full of light. You’re perfect as is✨",
+            whyPrompt: '0108 is thinking…',
+            whyStop: 'This program will never stop until you find the answer.',
+            whyOk: 'OK',
+            logPrefix: ': ',
+            virusesLeft: 'Viruses left',
+            scoreLabel: 'Score',
+            clockLabel: '',
+        },
+        ja: {
+            connect: '0108 接続中…',
+            enterName: '名前を入力してください:',
+            start: 'スタート',
+            prompt: '📡 0108: 調子はどう？',
+            scanInit: '0108はいつでもあなたの信号を受信できます！',
+            scanProgress: 'あなたの心をスキャンしています...',
+            virusDetected: '🚨 ウイルス発見！',
+            virusBtn: 'ウイルスバスター起動！',
+            virusClean: '✅ ウイルスをやっつけたぞ！\n心の状態: 150%クリーン。',
+            lonelyPrompt: 'よし、甘いものでも食べながら音楽でも聴こう！🥧',
+            lonelyInput: 'お気に入りの曲の名前を入力してください >',
+            lonelyWave: ' を脳内再生中...♪',
+            lonelyEnd: '0108はいつでもあなたと一緒に歌います。',
+            hatePrompt: '🚗 タイムパトロール開始！',
+            travelPast: '[ 過去 ] へ移動中...',
+            travelFuture: '[ 未来 ] へ移動中...',
+            hateEnd: 'すべての瞬間が光で溢れてる。あなたはそのままで完璧です✨',
+            whyPrompt: '0108は考えています…',
+            whyStop: 'このプログラムは、あなたと答えを見つけるまで止まらない。',
+            whyOk: 'OK',
+            logPrefix: '：',
+            virusesLeft: '残りウイルス',
+            scoreLabel: 'スコア',
+            clockLabel: '',
+        }
+    };
+    let currentLang = 'en';
+    let userName = 'AAA';
+    let sosDone = false;
+    let lonelyDone = false;
+    let hateDone = false;
+    // Helper to translate keys
+    function t(key) {
+        return translations[currentLang][key] || key;
+    }
+    // Cache elements
+    const loader = document.getElementById('loader');
+    const loaderText = document.getElementById('loaderText');
+    const titleDiv = document.getElementById('title');
+    const usernameScreen = document.getElementById('usernameScreen');
+    const enterNameText = document.getElementById('enterNameText');
+    const startBtn = document.getElementById('startBtn');
+    const outputDiv = document.getElementById('output');
+    const promptSection = document.getElementById('promptSection');
+    const promptText = document.getElementById('promptText');
+    const buttonsDiv = document.getElementById('buttons');
+    const overlay = document.getElementById('overlay');
+    const btnSos = document.getElementById('btn-sos');
+    const btnLonely = document.getElementById('btn-lonely');
+    const btnHate = document.getElementById('btn-hate');
+    const btnWhy = document.getElementById('btn-why');
+    const btnEn = document.getElementById('btn-en');
+    const btnJa = document.getElementById('btn-ja');
+    // Initialize loader and transition sequence
+    window.onload = () => {
+        loaderText.textContent = t('connect');
+        setTimeout(() => {
+            // Hide loader, show title
+            loader.style.display = 'none';
+            titleDiv.style.display = 'block';
+            setTimeout(() => {
+                titleDiv.style.display = 'none';
+                // Show name screen
+                enterNameText.textContent = t('enterName');
+                startBtn.textContent = t('start');
+                usernameScreen.style.display = 'block';
+            }, 2000);
+        }, 3200);
+    };
+    // Language switching
+    function setLanguage(lang) {
+        if (currentLang === lang) return;
+        currentLang = lang;
+        btnEn.classList.toggle('active', currentLang === 'en');
+        btnJa.classList.toggle('active', currentLang === 'ja');
+        // Update static texts based on language
+        loaderText.textContent = t('connect');
+        enterNameText.textContent = t('enterName');
+        startBtn.textContent = t('start');
+        promptText.textContent = t('prompt');
+        // Buttons text remain constant; do not translate the four action buttons
+        // If overlay is visible, update its textual content accordingly
+        // We won't retranslate past logs
+    }
+    btnEn.addEventListener('click', () => setLanguage('en'));
+    btnJa.addEventListener('click', () => setLanguage('ja'));
+    // Save username and start prompt
+    startBtn.addEventListener('click', () => {
+        const input = document.getElementById('usernameInput');
+        const value = input.value.trim();
+        userName = value ? value : 'AAA';
+        usernameScreen.style.display = 'none';
+        showPrompt();
+    });
+    function showPrompt() {
+        promptText.textContent = t('prompt');
+        promptSection.style.display = 'block';
+        // Update button lock states
+        if (sosDone && lonelyDone && hateDone) {
+            btnWhy.classList.remove('locked');
+            btnWhy.classList.remove('disabled');
+        } else {
+            btnWhy.classList.add('locked');
+            btnWhy.classList.add('disabled');
+        }
+        // Re-enable other buttons
+        btnSos.classList.remove('disabled');
+        btnLonely.classList.remove('disabled');
+        btnHate.classList.remove('disabled');
+    }
+    // Append a log message to the output
+    function addLog(action) {
+        const div = document.createElement('div');
+        div.className = 'message log';
+        div.textContent = `${userName}${t('logPrefix')}${action}`;
+        outputDiv.appendChild(div);
+        outputDiv.scrollTop = outputDiv.scrollHeight;
+    }
+    // SOS handler
+    btnSos.addEventListener('click', async () => {
+        if (btnSos.classList.contains('disabled')) return;
+        btnSos.classList.add('disabled');
+        addLog('sos');
+        // Show scanning overlay
+        overlay.innerHTML = '';
+        overlay.style.display = 'flex';
+        const msg = document.createElement('div');
+        msg.textContent = t('scanInit');
+        overlay.appendChild(msg);
+        const bar = document.createElement('div');
+        bar.className = 'scan-bar';
+        const fill = document.createElement('div');
+        fill.className = 'scan-fill';
+        bar.appendChild(fill);
+        overlay.appendChild(bar);
+        // Show scanning progress message
+        const progressMsg = document.createElement('div');
+        progressMsg.style.marginTop = '8px';
+        progressMsg.textContent = t('scanProgress');
+        overlay.appendChild(progressMsg);
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 5;
+            fill.style.width = progress + '%';
+            if (progress >= 100) {
+                clearInterval(interval);
+                // Virus detected
+                msg.textContent = t('virusDetected');
+                // Remove progress message
+                progressMsg.remove();
+                // Show button to launch buster
+                const busterBtn = document.createElement('button');
+                busterBtn.textContent = t('virusBtn');
+                busterBtn.style.marginTop = '12px';
+                overlay.appendChild(busterBtn);
+                busterBtn.addEventListener('click', async () => {
+                    // Start game
+                    overlay.innerHTML = '';
+                    await startGame();
+                    // After game, show clean message
+                    overlay.innerHTML = '';
+                    const cleanMsg = document.createElement('div');
+                    cleanMsg.innerHTML = t('virusClean').replace(/\n/g, '<br>');
+                    overlay.appendChild(cleanMsg);
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                        sosDone = true;
+                        finalizeAction();
+                    }, 2000);
+                });
+            }
+        }, 300);
+    });
+    // Lonely handler
+    btnLonely.addEventListener('click', async () => {
+        if (btnLonely.classList.contains('disabled')) return;
+        btnLonely.classList.add('disabled');
+        addLog('lonely');
+        // Show prompt message and input
+        overlay.innerHTML = '';
+        overlay.style.display = 'flex';
+        const msg = document.createElement('div');
+        msg.textContent = t('lonelyPrompt');
+        overlay.appendChild(msg);
+        // Input field
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = t('lonelyInput');
+        input.style.marginTop = '12px';
+        input.style.padding = '6px 10px';
+        input.style.background = '#111';
+        input.style.color = '#00fff2';
+        input.style.border = '1px solid #00fff2';
+        input.style.fontFamily = 'inherit';
+        overlay.appendChild(input);
+        // OK button
+        const okBtn = document.createElement('button');
+        okBtn.textContent = t('whyOk');
+        okBtn.style.marginTop = '8px';
+        overlay.appendChild(okBtn);
+        okBtn.addEventListener('click', () => {
+            const song = input.value.trim() || (currentLang === 'en' ? 'Unknown song' : '不明な曲');
+            // Show wave animation
+            overlay.innerHTML = '';
+            const waveMsg = document.createElement('div');
+            // Compose song message (song + lonelyWave suffix)
+            const suffix = t('lonelyWave');
+            waveMsg.textContent = song + suffix;
+            overlay.appendChild(waveMsg);
+            const waveContainer = document.createElement('div');
+            waveContainer.className = 'wave-container';
+            // Create bars
+            for (let i = 0; i < 20; i++) {
+                const barEl = document.createElement('div');
+                barEl.className = 'wave-bar';
+                barEl.style.animationDelay = (i * 0.1) + 's';
+                waveContainer.appendChild(barEl);
+            }
+            overlay.appendChild(waveContainer);
+            const endMsg = document.createElement('div');
+            endMsg.textContent = t('lonelyEnd');
+            overlay.appendChild(endMsg);
+            // Wait some time and finish
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                lonelyDone = true;
+                finalizeAction();
+            }, 4000);
+        });
+    });
+    // Hate handler
+    btnHate.addEventListener('click', async () => {
+        if (btnHate.classList.contains('disabled')) return;
+        btnHate.classList.add('disabled');
+        addLog('hate myself');
+        overlay.innerHTML = '';
+        overlay.style.display = 'flex';
+        const msg = document.createElement('div');
+        msg.textContent = t('hatePrompt');
+        overlay.appendChild(msg);
+        // Car animation
+        const carContainer = document.createElement('div');
+        carContainer.className = 'car-container';
+        const car = document.createElement('div');
+        car.className = 'car';
+        car.textContent = '🚗';
+        carContainer.appendChild(car);
+        overlay.appendChild(carContainer);
+        // Travel messages sequentially
+        setTimeout(() => {
+            const pastMsg = document.createElement('div');
+            pastMsg.textContent = t('travelPast');
+            pastMsg.classList.add('glitch');
+            overlay.appendChild(pastMsg);
+            setTimeout(() => {
+                const futureMsg = document.createElement('div');
+                futureMsg.textContent = t('travelFuture');
+                futureMsg.classList.add('glitch');
+                overlay.appendChild(futureMsg);
+                setTimeout(() => {
+                    const endMsg = document.createElement('div');
+                    endMsg.textContent = t('hateEnd');
+                    overlay.appendChild(endMsg);
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                        hateDone = true;
+                        finalizeAction();
+                    }, 2000);
+                }, 2500);
+            }, 2500);
+        }, 1000);
+    });
+    // Why handler
+    btnWhy.addEventListener('click', async () => {
+        if (btnWhy.classList.contains('disabled')) return;
+        // Only proceed if unlocked
+        addLog('why');
+        // Show thinking overlay
+        overlay.innerHTML = '';
+        overlay.style.display = 'flex';
+        const msg = document.createElement('div');
+        msg.textContent = t('whyPrompt');
+        overlay.appendChild(msg);
+        const bar = document.createElement('div');
+        bar.className = 'scan-bar';
+        const fill = document.createElement('div');
+        fill.className = 'scan-fill';
+        bar.appendChild(fill);
+        overlay.appendChild(bar);
+        // Animate bar to 60% then stop
+        let progress = 0;
+        const intv = setInterval(() => {
+            progress += 4;
+            fill.style.width = progress + '%';
+            if (progress >= 60) {
+                clearInterval(intv);
+                // Show stop message and OK button
+                const stopMsg = document.createElement('div');
+                stopMsg.style.marginTop = '8px';
+                stopMsg.textContent = t('whyStop');
+                overlay.appendChild(stopMsg);
+                const okBtn = document.createElement('button');
+                okBtn.textContent = t('whyOk');
+                okBtn.style.marginTop = '8px';
+                overlay.appendChild(okBtn);
+                okBtn.addEventListener('click', () => {
+                    // Show digital clock
+                    overlay.innerHTML = '';
+                    const clockMsg = document.createElement('div');
+                    clockMsg.textContent = '';
+                    overlay.appendChild(clockMsg);
+                    const clock = document.createElement('div');
+                    clock.id = 'clockDisplay';
+                    clock.textContent = '00:00:00';
+                    overlay.appendChild(clock);
+                    function updateClock() {
+                        const now = new Date();
+                        const hh = String(now.getHours()).padStart(2, '0');
+                        const mm = String(now.getMinutes()).padStart(2, '0');
+                        const ss = String(now.getSeconds()).padStart(2, '0');
+                        clock.textContent = `${hh}:${mm}:${ss}`;
+                    }
+                    updateClock();
+                    setInterval(updateClock, 1000);
+                });
+            }
+        }, 200);
+    });
+    // Finalize action: show prompt and unlock why if all done
+    function finalizeAction() {
+        // After finishing an action, show the prompt again
+        showPrompt();
+    }
+    // Game implementation (spaceship shooter) as asynchronous function
+    function startGame() {
+        return new Promise(resolve => {
+            overlay.innerHTML = '';
+            // Create canvas and scoreboard
+            const canvas = document.createElement('canvas');
+            canvas.width = 320;
+            canvas.height = 240;
+            canvas.style.background = '#001b1a';
+            canvas.style.border = '2px solid #00ffcc';
+            overlay.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            const scoreBoard = document.createElement('div');
+            scoreBoard.style.marginTop = '8px';
+            scoreBoard.style.color = '#00ffcc';
+            overlay.appendChild(scoreBoard);
+            // Setup game state
+            const spaceship = { x: canvas.width / 2 - 15, y: canvas.height - 20, w: 30, h: 10, speed: 4 };
+            const bullets = [];
+            const viruses = [];
+            const cols = 6;
+            const rows = 2;
+            let remaining = cols * rows;
+            let score = 0;
+            // Populate viruses
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    viruses.push({ x: 30 + c * 40, y: 20 + r * 30, r: 8, vx: 1 * (Math.random() > 0.5 ? 1 : -1), hit: false });
+                }
+            }
+            function updateScore() {
+                // Show remaining viruses and score with translated labels
+                scoreBoard.textContent = `${t('virusesLeft')}: ${remaining} | ${t('scoreLabel')}: ${score}`;
+            }
+            updateScore();
+            let animationId;
+            let isOver = false;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Draw spaceship
+                ctx.fillStyle = '#ff0077';
+                ctx.fillRect(spaceship.x, spaceship.y, spaceship.w, spaceship.h);
+                // Draw viruses
+                viruses.forEach(v => {
+                    if (!v.hit) {
+                        v.x += v.vx;
+                        if (v.x - v.r < 0 || v.x + v.r > canvas.width) v.vx *= -1;
+                        ctx.fillStyle = '#00ffcc';
+                        ctx.beginPath();
+                        ctx.arc(v.x, v.y, v.r, 0, 2 * Math.PI);
+                        ctx.fill();
+                        // Collision with spaceship
+                        if (v.y + v.r >= spaceship.y && v.x + v.r >= spaceship.x && v.x - v.r <= spaceship.x + spaceship.w) {
+                            end(false);
+                        }
+                        if (v.y + v.r > canvas.height) {
+                            end(false);
+                        }
+                    }
+                });
+                // Bullets
+                for (let i = bullets.length - 1; i >= 0; i--) {
+                    const b = bullets[i];
+                    b.y -= 4;
+                    ctx.fillStyle = '#ffff00';
+                    ctx.fillRect(b.x - 1, b.y - 8, 2, 8);
+                    if (b.y < 0) {
+                        bullets.splice(i, 1);
+                        continue;
+                    }
+                    viruses.forEach(v => {
+                        if (!v.hit) {
+                            const dist = Math.hypot(v.x - b.x, v.y - b.y);
+                            if (dist < v.r) {
+                                v.hit = true;
+                                remaining--;
+                                score++;
+                                updateScore();
+                                bullets.splice(i, 1);
+                            }
+                        }
+                    });
+                }
+                if (viruses.every(v => v.hit)) {
+                    end(true);
+                }
+                if (!isOver) animationId = requestAnimationFrame(draw);
+            }
+            draw();
+            function move(dir) {
+                spaceship.x += dir * spaceship.speed;
+                if (spaceship.x < 0) spaceship.x = 0;
+                if (spaceship.x + spaceship.w > canvas.width) spaceship.x = canvas.width - spaceship.w;
+            }
+            function shoot() {
+                bullets.push({ x: spaceship.x + spaceship.w / 2, y: spaceship.y });
+            }
+            function pointerMove(e) {
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+                spaceship.x = x - spaceship.w / 2;
+                if (spaceship.x < 0) spaceship.x = 0;
+                if (spaceship.x + spaceship.w > canvas.width) spaceship.x = canvas.width - spaceship.w;
+            }
+            function pointerDown() {
+                shoot();
+            }
+            canvas.addEventListener('mousemove', pointerMove);
+            canvas.addEventListener('mousedown', pointerDown);
+            canvas.addEventListener('touchmove', pointerMove);
+            canvas.addEventListener('touchstart', pointerDown);
+            function keyHandler(e) {
+                if (e.key === 'ArrowLeft') move(-1);
+                else if (e.key === 'ArrowRight') move(1);
+                else if (e.key === ' ') shoot();
+            }
+            window.addEventListener('keydown', keyHandler);
+            function end(success) {
+                if (isOver) return;
+                isOver = true;
+                cancelAnimationFrame(animationId);
+                canvas.removeEventListener('mousemove', pointerMove);
+                canvas.removeEventListener('mousedown', pointerDown);
+                canvas.removeEventListener('touchmove', pointerMove);
+                canvas.removeEventListener('touchstart', pointerDown);
+                window.removeEventListener('keydown', keyHandler);
+                // Resolve after a slight delay
+                resolve();
+            }
+        });
+    }
+    </script>
+</body>
+</html>
