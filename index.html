@@ -208,6 +208,24 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        #rankingBtn {
+            grid-column: 1 / -1;
+            background: #e6007e;
+            color: #ffffff;
+            border: none;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 8px;
+        }
+        
+        #rankingBtn:hover {
+            background: #ff1493;
         }
         
         #buttons button {
@@ -506,6 +524,7 @@
                 <button id="btn-hate">hate myself</button>
                 <button id="btn-why" class="locked">why</button>
             </div>
+            <button id="rankingBtn">📊 View Rankings</button>
         </div>
         
         <div id="overlay"></div>
@@ -540,7 +559,8 @@
                 scoreLabel: 'Score',
                 timeLabel: 'Time',
                 rankingTitle: '⭐ TOP RANKINGS ⭐',
-                playingInHead: 'Playing in your head...'
+                playingInHead: 'Playing in your head...',
+                viewRankings: 'View Rankings'
             },
             ja: {
                 connect: '0108 接続中…',
@@ -569,7 +589,8 @@
                 scoreLabel: 'スコア',
                 timeLabel: '時間',
                 rankingTitle: '⭐ トップランキング ⭐',
-                playingInHead: '脳内再生中...'
+                playingInHead: '脳内再生中...',
+                viewRankings: 'ランキング表示'
             }
         };
         
@@ -984,7 +1005,8 @@
             btnHate: document.getElementById('btn-hate'),
             btnWhy: document.getElementById('btn-why'),
             btnEn: document.getElementById('btn-en'),
-            btnJa: document.getElementById('btn-ja')
+            btnJa: document.getElementById('btn-ja'),
+            rankingBtn: document.getElementById('rankingBtn')
         };
         
         window.onload = () => {
@@ -1016,6 +1038,7 @@
             elements.enterNameText.textContent = t('enterName');
             elements.startBtn.textContent = t('start');
             elements.promptText.textContent = t('prompt');
+            elements.rankingBtn.textContent = '📊 ' + t('viewRankings');
         }
         
         elements.btnEn.addEventListener('click', () => setLanguage('en'));
@@ -1032,6 +1055,7 @@
         
         function showPrompt() {
             elements.promptText.textContent = t('prompt');
+            elements.rankingBtn.textContent = '📊 ' + t('viewRankings');
             elements.promptSection.style.display = 'block';
             
             elements.btnSos.classList.remove('disabled');
