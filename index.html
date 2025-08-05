@@ -825,14 +825,7 @@
             return interval;
         }
         
-        let currentLang = 'en';
-        let userName = 'AAA';
-        let sosDone = false;
-        let lonelyDone = false;
-        let hateDone = false;
-        let rankings = [];
-        
-        // ダイナミックランキング生成
+        // ダイナミックランキング生成（オフライン時のフォールバック）
         function generateDynamicRankings() {
             const baseRankings = [
                 { name: 'AKIRA', time: 8.2 },
@@ -854,7 +847,87 @@
             })).sort((a, b) => a.time - b.time);
         }
         
-        rankings = generateDynamicRankings();
+        // 初期化（オンライン対応）
+        async function initializeRankings() {
+            if (USE_ONLINE_RANKING) {
+                const onlineRankings = await loadRankingsOnline();
+                if (onlineRankings) {
+                    rankings = onlineRankings;
+                    console.log('🌐 Using online rankings');
+                    return;
+                }
+            }
+            
+            // オフラインフォールバック
+            rankings = generateDynamicRankings();
+            console.log('📱 Using offline rankings');
+        }
+        
+        // オンラインランキング設定
+        const JSONBIN_API_KEY = '$2a$10$ycn6./ig3dZJOO0jmNBceuZ64D5j0jRHJFRsC5DNWEjmqk6O65/3K';
+        const JSONBIN_BIN_ID = '6891fc2a7b4b8670d8adbb49';
+        const USE_ONLINE_RANKING = true; // オンライン機能ON！
+        
+        // オンラインランキング送信
+        async function submitScoreOnline(userName, time) {
+            if (!USE_ONLINE_RANKING) return false;
+            
+            try {
+                // 現在のランキングを取得
+                const currentRankings = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: {
+                        'X-Master-Key': JSONBIN_API_KEY
+                    }
+                }).then(r => r.json()).then(data => data.record.rankings || []);
+                
+                // 新しいスコアを追加
+                const newEntry = {
+                    name: userName,
+                    time: time,
+                    date: new Date().toISOString().split('T')[0],
+                    timestamp: Date.now()
+                };
+                
+                currentRankings.push(newEntry);
+                currentRankings.sort((a, b) => a.time - b.time);
+                const topRankings = currentRankings.slice(0, 50);
+                
+                // 更新されたランキングを保存
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify({ rankings: topRankings })
+                });
+                
+                console.log('🌐 Score submitted online!');
+                return true;
+            } catch (error) {
+                console.log('❌ Online submission failed:', error);
+                return false;
+            }
+        }
+        
+        // オンラインランキング取得
+        async function loadRankingsOnline() {
+            if (!USE_ONLINE_RANKING) return null;
+            
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: {
+                        'X-Master-Key': JSONBIN_API_KEY
+                    }
+                });
+                const data = await response.json();
+                console.log('📊 Loaded online rankings!');
+                return data.record.rankings || [];
+            } catch (error) {
+                console.log('❌ Failed to load online rankings:', error);
+                return null;
+            }
+        }
         
         function t(key) {
             return translations[currentLang][key] || key;
@@ -972,6 +1045,13 @@
             return sparkleContainer;
         }
         
+        let currentLang = 'en';
+        let userName = 'AAA';
+        let sosDone = false;
+        let lonelyDone = false;
+        let hateDone = false;
+        let rankings = [];
+        
         function updateRankings(newTime) {
             const today = new Date();
             const dateStr = today.toISOString().split('T')[0];
@@ -980,6 +1060,20 @@
             rankings.push(newEntry);
             rankings.sort((a, b) => a.time - b.time);
             rankings = rankings.slice(0, 20);
+            
+            // オンライン送信を試行
+            if (USE_ONLINE_RANKING) {
+                submitScoreOnline(userName, newTime).then(success => {
+                    if (success) {
+                        // 送信成功時は最新ランキングを取得
+                        loadRankingsOnline().then(onlineRankings => {
+                            if (onlineRankings) {
+                                rankings = onlineRankings;
+                            }
+                        });
+                    }
+                });
+            }
         }
         
         function displayRankings() {
@@ -992,7 +1086,14 @@
             title.style.color = '#ffff00';
             title.style.fontSize = '14px';
             title.style.fontWeight = 'bold';
-            title.textContent = '🏆 ' + t('rankingTitle');
+            
+            // オンライン/オフライン状態表示
+            const statusIcon = USE_ONLINE_RANKING ? '🌐' : '📱';
+            const statusText = USE_ONLINE_RANKING ? 
+                (currentLang === 'en' ? 'ONLINE RANKINGS' : 'オンラインランキング') :
+                (currentLang === 'en' ? 'OFFLINE RANKINGS' : 'オフラインランキング');
+            
+            title.textContent = `${statusIcon} ${statusText}`;
             rankingDiv.appendChild(title);
             
             const rankingContainer = document.createElement('div');
