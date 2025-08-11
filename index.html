@@ -285,36 +285,6 @@
             50% { transform: scaleY(1.3); }
         }
         
-        .car-container {
-            width: 100%;
-            height: 50px;
-            position: relative;
-            overflow: hidden;
-            margin: 20px 0;
-        }
-        
-        .car {
-            position: absolute;
-            left: -50px;
-            top: 10px;
-            font-size: 28px;
-            animation: drive 4s linear forwards;
-        }
-        
-        .car.reverse {
-            animation: driveReverse 4s linear forwards;
-        }
-        
-        @keyframes drive {
-            0% { left: -50px; }
-            100% { left: calc(100% + 50px); }
-        }
-        
-        @keyframes driveReverse {
-            0% { left: calc(100% + 50px); }
-            100% { left: -50px; }
-        }
-        
         .heart-scanner {
             position: relative;
             width: 200px;
@@ -380,12 +350,502 @@
             width: 0%;
         }
         
-        #clockDisplay {
-            font-size: 48px;
-            margin-top: 32px;
-            color: #14ffec;
-            text-shadow: 0 0 5px #14ffec;
+        /* 時をかける少女風デジタル時計 */
+        .tokikake-clock {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 64px;
+            font-weight: 700;
+            color: #ff4444;
+            background: #000000;
+            padding: 30px 0px;
+            margin: 30px auto;
+            letter-spacing: 8px;
+            text-align: center;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+            box-shadow: 
+                inset 0 0 30px rgba(255, 68, 68, 0.1),
+                0 0 50px rgba(255, 68, 68, 0.2);
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 5;
+            display: inline-block;
+            width: 100vw;
+            max-width: none;
+            word-break: break-all;
+        }
+
+        .tokikake-clock::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 68, 68, 0.3), transparent);
+            animation: gentleScan 3s infinite;
+            z-index: 1;
+        }
+
+        @keyframes gentleScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* 段階的グリッチ効果 */
+        .phase-1 {
+            animation: gentleGlitch 2s ease-in-out infinite;
+        }
+
+        .phase-2 {
+            animation: mediumGlitch 1s ease-in-out infinite;
+        }
+
+        .phase-3 {
+            animation: strongGlitch 0.3s ease-in-out infinite;
+        }
+
+        @keyframes gentleGlitch {
+            0%, 90% { 
+                transform: translateX(0); 
+                color: #ff4444;
+            }
+            95% { 
+                transform: translateX(-1px); 
+                color: #ff6666;
+            }
+            100% { 
+                transform: translateX(0); 
+                color: #ff4444;
+            }
+        }
+
+        @keyframes mediumGlitch {
+            0%, 80% { 
+                transform: translateX(0) scaleX(1); 
+                color: #ff4444;
+            }
+            85% { 
+                transform: translateX(-2px) scaleX(0.99); 
+                color: #ff6666;
+            }
+            90% { 
+                transform: translateX(2px) scaleX(1.01); 
+                color: #ffaa44;
+            }
+            100% { 
+                transform: translateX(0) scaleX(1); 
+                color: #ff4444;
+            }
+        }
+
+        @keyframes strongGlitch {
+            0%, 70% { 
+                transform: translateX(0) scaleX(1); 
+                color: #ff4444;
+                text-shadow: 0 0 10px #ff4444;
+            }
+            75% { 
+                transform: translateX(-3px) scaleX(0.97); 
+                color: #ff8888;
+                text-shadow: 2px 0 #00ff88, -2px 0 #4488ff;
+            }
+            80% { 
+                transform: translateX(4px) scaleX(1.03); 
+                color: #ffff44;
+                text-shadow: -2px 0 #ff4488, 2px 0 #44ffff;
+            }
+            85% { 
+                transform: translateX(-1px) scaleX(0.98); 
+                color: #ffffff;
+                text-shadow: 1px 0 #ff4444, -1px 0 #44ff44;
+            }
+            100% { 
+                transform: translateX(0) scaleX(1); 
+                color: #ff4444;
+                text-shadow: 0 0 10px #ff4444;
+            }
+        }
+
+        /* 数字の横流れエフェクト */
+        .number-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .number-stream {
+            position: absolute;
+            color: #ff4444;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            opacity: 0.4;
+            white-space: nowrap;
+            animation: numberStreamRight linear infinite;
+        }
+
+        .number-stream.left {
+            animation: numberStreamLeft linear infinite;
+        }
+
+        .number-stream.future {
+            color: #44ff44;
+        }
+
+        @keyframes numberStreamRight {
+            0% {
+                transform: translateX(-100vw);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateX(100vw);
+                opacity: 0;
+            }
+        }
+
+        @keyframes numberStreamLeft {
+            0% {
+                transform: translateX(100vw);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateX(-100vw);
+                opacity: 0;
+            }
+        }
+
+        /* 未来モード用の緑色スタイル */
+        .future-mode .tokikake-clock {
+            color: #44ff44;
+            box-shadow: 
+                inset 0 0 30px rgba(68, 255, 68, 0.1),
+                0 0 50px rgba(68, 255, 68, 0.2);
+        }
+
+        .future-mode .tokikake-clock::before {
+            background: linear-gradient(90deg, transparent, rgba(68, 255, 68, 0.3), transparent);
+        }
+
+        /* 未来モードのグリッチ効果を緑色に */
+        .future-mode .phase-1 {
+            animation: gentleGlitchGreen 2s ease-in-out infinite;
+        }
+
+        .future-mode .phase-2 {
+            animation: mediumGlitchGreen 1s ease-in-out infinite;
+        }
+
+        .future-mode .phase-3 {
+            animation: strongGlitchGreen 0.3s ease-in-out infinite;
+        }
+
+        @keyframes gentleGlitchGreen {
+            0%, 90% { 
+                transform: translateX(0); 
+                color: #44ff44;
+            }
+            95% { 
+                transform: translateX(-1px); 
+                color: #66ff66;
+            }
+            100% { 
+                transform: translateX(0); 
+                color: #44ff44;
+            }
+        }
+
+        @keyframes mediumGlitchGreen {
+            0%, 80% { 
+                transform: translateX(0) scaleX(1); 
+                color: #44ff44;
+            }
+            85% { 
+                transform: translateX(-2px) scaleX(0.99); 
+                color: #66ff66;
+            }
+            90% { 
+                transform: translateX(2px) scaleX(1.01); 
+                color: #aaff44;
+            }
+            100% { 
+                transform: translateX(0) scaleX(1); 
+                color: #44ff44;
+            }
+        }
+
+        @keyframes strongGlitchGreen {
+            0%, 70% { 
+                transform: translateX(0) scaleX(1); 
+                color: #44ff44;
+                text-shadow: 0 0 10px #44ff44;
+            }
+            75% { 
+                transform: translateX(-3px) scaleX(0.97); 
+                color: #88ff88;
+                text-shadow: 2px 0 #ff8800, -2px 0 #4488ff;
+            }
+            80% { 
+                transform: translateX(4px) scaleX(1.03); 
+                color: #ffff44;
+                text-shadow: -2px 0 #ff4488, 2px 0 #44ffff;
+            }
+            85% { 
+                transform: translateX(-1px) scaleX(0.98); 
+                color: #ffffff;
+                text-shadow: 1px 0 #44ff44, -1px 0 #ff4444;
+            }
+            100% { 
+                transform: translateX(0) scaleX(1); 
+                color: #44ff44;
+                text-shadow: 0 0 10px #44ff44;
+            }
+        }
+
+        /* トラベリングメッセージのスタイル */
+        .traveling-message {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid;
+            font-size: 16px;
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
             font-weight: bold;
+            text-shadow: 0 0 5px;
+            z-index: 20;
+            position: relative;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .traveling-message.past {
+            border-color: #ff6666;
+            color: #ff6666;
+            text-shadow: 0 0 5px #ff6666;
+            box-shadow: 0 0 20px rgba(255, 102, 102, 0.3);
+        }
+
+        .traveling-message.future {
+            border-color: #66ff66;
+            color: #66ff66;
+            text-shadow: 0 0 5px #66ff66;
+            box-shadow: 0 0 20px rgba(102, 255, 102, 0.3);
+        }
+
+        /* タイムトラベル結果表示のスタイル */
+        .travel-result-container {
+            background: linear-gradient(145deg, #000000, #111111);
+            border: 2px solid #14ffec;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 90%;
+            box-shadow: 
+                0 0 30px rgba(20, 255, 236, 0.3),
+                inset 0 0 20px rgba(20, 255, 236, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .travel-result-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #14ffec, #e6007e, #14ffec);
+            border-radius: 12px;
+            z-index: -1;
+            animation: borderGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes borderGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .travel-result-header {
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            color: #14ffec;
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .travel-result-status {
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            color: #00ff00;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .travel-result-message {
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 10px #ffffff;
+            line-height: 1.4;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .scan-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(20, 255, 236, 0.03) 2px,
+                rgba(20, 255, 236, 0.03) 4px
+            );
+            pointer-events: none;
+            animation: scanMove 3s linear infinite;
+        }
+
+        @keyframes scanMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(8px); }
+        }
+
+        /* オリジナル時計のスタイル */
+        .original-clock {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            margin: 20px auto;
+            border: 2px solid #14ffec;
+            border-radius: 50%;
+            background: radial-gradient(circle, #001122 0%, #000000 100%);
+        }
+
+        /* 中央の大きな円（文字盤） */
+        .clock-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            background: #14ffec;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+            box-shadow: 0 0 10px rgba(20, 255, 236, 0.8);
+        }
+
+        /* 針の基本スタイル */
+        .clock-hand {
+            position: absolute;
+            background: #14ffec;
+            transform-origin: center bottom;
+            box-shadow: 0 0 5px rgba(20, 255, 236, 0.6);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 細い長い針（秒針） */
+        .second-hand {
+            width: 2px;
+            height: 130px;
+            top: 20px;
+            background: #e6007e;
+            box-shadow: 0 0 5px rgba(230, 0, 126, 0.6);
+            z-index: 1;
+        }
+
+        /* 中くらいの針（分針） */
+        .minute-hand {
+            width: 4px;
+            height: 110px;
+            top: 40px;
+            border-radius: 2px;
+            z-index: 2;
+        }
+
+        /* 太い針（時針） */
+        .hour-hand {
+            width: 6px;
+            height: 80px;
+            top: 70px;
+            border-radius: 3px;
+            z-index: 3;
+        }
+
+        /* 数字のスタイル */
+        .clock-numbers {
+            position: absolute;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            color: #14ffec;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(20, 255, 236, 0.8);
+        }
+        
+        .time-travel-btn {
+            padding: 12px 24px;
+            background: #14ffec;
+            color: #151515;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(20, 255, 236, 0.3);
+        }
+
+        .time-travel-btn:hover {
+            background: #00d4c7;
+            box-shadow: 0 0 30px rgba(20, 255, 236, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .time-travel-btn.future {
+            background: #44ff44;
+            color: #000000;
+            box-shadow: 0 0 20px rgba(68, 255, 68, 0.3);
+        }
+
+        .time-travel-btn.future:hover {
+            background: #33cc33;
+            box-shadow: 0 0 30px rgba(68, 255, 68, 0.5);
+        }
+
+        /* レスポンシブ対応 */
+        @media (max-width: 480px) {
+            .tokikake-clock {
+                font-size: 20px;
+                padding: 15px 0px;
+                letter-spacing: 2px;
+            }
         }
         
         .sparkles {
@@ -450,16 +910,6 @@
             50% { opacity: 0.8; }
             100% { opacity: 1; }
         }
-        
-        .travel-result {
-            text-align: center;
-            padding: 40px 20px;
-            background: rgba(0, 0, 0, 0.9);
-            border-radius: 12px;
-            margin: 20px 0;
-        }
-        
-        /* その他のCSSスタイルは元のままコピー */
         
         .connection-status {
             position: absolute;
@@ -537,8 +987,44 @@
     </div>
 
     <script>
-        // 修正版：CORS問題を回避するためのランキングマネージャー
+        // 修正版：メモリリーク対策
+        class IntervalManager {
+            constructor() {
+                this.intervals = new Set();
+                this.isCleanedUp = false;
+            }
+            
+            setInterval(callback, delay) {
+                if (this.isCleanedUp) return null;
+                const id = setInterval(callback, delay);
+                this.intervals.add(id);
+                return id;
+            }
+            
+            clearInterval(id) {
+                if (id) {
+                    clearInterval(id);
+                    this.intervals.delete(id);
+                }
+            }
+            
+            clearAll() {
+                this.intervals.forEach(id => clearInterval(id));
+                this.intervals.clear();
+                this.isCleanedUp = true;
+            }
+        }
+        
+        const intervalManager = new IntervalManager();
+
         const RANKING_CONFIG = {
+            endpoints: [
+                'https://jsonplaceholder.typicode.com/posts',
+                'https://httpbin.org/anything',
+                'https://api.github.com/zen'
+            ],
+            rankingEndpoint: 'https://api.jsonstorage.net/v1/json/hellowworld-ranking/create',
+            getEndpoint: 'https://api.jsonstorage.net/v1/json/hellowworld-ranking',
             maxEntries: 50,
             cacheDuration: 3000,
             retryAttempts: 2
@@ -548,20 +1034,20 @@
             constructor() {
                 this.cache = null;
                 this.cacheTime = 0;
-                this.isOnline = false; // ローカルファイルでは常にオフライン
+                this.isOnline = false;
                 this.retryCount = 0;
                 this.sessionId = this.generateSessionId();
+                this.autoRefreshInterval = null;
             }
 
             generateSessionId() {
                 return 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
             }
 
-            // 修正版：CORS問題を回避
             async checkConnection() {
-                console.log('🔍 接続テスト（ローカルファイルモード）...');
+                console.log('🔍 接続テスト開始...');
                 
-                // ローカルファイルの場合は常にオフラインとして扱う
+                // ローカルファイルの場合は常にオフライン
                 if (window.location.protocol === 'file:') {
                     console.log('📱 ローカルファイルモード - オフライン設定');
                     this.isOnline = false;
@@ -569,26 +1055,58 @@
                     return false;
                 }
                 
-                // HTTP/HTTPSの場合は通常の接続チェック
-                try {
-                    // 簡単な接続テスト
-                    await fetch('/favicon.ico', { method: 'HEAD', cache: 'no-cache' });
-                    this.isOnline = true;
-                    this.updateConnectionStatus(true);
-                    console.log('✅ 接続成功!');
-                    return true;
-                } catch (error) {
-                    this.isOnline = false;
-                    this.updateConnectionStatus(false);
-                    console.log('📱 オフラインモード');
-                    return false;
+                for (let i = 0; i < RANKING_CONFIG.endpoints.length; i++) {
+                    try {
+                        console.log(`テスト ${i+1}: ${RANKING_CONFIG.endpoints[i]}`);
+                        
+                        const response = await Promise.race([
+                            fetch(RANKING_CONFIG.endpoints[i], {
+                                method: 'GET',
+                                cache: 'no-cache',
+                                mode: 'cors'
+                            }),
+                            new Promise((_, reject) => 
+                                setTimeout(() => reject(new Error('Timeout')), 3000)
+                            )
+                        ]);
+                        
+                        if (response.ok) {
+                            this.isOnline = true;
+                            this.updateConnectionStatus(true);
+                            console.log('✅ 接続成功!', RANKING_CONFIG.endpoints[i]);
+                            return true;
+                        } else {
+                            console.log('❌ レスポンスエラー:', response.status);
+                        }
+                    } catch (error) {
+                        console.log('❌ 接続エラー:', error.message);
+                    }
                 }
+                
+                try {
+                    console.log('📡 最終テスト: navigator.onLine');
+                    if (navigator.onLine) {
+                        this.isOnline = true;
+                        this.updateConnectionStatus(true);
+                        console.log('✅ navigator.onLine = true, オンライン判定');
+                        return true;
+                    }
+                } catch (error) {
+                    console.log('❌ navigator.onLine エラー:', error.message);
+                }
+                
+                this.isOnline = false;
+                this.updateConnectionStatus(false);
+                console.log('📱 全て失敗、オフラインモード');
+                return false;
             }
 
             updateConnectionStatus(online) {
                 const statusEl = document.getElementById('connection-status');
-                statusEl.className = `connection-status ${online ? 'online' : 'offline'}`;
-                statusEl.textContent = online ? '🌐 ONLINE' : '📱 OFFLINE';
+                if (statusEl) {
+                    statusEl.className = `connection-status ${online ? 'online' : 'offline'}`;
+                    statusEl.textContent = online ? '🌐 ONLINE' : '📱 OFFLINE';
+                }
             }
 
             async loadRankings() {
@@ -602,7 +1120,7 @@
                 const offlineRankings = this.getOfflineRankings();
                 
                 try {
-                    // ローカルファイルの場合はオフラインランキングを使用
+                    await this.checkConnection();
                     if (!this.isOnline) {
                         console.log('📱 オフラインモード使用');
                         this.cache = offlineRankings;
@@ -610,7 +1128,6 @@
                         return this.cache;
                     }
 
-                    // オンラインの場合はシミュレーションデータを使用
                     const onlineData = await this.simulateOnlineRankings();
                     
                     this.cache = onlineData;
@@ -629,24 +1146,30 @@
             }
 
             async simulateOnlineRankings() {
-                const localRankings = JSON.parse(localStorage.getItem('hellowworld_global_rankings') || '[]');
-                
-                const globalPlayers = [
-                    { name: '0w0', time: 3.8, online: true },
-                    { name: 'ぜんねこ', time: 8.9, online: true },
-                    { name: 'otoha_0108', time: 12.7, online: true }
-                ].map(entry => ({
-                    ...entry,
-                    time: entry.time + (Math.random() - 0.5) * 1.5,
-                    date: new Date(Date.now() - Math.random() * 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                    timestamp: Date.now() - Math.random() * 86400000
-                }));
+                try {
+                    const localRankings = JSON.parse(localStorage.getItem('hellowworld_global_rankings') || '[]');
+                    
+                    // 元のコードのランキング名称を使用
+                    const globalPlayers = [
+                        { name: '0w0', time: 3.8, online: true },
+                        { name: 'ぜんねこ', time: 8.9, online: true },
+                        { name: 'otoha_0108', time: 12.7, online: true }
+                    ].map(entry => ({
+                        ...entry,
+                        time: entry.time + (Math.random() - 0.5) * 1.5,
+                        date: new Date(Date.now() - Math.random() * 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        timestamp: Date.now() - Math.random() * 86400000
+                    }));
 
-                const combinedRankings = [...localRankings, ...globalPlayers]
-                    .sort((a, b) => a.time - b.time)
-                    .slice(0, RANKING_CONFIG.maxEntries);
+                    const combinedRankings = [...localRankings, ...globalPlayers]
+                        .sort((a, b) => a.time - b.time)
+                        .slice(0, RANKING_CONFIG.maxEntries);
 
-                return combinedRankings;
+                    return combinedRankings;
+                } catch (error) {
+                    console.warn('シミュレーションランキング生成エラー:', error);
+                    return this.getOfflineRankings();
+                }
             }
 
             async submitScore(userName, time, gameData = {}) {
@@ -665,6 +1188,7 @@
                 this.saveToGlobalLocal(newEntry);
 
                 try {
+                    await this.checkConnection();
                     if (this.isOnline) {
                         console.log('🌐 オンライン送信シミュレーション...');
                         
@@ -702,27 +1226,11 @@
                 }
             }
 
-            saveToLocal(userName, time) {
-                try {
-                    const localRankings = JSON.parse(localStorage.getItem('hellowworld_rankings') || '[]');
-                    const newEntry = {
-                        name: userName,
-                        time: time,
-                        date: new Date().toISOString().split('T')[0],
-                        local: true,
-                        timestamp: Date.now()
-                    };
-                    localRankings.push(newEntry);
-                    localStorage.setItem('hellowworld_rankings', JSON.stringify(localRankings.slice(-20)));
-                    console.log('💾 ローカル保存完了');
-                } catch (error) {
-                    console.warn('ローカル保存失敗:', error);
-                }
-            }
-
             getOfflineRankings() {
                 try {
                     const localRankings = JSON.parse(localStorage.getItem('hellowworld_rankings') || '[]');
+                    
+                    // 元のコードのランキング名称を使用
                     const baseRankings = [
                         { name: '0w0', time: 8.2 },
                         { name: 'ぜんねこ', time: 9.1 },
@@ -750,19 +1258,31 @@
             }
 
             startAutoRefresh() {
+                // 既存のintervalをクリア
+                if (this.autoRefreshInterval) {
+                    intervalManager.clearInterval(this.autoRefreshInterval);
+                }
+                
                 // ローカルファイルでは自動リフレッシュは無効
                 if (window.location.protocol === 'file:') {
                     console.log('📱 ローカルファイルモード - 自動リフレッシュ無効');
                     return;
                 }
                 
-                setInterval(async () => {
+                this.autoRefreshInterval = intervalManager.setInterval(async () => {
                     if (this.isOnline) {
                         this.cacheTime = 0;
                         await this.loadRankings();
                         console.log('🔄 自動リフレッシュ完了');
                     }
                 }, 10000);
+            }
+            
+            cleanup() {
+                if (this.autoRefreshInterval) {
+                    intervalManager.clearInterval(this.autoRefreshInterval);
+                    this.autoRefreshInterval = null;
+                }
             }
         }
 
@@ -842,61 +1362,1445 @@
                 totalPlayers: '世界の総プレイヤー数: '
             }
         };
+
+
         
-        // ここから先は元のコードとほぼ同じ（ただし一部変更）
+        const otohaLyrics = {
+            'リインカーネーション': `誰も居ない雨夜と正夢
+与えられた花瓶の中で
+回想 瞬間的なフラッシュバッカー
+ひらひらと舞った、藍い涙
+
+行方の無い身体は透明
+濁りは今 気体になって
+暗転 盲目的なフリーリセッター
+ばらばらになった、僕らの音
+
+生まれ変わって
+また同じ場所で咲いた
+花のように光射す瞼を開いて
+後悔と嘘に塗れた
+あの混沌の夢から逃げた
+貴方は、僕だ。
+
+閉ざされた 硝子は重厚
+その壁すら 貫くような
+はっと 僕を連れ出したアウトサイダー
+きらきらと鳴った、七つの声
+
+きっと本当の本物など在りはしない
+飾りのない信仰を捧げたい
+それが 例え 悲しい
+結末しか迎えないものだとしても
+一つだけ確かな意志と共に
+終わりのない最期へと転がりたい
+全て叶えるまで
+
+貴方はきっと
+何もかも忘れている
+始まりを急かすようなあの白い衝動
+きっとまだやり直せるさ
+今淡々と記憶を辿る
+僕は、貴方だろう？
+
+ずっと、答えのない日々を彷徨って
+消えてしまいたい劣等の夜さえ
+超えて 塗り替えて 捨て切らないで
+愛せるように
+
+転生
+
+目を醒せ！
+今痛みを分け合えば
+僕らまだ一つになれる気がするんだ
+言い訳は何も要らない
+今真っ直ぐに“君”を見つめる
+「貴方は、僕だ」
+
+生まれ変わって
+また同じ場所で咲いた
+花のように光射す瞼を開いて
+後悔と嘘に塗れた
+あの混沌の夢から逃げた
+貴方は、僕だ。`,
+            'Change': `魔法にかけられたみたいに変わってく
+モノクロの世界飛び出して
+色褪せない音を鳴らそう
+貴方とならどこまでも
+
+悲しい音に飲まれそうな
+息も続かない白昼夢にて
+曖昧な感情が
+揺らめいて消えて行く
+
+答え 何て？瞳孔にも無い
+煌きを閉ざした目蓋から
+溢れたのはきっと
+隠し切れぬ念い
+
+誰も知らない 知らない 僕の
+世界の入り口に引き寄せられるように
+変わらない 足りない 僕の
+惰性の繰り返しを壊して
+
+魔法にかけられたみたいに変わってく
+モノクロの世界飛び出して
+色褪せない音を鳴らそう
+貴方とならどこまでも
+
+纏わり付くような温度
+吹き飛ばす為に騒音
+枯渇してる今 狂おしい程 求める未来
+誰も僕を止められやしない
+いつか見た夢で咲いてたあの
+藍い花のように
+
+言えない 言えなかった
+生き方のすべて 採点 は人任せで
+鮮やかな貴方色
+解答用紙を塗り潰して
+
+魔法にかけられたみたいに変わってく
+モノクロの世界飛び出して
+色褪せない音を鳴らそう
+貴方とならどこまでも`,
+            '猫と風船': `寂しくて死んでしまいそうな夜を引き摺って
+触れ合ったって埋まらぬ隙間たち 隠して
+言えないな 痛いな 言葉にできず笑っていた
+空っぽの鳴き声が今日もまた 消えてく
+
+ズキズキ静かに傷を削って
+隠し事が上手くなって
+だらだら針を過ごして
+安定を待っている檻の中
+「いついつまでも側にいてよ」って
+とても言える訳ない
+飲み込んで爪を仕舞った
+
+パチンと割れてしまうような関係なら
+この部屋にきっと君はいない
+分かったような口聞いて 馬鹿馬鹿しい
+張り裂けそうな 胸を ふたり縫い合って
+ココロここに在らずになって今日も
+
+よるのなか 恋し
+冷えたからだを震っていた
+転がったって掴めやしないと今 思断つ
+ぼくだけが 故意に
+飲まれそうな闇を蹴破って
+空っぽの泣き声光らせた 「みつけて」
+
+時々ドクドク流れ回った
+臆と病の血がずっと
+今でもぼくを毒して
+完璧な愛さえ不味くなるよ
+膨れるほどの福を手招いて
+怖くなっていたんだろう
+「ねぇ、もっと触れてもいい？」
+
+描き出した病だ 身勝手な話だ
+叶えたい 願えない ただの妄想
+猫速で変わりゆく めまぐるしい心
+
+パチンと割れてしまうような関係なら
+この部屋にきっと君はいない
+分かったような口聞いて 馬鹿馬鹿しい
+張り裂けそうな 胸を ふたり縫い合って
+ココロここに在らずになって今日も`,
+            ‘パラドクサー: `曖昧な愛なら要らないから
+変わらない確かな 形で居たい
+期待ばっかしたら 貴方は又
+「離れたい」なんてさ きりが無いや
+
+鼬ごっこみたい 未来が見えない
+誰の所為にも出来はしない
+笑いたいのに 哀しいアイロニー
+もう 止められやしない
+
+僕は何者にも成れない
+ゆらゆらゆら 揺らめいて徘徊
+叶うならば僕は僕で居たい
+凸凹の心でも愛して欲しい
+
+誰が描いたんだか この物語は
+少し僕には 息苦しい
+知らない方がいい 貴方の「左様なら」に
+絶やされるくらいならば いっそ
+
+｢もういいかい｣｢まぁだだよ｣
+｢もういいかい｣
+ほんとはとっくにもういいよ
+いいの いいのに 言い出せない
+
+全てを受け入れてよ
+
+天邪鬼みたい パラドクサーは今
+誰も知らない場所で独り
+踊りたいのに ここに居たいのに
+ねぇ 超えられない一線
+
+僕は何者にも成れない
+ゆらゆらゆら 揺らめいて徘徊
+叶うならば僕は僕で居たい
+凸凹の心でも愛して欲しい
+
+嗚呼 僕が生まれ変われるなら
+何色の花になろう
+何処に根を生やし
+誰と散るのか
+過去を殺めるようで
+貴方ごと愛している
+
+「僕は何者かに成りたい。」`,
+            ‘IYAIYA’: `腰掛けたソファーの上
+見つめる何もない天井
+朝起きてから何したっけ
+思い出せないや IYA IYA
+
+空っぽの紙コップから
+昨日のコーヒーの匂い
+まだ強く残っている
+そういやあまり眠れなかった
+
+何もしたくない
+何も浮かばない
+何も進まない
+
+何もおもろない
+何も食べれない
+甘いもの以外
+
+IYA IYAなことは嫌だって
+大人だとかは関係なくて
+IYA IYAな時期は誰だって
+思いの通りにしたいんです
+
+だからYA IYA IYA IYA IYA
+今日は朝までゲームしようよ
+IYA IYA  IYA IYA IYA
+誰も僕らを叱れない
+
+錆付いた憂鬱の味
+昨日噛んだトコが痛い
+まだ今なら遅くはない
+言い訳にして今日は眠って
+
+誰のためにも動きたくない
+誰かの犬にもなりたくない
+誰かを幸せにはしたい じゃあ
+曲でも書こうか
+
+どんなにツイてなくて
+いっそ全部投げ出したくて
+我儘を曝け出して行け
+
+IYA IYAなことは嫌だって
+大人なのに、とかじゃなくて
+IYA IYAな時期は誰だって
+大人だからこそ、あるんです
+
+だからYA IYA IYA IYA IYA
+深夜二時にどっかで駄弁ろう
+IYA IYA  IYA IYA IYA
+誰も僕らを叱らせない
+
+IYA IYAなことは嫌だって
+大人だとかは関係なくて
+IYA IYAな時期は誰だって
+思いの通りにしたいんです
+
+だからYA IYA IYA IYA IYA
+今日は朝までゲームしようよ
+IYA IYA  IYA IYA IYA
+誰も僕らを叱れない`,
+            ‘アズライト’: `
+「ハローハロー 調⼦はどう？」僕は相変わらずの氷点下 0 度
+まだ 息は⽩く濁ってる
+ハローハロー 未来はどう？君は相変わらずの剽軽なピエロ？
+どうか 闇に飲まれていませんように
+刹那の感情が僕を揺さぶって呻く 置き去りにしないで 劣等
+星を待つ
+夜はいつもより冷たくて ⻑い ⻑い 気がしたんだ
+屹度 もう⼀⽣ 抜け出せないかもって
+そんな⾝勝⼿な憂鬱が 嫌い 嫌い 嫌いな癖に
+こんな時に限って流れる
+夜空に光っては溢れ出したアズライト
+「ハローハロー 天気はどう？」僕は相変わらずの曇天の迷路
+まだ 彗星の切っ先は⾒えない
+ハローハロー 明⽇はどう？やっぱ知りたくないや
+腰抜けで終われない今⽇をまずは⽣きてみるから 嗚呼
+こんなにも単純で拙い歌でも響け
+夜空を切り裂くような
+星を待つ
+星が降る
+夜はいつもより華やいで 暗い 暗い 瞳の中
+閃光の余炎を 遺して溶けていった
+今がなんだと⾔われたって 未来 未来 未来の空を
+僕が僕を⼼配することのない
+夜空に放っては描き出したアズライト
+ハローハロー 調⼦はどう？`,
+            ‘i’fのマーメイド: `新たな物語の結末は 全てハッピーエンドにしよう
+予想外の番狂わせ 次は君の番だ
+嗚呼 息をしている 光の届かない海の底で
+誰かが闇へ誘う 声がする
+どんな契約もここでの自由には勝てない
+わずかな焦燥と期待が心地よくてさ
+新たな物語の結末は 全てハッピーエンドにしよう
+予想外の番狂わせ ずっとここで泳いでいたいの
+泡になって消えるなら 僕はヒーローになるのが良い
+退がり方なんて忘れたよ 次は君の番だ
+嗚呼 誰かが描いた 悲しいお伽噺みたいには
+終わらせたくはないな 僕の心が
+勝手に抗って聞かないくらいに 騒いでる
+可哀想な主人公のままじゃ僕は 許せなくて
+鳩尾で世界の胎動が揺れる 内側で鳴り響く
+僕の歌声以外はもう 要らない
+新たな物語の宿敵が どんな畏怖なるバリアでも
+僕を僕たらしめるもの 何一つ 奪わせないから
+新たな物語の結末は 全てハッピーエンドにしよう
+予想外の番狂わせ ずっとここで泳いでいたいの
+泡になって消えるなら 僕はヒーローになるのが良い
+退がり方なんて忘れたよ 次は君の番だ`,
+            ‘ダンスホール’: `⾔わんこっちゃない ⾔わんこっちゃないだろう
+またこんな夜になるってさ分かってた癖に
+痛いだろ それが欲しかったんだろ
+向き合ってるフリしてなんにも 変わってない癖に
+さあ 意味のない時間を抜け出して 答えのない問いに唾吐いて
+独りよがりの癖に独りには慣れない？
+評論家気取りの観衆が プラスチックみたいな脳髄を
+今か今かと働かせている今
+朝の光の中で独り踊ろう 真っ直ぐな瞳はここで濁るべきじゃない
+悲しみも苦しみも 屈託なき今⽇を描くための energy
+嗚呼 どこまでも狡い
+罠だらけのこのダンスホールにて
+⾔わんこっちゃない ⾔わんこっちゃないだろう
+僕以外にこの⾔葉は吐かせない
+また今夜 ⾺⿅の⼀つ覚えみたいに
+繰り返すならばもう 救いは無いだろう
+ねえ この⻑い夜に逃げたって 仄暗い闇に溶けたって
+⼀夜限りの慰めにしかならない
+⼼無い投げ⽯より 鏡の中の道化師が泣きながら笑う
+その様が許せなくて
+炎の熱の中で独り踊ろう 真っ新な⾝体が⿊く燃え尽きるまで
+いつまでも いつまでも 憂鬱な夜には染まれない determination
+なあ 良い加減にしろよ
+まだ下ろせない 僕のダンスホールの幕は
+踊れなくても踊れって 踊れって 戦えなくても歌えって 歌えって
+戻れないなら進めって 進めって 過去が怖いなら殺せって 殺せって
+今を⽣きろって
+踊れぬ癖にってだから何？ お前らの為に踊ってない僕は僕⾃⾝とこんな歌に 頷いて笑う存在を愛してる
+体揺らせ ⾜を鳴らせ 君だけの groove で踊ってよ
+楽しけりゃいいだけの⾳楽じゃ こんなにノれないだろ
+Where is your own dance hall?`,
+            ‘六秒間’: `全てに飽きが来ている
+⾍のような息をしている
+いつかもう 怪物にでもなりそう
+好きなときに壊して
+好きなように泣けたら
+今が全部じゃないとは
+頭じゃ分かってるんだが
+なんかもう 抜け出せないよ 吐きそう
+答えなんて知るかよ
+誰の説教も聞きたくないや
+だって どうしても
+僕と君は違う⽣き物でしょ？
+だったら 分かり合えないのは当然
+だから ⽬を閉じて
+数えて It's never too late
+今からでも抑えられるから
+「柔らかい気持ちでいたい」
+常に期待は⽌められないものさ
+六秒間 六秒間だけで良いから
+六秒間 六秒間ただゆるり数えて
+まだまだまだこんなもんじゃない
+気休めにだって成ってない
+バラバラ砕けたカラカラの⼼が
+⾜りないって⾔ってんだ
+気休めなんて要らないぜ
+きっと くだらない
+綺麗事じゃ誰も 救えはしない
+もっと リアルで上質なひと時を
+きみと ⽬を閉じて
+数えて It's never too late
+クラクラのフラフラになるまで
+遊びたい 踊っていたい
+瞼の裏で回るミラーボール
+六秒間 六秒間だけで良いから
+六秒間 六秒間ただゆるり数えて
+あと少し ⽬を閉じて
+数えて It's never too late
+ゆとりある 未来に花束を
+怒りも悲しみも
+⿐で笑って置き去りにして⾏こう
+六秒間 六秒間だけでいいから
+六秒間 六秒間ただゆるり数えて
+六秒間 六秒間
+六秒間 六秒間`,
+            ‘フラッシュバッカー’: `転換点 いつかノートに 書いたあの言葉たちは
+きっと 泡になって消えた 行方なんて知らない
+擦り切った白いチョークが はらはらと落ちていった
+まるで 星屑みたいだと 見とれていたんだ 嗚呼
+いつかは消えてしまうけど 誰かの記憶には残れるかな
+この瞬間を切り取ってさ
+光る朝が 朝が あまりに眩しい 眩しいからさ
+なんかもう それだけで 心が宙に舞う
+君の言葉がずっと離れない 離れない
+フラッシュバッカー 今も思い出してる
+薄明に染まる空が 淡い彩りこぼして
+こんな ちっぽけな僕の背中を包んでく
+透明なこの体は 何色に成れるの？ ただ
+水のように流れ 消えてゆくだけ？ ねぇ
+「ぼやけたままのフォーカスじゃ 君のホンモノは写せないよ」
+寂しげな顔で 君が笑う
+光る朝が 朝が あまりに眩しい 眩しいからさ
+ちょっとさ らしくはない 未来も信じちゃうよ
+君の言葉がずっと離れない 離れない
+フラッシュバッカー 今も 思い出してる
+光る朝が 朝が あまりに眩しい 眩しいからさ
+なんかもう それだけで 心が宙に舞う
+君の言葉をぎゅっと離さない 離さない
+フラッシュバッカー 今も 思い出してる`,
+            '拝啓⽣きたがりの僕へ': `拝啓⽣きたがりの僕へ
+なんて⾔葉から 始めればいいのか
+分からないが
+敢えて挨拶は無しだ
+だって君とは もう嫌になるほど
+顔を合わせてる
+解けない有刺鉄線
+刺さったままの太い鉄パイプ
+⾜掻けば⾜掻くほど
+深く、深く
+気休め程度の⾳楽さえ
+かえって痛みを増すだけだ
+弱い僕がいけないのだ
+拝啓⽣きたがりの僕へ
+どうせまた綺麗事だろ？
+どれだけ おどけたって
+鏡に映る君は笑ってくれなくて
+なんで なんでよ
+そんな顔するなよ
+拝啓⽣きたがりの僕へ
+「お陰様で元気です。病む暇も無い程
+多忙に明け暮れて...」
+なんて冗談は笑えない
+きっと通じない
+死にたくなる程 君に知られてる
+誤魔化しの効かぬ壇上
+何も歌えない 何も叫べない
+僕には何もない 本物など
+「死にたいなんて笑わせる」
+全てを知る君が 呟いた
+少しも笑ってない笑顔で拝啓⽣きたがりの僕へ
+僕の⽅が綺麗事だな
+どれだけ 死にたがってもろくに
+死ねやしない癖に笑えないよな
+ごめん ごめんって
+そんな顔するなよ
+L が問いた S の応答は
+返らない もう帰らないよ
+今更"裏返しだ"なんて
+クソ軽いこと⾔えないけど
+今からでも遅くないなら
+その綺麗事を綺麗な真実に
+変えてみせてよ
+拝啓⽣きたがりの僕へ
+どうせまた綺麗事だろ？
+それでも 仕⽅ないから君の
+その戯⾔を聞いてあげるから
+ちょっと ちょっとでいい
+笑ってくれるかな
+拝啓⽣きたがりの僕へ
+「今⽇も元気はない。
+それに⽇によっては頭が痛くなる。」
+そんな憂と鬱の⽇々を
+きっと繰り返す
+それでも最期まで君と死にたい`,
+            ‘駆落’: `どんな⾔葉も当てはまらないような 真夜中にアクセル
+期待してたほど眩しくはないけど 気分次第です
+断ち切って捨て去って⼿離して⾏こうぜ 誰だってお別れは⾟いものさ
+傷付いて泣き出して灰になった⾃分を きっと迎えに⾏くから
+悲しみや苦しみ、と⾔い切れるほど 単純な痛みは無かった
+ねぇ 僕らはすでに旅の⽀度を 始めていたのかもね
+堕落した夜に紛れ込んでいく 誰も⾏⽅を知らない
+こんな怠惰な夢も悪くない 邪魔はさせない駆落
+我儘に散らかした部屋 要るの要らないの どっち
+⼀瞬迷ったなら構わずに 然れど 君次第です
+偽って繕って欺いたつもり？ 枯れ切った嘘だけが募っていく
+明⽇なんか来るかどうか 不確かな約束より
+僕が迎えに⾏くから
+悲しみも苦しみも置き去りにして 誰の⼿も届かないどこかへ
+鬱(ふさ)ぐ瞳 光を⾒つけに 暗がりへと駆けるよ
+堕落した夜に紛れ込んでいく 引かれる髪は切ればいい
+こんな怠惰な夢も悪くない ⾛れ 逃げ切れ 駆落
+この両⼿に余るほど溢れるほどに 代えられぬ恋しさがあるなら
+全てを乗せて 壊れぬように 僕が強くなるから
+悲しみや苦しみ、と⾔い切れるほど 単純な痛みは無かった
+ねぇ 僕らはすでに旅の⽀度を 始めていたのかもね
+堕落した夜に紛れ込んでいく 誰も⾏⽅を知らない
+こんな怠惰な夢も悪くない 邪魔はさせない駆落`,
+            ‘大生解’: `
+世界が全部間違っていて君が正しいと
+最⾼な理不尽を掲げて待ってるよ
+曖昧なのに現実的でどこか冷たくて
+熱苦しくて傲慢な嘘みたいな本当さ
+嗚呼 ここじゃない何処かへと
+消えたくなる
+嗚呼 ⾃分じゃない誰かに
+⽣まれ変わりたくなる
+⼩さな花瓶の中で
+息が詰まってしまいそうで
+それでも僕らただ根を、⼿を伸ばす
+⽣きてさえ
+⽣きてさえ
+⽣きてさえいてくれりゃいい
+⽣きてさえ
+⽣きてさえいれば
+それだけで⼤⽣解
+⽣きてさえ
+僕の頭の操縦席はとうに空いたのに
+お節介なほどオートマティックに
+⿎動は⽌まらない
+単純なのに変則的でどこか寂しくて
+独りよがりで⾝勝⼿な美しい醜態さ
+嗚呼 この場所が
+世界の全てじゃないことくらい
+嗚呼 夜は明けて ⾬は⽌むことくらい
+分かってんだ
+眩しい液晶画⾯ 綺麗事ばかりの歌
+僕らが帰る答えは、どこにあるの？誰が君を縛り付けようとも
+突き刺そうとも
+君が消えていい理由にはならない
+誰が許しても この声が届く限り
+僕が許さない
+⽣きてさえ
+⽣きてさえ
+⽣きてさえいてくれりゃいい
+⽣きてさえ
+⽣きてさえいれば
+それだけで⼤⽣解
+⽣きてさえ
+⽣きてさえ
+⽣きてさえいれば
+君の存在を不⽣解にはさせない`,
+            'ハッピー・エンド・ロール': `最後の歌が聴こえる瞬間
+貴⽅はどこに居るのだろう
+もう 歌い残すことなど
+無くなっていれば いいな
+もう 苦しまないようにと
+あの⼦は⾶んで天使になった
+ああ その⽇から僕は
+使命の様に 歌い続けてる
+とめどない、やるせない
+変えられないものばかりだ
+頼りない、不甲斐ない僕に
+できることは
+ハッピー・エンド・ロール
+涙が裂けるくらいに
+夜が明けるまで
+貴⽅ともに歌笑う
+ハッピー・エンド・ロール
+その名にふさわしいほど
+最⾼な最期を
+ハッピー・エンド・ロール
+ハッピー・エンド・ロール
+僕が死にたくなる度
+閉じた瞼で祖⽗が叱った
+約束したろ、最後は
+おもろい⼟産話を
+僕が死ぬ気で⽣きれば
+誰かが死なずに済むならいいな⾒えずとも聞こえずとも
+⼼に触れる 歌を残そう
+休めない、時間がない
+救い切れないものばかりだ
+忘れない、忘れたくないんだ
+消える前に
+ハッピー・エンド・ロール
+夢から醒めるみたいに
+その続きを観たくなるような
+エンディングを
+ハッピー・エンド・ロール
+誰もが評さずとも
+最⾼な最期を
+ハッピー・エンド・ロール
+ハッピー・エンド・ロール
+ああ 何を捨てて 何を選び
+誰と⽣きよう
+ああ できれば貴⽅と
+幕を下ろす その時まで
+ハッピー・エンド・ロール
+涙が裂けるくらいに
+夜が明けるまで
+貴⽅ともに歌笑う
+ハッピー・エンド・ロール
+その名にふさわしいほど
+最⾼な最期を
+ハッピー・エンド・ロール
+ハッピー・エンド・ロール`,
+            '狂信者のパレード': `受け容れ難い悲劇に迷ってしまった消えぬ温度
+瞳の奥で⻘く揺れてる咽せるような穢れがケロイドを残して
+今も何処かで 帰れないあの⽇を悼んでる
+命張って ⾎反吐を吐いてただ美しく⽣きたいだけなのに如何して
+⾜を掬うなって聞こえないの？裏返る愛憎
+絡まるフィクションつまらぬ概念にバイバイバイ
+有象無象共の堂々たること もうその様はお⾒事
+掻っ裂いて引き摺って暴いてよ
+⼀切の劣等を擲(なげう)って誰かを呪う感情さえも供物のように取り込んで
+⼈間様の振りが巧いだけ怪物ならざるモノ探してる
+それはまるで⼀等星の⻘い煌めきのようなさあ
+まだまだ信仰が⾜りない甚だ⾺⿅⾺⿅しい運命など退がらない ⾏進を鳴らせ
+孤独達のパレードを今始めよう
+この世の万物は⼰が思う程これと⾔って 醜いも尊いも⼤差無い
+⽣まれ落ちては消えて 絶やさぬ様にと空の何処かで誰か様が淘汰してんだろう
+崇めたって 跪(ひざまづ)いたって祈りなど
+荼毘に付してだから如何した、とイワンばかりの⿅⼗お優しいね
+⾊の無い遭逢 硝⼦の瞳孔砕けてぶっ壊れようとも
+「なんてご冗談を」とか爆笑して嘔吐いちゃって吐き出して指⽴って
+焼き付いて沸き⽴って震えてる何時かの烈⽕ 未だ燻(くすぶ)って
+この⾝に残る悔恨さえも燃やして尽くす報復を
+あくまでも永遠など無いから灰燼と化すまでは終わりは無い
+それならばいっそ⾼尚な⽕遊びでもしていようか
+もう がたがた御託は要らないからから空っぽな痛論だこと
+⽌まない 投⽯を焦がせ 孤独達のパレードはまだこれからさ愛は無い 愛は無い そこには愛は無い
+何も無い何も無い 真実など何も無いよただ
+⼀つだけ ⼀つだけ
+この世に⼀⼈だけ ⼀⼈だけ狂信的な迄に疑って
+圧倒的な迄にクソ⽣き抜いていけ
+掻っ裂いて引き摺って暴いてよ
+⼀切の劣等を擲(なげう)って誰かを呪う感情さえも供物のように取り込んで
+⼈間様の振りが巧いだけ怪物ならざるモノ探してる
+それはまるで⼀等星の ⻘い煌めきのような
+さあ まだまだ信仰が⾜りない甚だ⾺⿅⾺⿅しい運命など退がらない
+⾏進を鳴らせ
+孤独達のパレードを今始めよう`,
+            'MADHONEY': `疾っくの疾うに回っているまやかし
+から出でた猛毒が頭から⽖先まで 全
+⽀配している空の⾝体を持て余すよ
+り染まり切った今がよほど調⼦良い
+ことこの上ない
+奮い⽴つほどに
+サディスティックな主さえ泣かせたい
+歪み切って歪ませたい
+悪しからず期待などしないでくれよ
+ねえ欲深いまま最後まで⾺⿅な振り
+させて知れば知るほど狂っていく味
+わうほどに眩んでいく今はまだ
+真⽩に溶ける⽢さの中で
+耐性が付いちゃってんだもう単純な
+罠に本能が引き寄せられてくほどに
+ショートしちゃっている毒された世
+界に意味はないただ⼀度きりの運命
+を
+⾝体⼀つで味わって喰らい尽くすだ
+けさ
+プラスティックが溶けるような匂い
+害はないさ 今更
+悪しからず期待などしないでくれよ
+ねえ最後まで⾺⿅な振りさせて知れ
+ば知るほど狂っていく味わうほどに
+眩んでいく今はまだ
+真⽩に溶ける⽢さの中でクラっとして中毒になる代わりに
+僕の全部を連れて⾏けよ
+悪しからず期待などしないでくれよ
+ねえ欲深いまま最後まで⾺⿅な振り
+させて知れば知るほど狂っていく味
+わうほどに眩んでいくだからこそ真
+⽩に溶ける⽢さの中で`,
+            'あるものねだり': `黙れよ
+全部持ってる癖して
+全部持ってないないみたいな face あー
+やだやだもう反吐が出そうです
+そうです 僕らは下衆です
+教科書には載ってないしもうどうせ先
+⽣も教えちゃくれないよ都合良く出来
+てんだろう
+全⾃動で簡単に忘れる system
+あああああ
+もうてんで駄⽬駄⽬
+今⽇もなんも出来なくて荒れ荒れ
+病めるときも ⽣きる価値のないときも
+何⼀つおもろいことがないときも
+そう あるものねだり
+与えられたもの忘れてばかりこんな僕
+が こんな⾺⿅が
+⽣きててなんで なんで なんで
+ねだって唸って奪ってばっか薄暗い路
+地を選り歩くようにねだって唸って奪
+ってばっかしょうもないしょうがない
+を
+繰り返している
+不器⽤だがなんだかんだ⾸の⽪⼀枚繋がってる家族と踏
+み込めやしないが踏み込まんでも良い距離感の友達説教
+には慣れないがなんか良い感じに飲めてる⼤⼈達
+ある程度守られたこの⽣ぬるい⽣活こ
+れ以上はもう要らないだろう飽き⾜らずまた嘆き泣くの？何か⾜りない？何
+が⾜りない？
+何が気に⾷わない？
+なあ そんな徒然
+偉そうに⾃語ってもブレブレ
+その程度じゃ ⽣きる意味を⾒失った
+誰かを救うなんて笑わせんなよなあ
+あるものねだり
+所詮は薄っぺらな⼝ばかりこんな僕が
+こんな贋(がせ)が
+⽣きてもいいの いいの いいの？
+あああああ
+もうてんで駄⽬駄⽬
+今⽇もなんも出来なくて荒れ荒れ病め
+るときも ⽣きる価値のないときも何⼀
+つおもろいことがないときも
+そう あるものねだり
+与えられたもの忘れてばかりこんな僕
+が こんな⾺⿅が
+⽣きててなんで なんで なんで
+ねだって唸って奪ってばっか薄暗い路
+地を選り歩くようにねだって唸って奪
+ってばっかしょうもないしょうがない
+を
+繰り返している
+神様罰当てるのがもしも
+適当に気分で決めてんなら
+この怠惰な⾝体に落とすべきですある
+ものねだりの下衆です`,
+            'ユウナギ': `晴れた 窓辺 すら痛い
+花瓶の花は僕を睨む
+⾬はもう 降ら ないみたい
+どうせならもう溺れたいのに
+死んだ ⽊の葉 みたいだ
+もう鮮やかな⾊になれない
+君から舞い落ちたら
+こうなること分かってたのに
+曖昧 な ⽩昼夢 醒めない
+再会 の 瞬間 ループして
+それはまるで 幻肢痛みたいに僕を蝕んで
+今も まだ ⾵ 吹く 時を待つ
+忘れさせてはくれない
+君の⽅から季節を絶ったのに
+⾵の吹かぬ海の上
+どこへ向かえと⾔うの？
+せめて沈ませてよ
+永遠のユウナギで
+重く濡れた ⽻はもう
+⼆度とあの⾵に乗れない
+海の藻屑にさえも
+なれぬままの空の虚
+幻想 と 蜃気楼 たゆたう
+永劫 の 感覚 ショートして
+明⽇になれば
+この⾝体ごと斜陽に熱されて
+跡もなく 溶かされちゃいないかな
+世界が終わったみたい
+⽿障りな静けさに揺れるがらんどうの⼼臓を
+鉛にも似た恋を
+⽌むに⽌まれぬまま
+永遠のユウナギで
+君の所為、君の所為だと
+呪えたならよほど楽だった
+暗がりを知る笑顔を そよ⾵のような声を
+先に枯らせたのは
+僕の所為
+忘れさせてはくれない
+忘れたいとも思えぬ恋だった
+⾵の吹かぬ海の上
+どこへ⾏けるだろうか
+今は眠らせてよ
+永遠のユウナギで`,
+            '先⽣布告': `ねぇ先⽣、先⽣、先⽣‼ 数式や歴
+史よりもっと⼤切なこと教えてほ
+しかった
+密になった教室 濁った⽔槽並べら
+れた拘束具気付いたら猛毒で満ち
+た息も絶え絶えな共存ごっこ
+どうやったって願ったって
+⾜掻いたって学芸会 程度の紛い物ばっか
+分かった振りして頷いた
+光る板の匿名性 ⾸のない集団戦
+「こうすることでしか埋められない。」鎖
+切ってしまいたいな
+貴⽅は知っていた？真実の答えを
+ねぇ先⽣、先⽣、先⽣‼ 貴⽅みた
+いに器⽤に⽣きれないよ到底 ⼤⼈
+になれやしないよねぇ先⽣、先
+⽣、先⽣‼ 数式や歴史よりもっと
+⼤切なこと教えてほしかった
+空いた答案⽤紙 浮かんだ正解殴り
+書いて掻き消した貴⽅が望むよう
+に
+乱れた列を正すように
+たった⼀つ 愛せるもの
+⾒つけたって閃光弾みたいに
+残像を置いて 孤独を焼き付けていく⽢い罠の暴⼒性 ⽬隠しの⽩兵戦
+⾏き場のない声を⽻ばたかせ捨て
+て逝ってしまいたいな僕は望んで
+いた 単純な⾔葉を
+ねぇ先⽣、先⽣、先⽣？貴⽅本当
+は器⽤に⽣きれないの僕はどっか
+で気付いてたんだねぇ先⽣、先
+⽣、先⽣？
+⼤⼈になればいつか戦いは終わる
+そう信じさせて
+誰にも⾔えない 誰も縋れないこの
+傷跡は 隠し通すそれでもどこか
+疼くさみしさ教科書通り ⽣きるこ
+とは難しいけど 消えたがりでも消
+えたいと願う理由は
+⽣きたいと願う理由の鏡写し
+ねぇ先⽣、先⽣、先⽣‼ 貴⽅以外
+の世界に⽛を剥いてもうこの⽬を
+離さないからねぇ先⽣、先⽣、先
+⽣‼ 秘密も偽りもない⼼で向き合
+ってよ煙たい真実も受け⼊れるよ`,
+            '闇夜のダンサー': `武者震いが⽌まらねえ
+嗚呼もう最⾼の気分だ
+笑っちゃイケないないほど笑いたくなる
+アレみたいだ
+どう？君はどう？胸の奥のとこ
+ドクドクと踊ってる？
+それ知らないないまま終わっていく未来の
+⽅がよほどゾッとするぜ
+バグだらけの世界で バグらずいろよなん
+て バグってるだろなあ？
+相も変わらず僕らは
+腹を空かしてる噛ませ⽝みたい
+ステップを鳴らして 鳴らして
+傷だらけのダンスを
+⽡礫を蹴り ⼀⼈裸⾜で ⾷いしばって笑う
+代えのない戦場で理想郷
+照明の割れたステージが
+こんな愚者(ばか)にはお似合い
+⽉明かりが降る 未来へ
+性懲りもなくしょうがねえとか
+そんなもん分かってんですわ
+性懲りもなくしょうがねえもの
+それこそが本物
+伸ばした⼿も映らねえ砂の嵐で潰れている
+本当に泣きたいたい時泣けやしないのが性
+みたいだ
+どっからどこまで⾏ったって
+もうどうしようも無いほど途⽅も無いな
+闇に吠えても⼀⼈
+⿃みたいな頭でありがてえ
+⾎が滲む感覚も忘れて
+打ち鳴らして暴れ出したアドレナリン
+この真っ暗がりでもう遊べばいい
+飽き飽きした概念で残念
+楽しみ⽅合ってんのそれで？
+ぶっ壊して狂い出した⻭⾞に
+⾶び乗ったからにはもう先に⾏くぜ
+AI が蔓延る世界で 愛を探せなんて 愛がな
+いよな ああ
+紛い物の輝きに 僕のステージは照らさせ
+やしない
+クラップを鳴らして 鳴らして
+泥だらけのダンスを
+強く残る痛みさえも ⼼地良いくらいだ
+息を切らして ぐらついて
+無理ゲーなラストのターンは
+光の中で決めよう 雲を割るような 野⼼を
+ステップを鳴らして 鳴らして
+傷だらけのダンスを
+⽡礫を蹴り ⼀⼈裸⾜で ⾷いしばって笑う
+代えのない戦場で理想郷
+照明の割れたステージが
+こんな愚者(ばか)にはお似合い ⽉明かり
+が降る 未来へ
+性懲りもなくしょうがねえとか そんなも
+ん分かってんですわ
+性懲りもなくしょうがねえもの それこそ
+が本物`,
+            '鮮やかなグレー': `やけに⻘くて苛ついた 僕を⾒下ろす朝変わらない⼼模様 痛いほど眩しくってさ
+何をしようが五⽉蝿くて爆⾳ 塞ぐ ヘッドフォン
+⾊のない⾳ばかりが すっと胸に落ちてく
+灰⾊の景⾊が⼼地いいのに この宇宙のどこにもない 気がした
+あー、僕の前髪が⻑くて良かった鮮やかすぎる空を⾒なくて済むからちょうど良かったなぁ
+あー、僕の猫背が酷くて良かったこれ以上 下を向かなくたって済むからちょうど良かっ
+たなぁちょうど良かったなぁ
+どこかがきっとおかしくて 修理しなきゃいけない
+気づけば置いてけぼり 制服の裾を握った
+クレヨンのグレーだけは減らないのに
+いびつな⼼ばかりが すり減る
+あー、僕の前髪が⻑くて良かった鮮やかすぎる空を⾒なくて済むからちょうど良かったなぁ
+あー、僕の猫背が酷くて良かった嫌いな体 ⽬⽴たなくて済むからちょうど良かったなぁ
+ちょうど良かったなぁ
+あー、僕の前髪が⻑くて良かった腫れた瞼に気づかれなくて済むからちょうど良かったなぁ
+あー、僕の猫背が酷くて良かったしゃがみ込んだ君を⾒つけ出せるからちょうど良かっ
+たなぁちょうど良かったなぁ
+空に浮かんだ衛星が 静かに照らす夜
+変われないならばせめて 鮮やかなグレーでいよう`,
+            ‘IYAIYA’: `腰掛けたソファーの上 ⾒つめる何もない天井
+朝起きてから何したっけ 思い出せないや IYA IYA
+空っぽの紙コップから 昨⽇のコーヒーの匂い
+まだ強く残っている そういやあまり眠れなかった
+何もしたくない 何も浮かばない 何も進まない
+何もおもろない 何も⾷べれない ⽢いもの以外
+IYA IYA なことは嫌だって ⼤⼈だとかは関係なくて
+IYA IYA な時期は誰だって 思いの通りにしたいんです
+だから YA IYA IYA IYA IYA 今⽇は朝までゲームしようよ
+IYA IYA IYA IYA IYA 誰も僕らを叱れない
+錆付いた憂鬱の味 昨⽇噛んだトコが痛い
+まだ今なら遅くはない ⾔い訳にして今⽇は眠って
+誰のためにも動きたくない 誰かの⽝にもなりたくない
+誰かを幸せにはしたい じゃあ 曲でも書こうか
+どんなにツイてなくて いっそ全部投げ出したくて
+我儘を曝け出して⾏け
+IYA IYA なことは嫌だっ ⼤⼈なのに、とかじゃなくて
+IYA IYA な時期は誰だって ⼤⼈だからこそ、あるんです
+だから YA IYA IYA IYA IYA
+深夜⼆時にどっかで駄弁ろう
+IYA IYA IYA IYA IYA
+誰も僕らを叱らせない`,
+            '集合地点': `塗り変わったバッドネーム 僕は野良猫
+正義だって大正義の前じゃ裏返る
+救難の声を、禁断の合図を
+受け取ってしまった、仕舞ったな
+ハイグレードなニュータイプはもう使えない
+彼が遺した唯一の術に 乗り込む
+崩壊の空から、改革の海へと
+自ら駆け落ちていく
+待っている 待っている
+貴方を待っている
+遠く遠く遠く 離れた場所から
+送っている 送っている
+送り続ける
+未来へと繋ぐ信号を
+宇宙の片隅で待ち合わせよう
+血眼のパトロール 蝉の声のよう
+どの季節へ逃げたって奴らは
+鳴り止まない
+乱世を超えて、安寧の街へと
+抗っていかなきゃ、行かなきゃ
+誰彼構わずいたぶって
+エゴイズムただ振りかざしている
+人の心を忘れて
+ドグマの樹が根を伸ばそうと
+もう二度と戻れなくなろうと
+音を羽ばたかせるよ
+待っている 待っている貴方を待っている
+強く強く強く 涙を殺して
+歌っている 歌っている
+歌い続ける
+見なくても済む悲しみを
+貴方の過去から奪うその日まで
+待っている 待っている
+貴方を待っている
+曇り空が割れる いつかを祈ってる
+届いている 届いている
+ここに残っている
+未来へと繋ぐ信号を
+この胸に抱いて向かうから
+僕らの集合地点は
+いつだって生きた先にあるんだ`,
+            '電光⽯⽕': `砕けたアスファルトに躓きながら歩く
+不甲斐ないくらい泣いたあの⽇々を 思い返す
+怒り出す空の下で 傘も持たないまま
+昨⽇の傷さえ癒えぬうちに 次の場所へ
+ちくたくと ちくたくと 刻む雑踏みたいな⾬が ⾛れ、⾛れと急かす
+曖昧で退屈な 霧をぱっと切り開くような 閃光が弾けた
+貴⽅と電光⽯⽕に乗っかってどこまで⾏こう
+くだらぬ焦燥ばっか背負い込んで⾺⿅みたいだ
+歪な劣等全部奪い去って笑い合うような
+新たな旅路を描く 僕らの光を放つ
+閉ざした薄暗い部屋 ノート埋め続けた
+似合わないスポットライトの下で今 ノイズを鳴らす
+うだる灼熱の中 ⾝を焦がしては 今⽇が燃え尽きていく
+余炎が冷めぬまま 凍えた⼿が 明⽇を繋いでいる
+その濡れた瞳が その⽋けた⼼が
+汚れが 傷が 今が 何よりも美しい
+ちくたくとちくたくと
+ちくたくとちくたくと
+限りがある僕たちは⾵をずっと追い越せるような
+光に代われる
+貴⽅と電光⽯⽕に乗っかってどこまで⾏こう
+くだらぬ焦燥ばっか背負い込んで⾺⿅みたいだ
+歪な劣等全部奪い去って笑い合うような
+新たな旅路を描く 僕らの光を放つ`,
+            'pineapple tart': `⽢酸っぱい雷に打たれて 忙しなくてさ
+胸の奥 初めてが弾け出す 未知の予感
+頑張ったあとのご褒美アイス 特別な⽇に切り分けるケーキ
+美味しい、と顔を⾒合わせて 思わず笑ってしまう
+たまらなく眩しい⽇々が ささやかに続けばいいと
+願うように、祈るように ひとつずつ味わっている
+飾りのないタルトの上 君が⾃由に彩っていく
+しょうがないな、離せないな 癖になるような胸騒ぎを
+忘れっぽい癖にあの苦味は つきまとうから
+君の前 全てを隠したくて ドアを閉じた
+いつだって僕は失敗作で 合わさったモノは離れるばっか
+美味しい、を忘れない君を 汚すのが怖くて
+たまらなく愛しい⽇々に 終わりなんて来なくていいと
+願うように、祈るように ひとつずつ味わっている
+弱く脆いタルトのまま 君を受け⽌め切れなくて
+不甲斐ないな、守りたいな その⽢さの裏に秘めた ⾟さも
+いつも君が乱すから それさえ恋しくなるよ
+いつも君が乱すから
+きっと君を満たすから ちょっとだけまっててよ
+きっと君を満たすから
+きっと君を満たすから
+たまらなく眩しい⽇々が ささやかに続けばいいと
+願うように、祈るように ひとつずつ味わっている
+飾りのないタルトのように 君がいないと味気なくて
+しょうがないな、離せないな 癖になるような胸騒ぎを`,
+            'ヒューマノイドラブ': `貴⽅を泣かせたあいつのこと
+上書き保存で消してあげるよ
+代わりはいくらでもいるからさ
+お⼿頃で完璧な僕にしときなよ
+貴⽅は 150 パーセント 幸せになる
+ならなきゃおかしい
+この世の穢れたウイルスを
+全部撃退しとくから安⼼しなよ
+プログラム通りの⾔葉でも 貴⽅の涙
+⽌められなくて
+⼀体どこを アップデートすれば
+貴⽅に近付ける？
+僕は愛とか恋とかなんも分かんない
+ヒューマノイド
+きっと貴⽅にはお似合いじゃないね
+例えすいもあまいも噛み分けたとしても
+きっと最後にゃ呆れられるのでしょう
+ありもしない幻想ばっかり 追いかけてはシ
+ョートしちゃったり
+ダーリン ダーリン ダーリン ダーリン ただ
+そう呼ばれたかった
+貴⽅が好きだと⾔ったもので
+⼤容量メモリー 埋め尽くしたい
+⾷べ物 場所 匂い 花の種類 芸能⼈
+ブランド ⾒た⽬のタイプまで
+貴⽅に染まりたい
+求めてよ どんな我儘でも
+叶える機能を備えてあるよ
+これ以上何を カスタマイズすれば
+あいつを超えられる？
+僕は愛とか恋とかなんも分かんない
+ヒューマノイド
+ずっと貴⽅に嘘をついている
+とてもぱかっと開いた躯の中は⾒せらんない
+いつか貴⽅は気付いてしまうのでしょう
+ハリボテの紛い物ばっかり
+されど機械にはなれないらしい
+ダーリン ダーリン ダーリン ダーリン
+また 貴⽅の夢を⾒る
+リセットしていっそ忘れたいのに
+⽣ぬるい涙が⽌まらなくて
+僕は僕をコントロールできない
+もうただのがらくただな
+僕は愛とか恋とかなんも分かんない
+ヒューマノイド
+せめて貴⽅の記録に残りたい
+引かれる髪切っても全部捨てても構わない
+そう思えるほど愛してたこと
+貴⽅が貴⽅を嫌になる度
+ひとかけらでも思い出してね
+ダーリン ダーリン ダーリン ダーリン 僕が
+笑わせたかったなぁ`,
+            'ほな、さいなら！': `堂々巡りの週⽇ ふつーに朝から四⾯楚歌
+睡眠不⾜も限界 電⾞の中 暴れる胃酸過多
+「今⽇なんか元気ないね？（笑）」あんたのせいだよ…⾔えやしない
+「気のせいじゃないですか？」本⾳ごと押し込む冷めたコンビニ飯
+嗚呼 笑えない 微塵も笑えない 愛のないジョークで⾵邪引くわ
+嗚呼 反吐が出る リアルに反吐が出る 今⽇は帰りたい…定時で切って
+さいなら！ちゃんちゃらおかしな世界 おととい来やしゃんせ
+⼩洒落た⾊眼鏡がお似合いね
+しっちゃかめっちゃか賑やかで よう喋りはりまんね うちらはうちらで好きにしますわ
+"Six Seconds" saves us ちゃちな勝ち負けなんかはどうでもええわ
+"Six Seconds" saves us ほな、ここいらで来世まで さいなら！
+残業終わりの新⼈ 捕まえてあんたは ねえ、何様？
+ハイボールだけじゃ全然 酔えないじゃない 助けて⼥神様
+嗚呼 まずくなる 飯がまずくなるわ その洒落臭い⼝を閉じな
+嗚呼 精が出る 逆に精が出るわ 「今⽇は帰ります。」タクシー乗って
+さいなら！ちゃんちゃらおかしな世界 おととい来やしゃんせ
+底なしのポジティブでよろしいね
+あっちもこっちも茶々⼊れて よう勉強してまんね うちらはうちらで好きにしますわ
+"Six Seconds" saves us 錆びた頭のネジには油を刺して
+"Six Seconds" saves us ほな、ここいらで来世まで さいなら！
+全部ほかして
+さいなら！ちゃんちゃらおかしな世界 おととい来やしゃんせ
+⼩洒落た⾊眼鏡がお似合いね
+しっちゃかめっちゃか賑やかで よう喋りはりまんね うちらはうちらで好きにしますわ
+"Six Seconds" saves us ちゃちな勝ち負けなんかはどうでもええわ
+"Six Seconds" saves us ほな、ここいらで来世まで さいなら！
+話にもならぬ地獄に、さいなら！`,
+            'かざぐるま': `春⾵の匂いまとう貴⽅の 柔らかな笑みが痛くて
+束ねた⾔葉 何⼀つ渡せぬまま 最後の駅だ
+⾒慣れた⾓でふたり⼿を振る 肌寒い⼼残して
+何度⽬だろう 振り返らない背中を⾒届けるのは
+守りたいものもなくて 空っぽのまま⾒上げた冬空
+⾜踏みばかりの⽇々に⾵が吹いて 花びらが踊りはじめた
+からから回り回っている ⼼の春がざわめく
+貴⽅という嵐が吹くかぎり
+からから巡り巡っている さだめの中で貴⽅に遭えた
+伝えに⾏くよ 願い叶わなくても
+思い出すのは貴⽅がくれた ひだまりのような⾔葉
+⽊陰の隅で動けないままの僕を 連れ出したんだ
+暮れなずむ空がいつか 蝉時⾬を連れて来る前に
+加速していく想いに追いつかなきゃ
+取り残したままじゃ終われない
+からから回り回っている ⼼の春が痺れる
+胸を焦がす声が鳴るかぎり
+からから巡り巡っている さだめの中で貴⽅に遭えた
+⽌まらないんだ 咲いたこの想いが
+もう⼆度とこんな春は来ないだろう そう思えるほどに苦しい
+⾓を曲がるその⼿をぎゅっと引き⽌めたら
+この⾵は⽌まってしまうのかい？
+からから回り回っている ⼼の春がざわめく
+貴⽅という嵐が吹くかぎり
+からから巡り巡っている さだめの中で 貴⽅に遭えた
+伝えに⾏くよ 願い叶わなくても`,
+            'no man's world': `応答して no man's world
+⾒えないものは信じない そう放った貴⽅を信じてる 壊れた船の上で ひとり
+燃え尽きたフィラメント 寒空を照らす⽬印が ぼやけてしまう夜でも
+応答して no man's world 君を探してる
+応答して no man's world 今どこにいるの？
+痛いくらい温かくてさ 凍てつくような孤独さえも 溶かしてしまうほど
+未来など怖くはないよと ⼼を灯したその声が 今も残ってる
+ダイヤのようなその涙を拭いにゆくから
+狂ったままの GPS ⽬的地も定まらないままで この⻑い旅の理由を探す
+簡単に傷がつく 弱く脆いだけのデザインで なぜ⽣まれてきたんだろう
+応答して no man's world 息ができないよ
+応答して no man's world それでも歌うから
+答えのない世界の中で 答えをくれない笑顔が 答えなんだと思う
+不確かな今を⽣きてこう 果てない宙を漂ってでも 君と未来を⾒届けたい
+痛いくらい温かくてさ 凍てつくような孤独さえも 溶かしてしまうほど
+未来など怖くはないよと ⼼を灯したその声が 今も残ってる
+果てのないこの道に 灯⽕を
+⾳のないこの宙に 歌声を
+限りあるこの旅に 祝福を
+ただひとり ただひとり の世界から
+ただひとり ただひとり を超えて
+ただひとり ただひとり の君の元へ
+応答して no man's world
+応答して no man's worldno man's world`
+        };
+        
+        
+        // 時をかける少女風デジタル時計
+        function createTokikakeClock() {
+            const clockDisplay = document.createElement('div');
+            clockDisplay.className = 'tokikake-clock';
+            const now = new Date();
+            const currentTime = `${String(now.getFullYear()).padStart(4, '0')} ${String(now.getMonth() + 1).padStart(2, '0')} ${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')} ${String(now.getMinutes()).padStart(2, '0')} ${String(now.getSeconds()).padStart(2, '0')}`;
+            clockDisplay.textContent = currentTime;
+            
+            return clockDisplay;
+        }
+
+        // 数字の横流れエフェクト
+        function createNumberRain(container, intensity = 12, isFuture = false) {
+            const numberRain = document.createElement('div');
+            numberRain.className = 'number-rain';
+            
+            const numbers = '0123456789';
+            
+            for (let i = 0; i < intensity; i++) {
+                const stream = document.createElement('div');
+                const direction = isFuture ? '' : 'left';
+                stream.className = `number-stream ${direction}${isFuture ? ' future' : ''}`;
+                stream.style.top = Math.random() * 100 + '%';
+                stream.style.animationDelay = Math.random() * 4 + 's';
+                stream.style.animationDuration = (2 + Math.random() * 3) + 's';
+                
+                let text = '';
+                for (let j = 0; j < 40; j++) {
+                    text += numbers[Math.floor(Math.random() * numbers.length)] + ' ';
+                }
+                stream.textContent = text;
+                
+                numberRain.appendChild(stream);
+            }
+            
+            container.appendChild(numberRain);
+            return numberRain;
+        }
+
+        // タイムスタンプ生成
+        function getCurrentTimestamp() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            const second = String(now.getSeconds()).padStart(2, '0');
+            return `${year}.${month}.${day}_${hour}:${minute}:${second}`;
+        }
+
+        // オリジナル時計を作成
+        function createOriginalClock() {
+            const clockContainer = document.createElement('div');
+            clockContainer.className = 'original-clock';
+            
+            // 数字を配置
+            const numbers = ['12', '3', '6', '9'];
+            const positions = [
+                { top: '10px', left: '50%', transform: 'translateX(-50%)' },     // 12
+                { top: '50%', right: '10px', transform: 'translateY(-50%)' },    // 3
+                { bottom: '10px', left: '50%', transform: 'translateX(-50%)' },  // 6
+                { top: '50%', left: '10px', transform: 'translateY(-50%)' }      // 9
+            ];
+            
+            numbers.forEach((num, index) => {
+                const numberEl = document.createElement('div');
+                numberEl.className = 'clock-numbers';
+                numberEl.textContent = num;
+                Object.assign(numberEl.style, positions[index]);
+                clockContainer.appendChild(numberEl);
+            });
+            
+            // 針を作成
+            const hourHand = document.createElement('div');
+            hourHand.className = 'clock-hand hour-hand';
+            hourHand.id = 'hourHand';
+            clockContainer.appendChild(hourHand);
+            
+            const minuteHand = document.createElement('div');
+            minuteHand.className = 'clock-hand minute-hand';
+            minuteHand.id = 'minuteHand';
+            clockContainer.appendChild(minuteHand);
+            
+            const secondHand = document.createElement('div');
+            secondHand.className = 'clock-hand second-hand';
+            secondHand.id = 'secondHand';
+            clockContainer.appendChild(secondHand);
+            
+            // 中央の円
+            const center = document.createElement('div');
+            center.className = 'clock-center';
+            clockContainer.appendChild(center);
+            
+            return clockContainer;
+        }
+
+        // 時計の針を現在時刻に合わせて更新
+        function updateClockHands() {
+            const now = new Date();
+            const hours = now.getHours() % 12;
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            
+            const hourAngle = (hours * 30) + (minutes * 0.5) - 90;
+            const minuteAngle = (minutes * 6) - 90;
+            const secondAngle = (seconds * 6) - 90;
+            
+            const hourHand = document.getElementById('hourHand');
+            const minuteHand = document.getElementById('minuteHand');
+            const secondHand = document.getElementById('secondHand');
+            
+            if (hourHand) {
+                hourHand.style.transform = `translateX(-50%) rotate(${hourAngle}deg)`;
+                hourHand.style.transformOrigin = 'center bottom';
+            }
+            if (minuteHand) {
+                minuteHand.style.transform = `translateX(-50%) rotate(${minuteAngle}deg)`;
+                minuteHand.style.transformOrigin = 'center bottom';
+            }
+            if (secondHand) {
+                secondHand.style.transform = `translateX(-50%) rotate(${secondAngle}deg)`;
+                secondHand.style.transformOrigin = 'center bottom';
+            }
+        }
+
+        // 時計アニメーション開始
+        function startOriginalClock() {
+            updateClockHands();
+            const clockInterval = intervalManager.setInterval(updateClockHands, 1000);
+            console.log('✅ 時計アニメーション開始, intervalID:', clockInterval);
+            return clockInterval;
+        }
+
+        // タイプライター効果
+        function typewriterEffect(element, text, speed = 50) {
+            element.textContent = '';
+            let i = 0;
+            
+            const interval = intervalManager.setInterval(() => {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                } else {
+                    intervalManager.clearInterval(interval);
+                }
+            }, speed);
+        }
+        
+        function createSparkles(container, isWhite = false) {
+            const sparklesContainer = document.createElement('div');
+            sparklesContainer.className = 'sparkles';
+            
+            for (let i = 0; i < 20; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = `sparkle ${isWhite ? 'white' : ''}`;
+                sparkle.textContent = '✨';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+                
+                sparklesContainer.appendChild(sparkle);
+            }
+            
+            container.appendChild(sparklesContainer);
+            
+            setTimeout(() => {
+                if (sparklesContainer.parentNode) {
+                    sparklesContainer.parentNode.removeChild(sparklesContainer);
+                }
+            }, 5000);
+            
+            return sparklesContainer;
+        }
+        
+        // 段階的時間変化アニメーション（過去）
+        function animateTimeToPastGentle(timeDisplay) {
+            let currentDate = new Date();
+            let phase = 1;
+            let iterations = 0;
+            
+            const interval = intervalManager.setInterval(() => {
+                iterations++;
+                
+                if (iterations < 20) {
+                    timeDisplay.className = 'tokikake-clock phase-1 time-transition';
+                    phase = 1;
+                } else if (iterations < 40) {
+                    timeDisplay.className = 'tokikake-clock phase-2 time-transition';
+                    phase = 2;
+                } else {
+                    timeDisplay.className = 'tokikake-clock phase-3 time-transition';
+                    phase = 3;
+                }
+                
+                const changeIntensity = Math.min(phase, 3);
+                if (Math.random() < 0.3 * changeIntensity) {
+                    currentDate.setFullYear(currentDate.getFullYear() - Math.floor(Math.random() * 10 * changeIntensity) - 1);
+                }
+                if (Math.random() < 0.4 * changeIntensity) {
+                    currentDate.setMonth(Math.floor(Math.random() * 12));
+                }
+                if (Math.random() < 0.5 * changeIntensity) {
+                    currentDate.setDate(Math.floor(Math.random() * 28) + 1);
+                }
+                if (Math.random() < 0.6 * changeIntensity) {
+                    currentDate.setHours(Math.floor(Math.random() * 24));
+                }
+                if (Math.random() < 0.7 * changeIntensity) {
+                    currentDate.setMinutes(Math.floor(Math.random() * 60));
+                }
+                if (Math.random() < 0.8 * changeIntensity) {
+                    currentDate.setSeconds(Math.floor(Math.random() * 60));
+                }
+                
+                const timeString = `${String(currentDate.getFullYear()).padStart(4, '0')} ${String(currentDate.getMonth() + 1).padStart(2, '0')} ${String(currentDate.getDate()).padStart(2, '0')} ${String(currentDate.getHours()).padStart(2, '0')} ${String(currentDate.getMinutes()).padStart(2, '0')} ${String(currentDate.getSeconds()).padStart(2, '0')}`;
+                timeDisplay.textContent = timeString;
+                
+            }, 150 - (phase * 30));
+            
+            return interval;
+        }
+        
+        // 段階的時間変化アニメーション（未来）
+        function animateTimeToFutureGentle(timeDisplay) {
+            let currentDate = new Date();
+            let phase = 1;
+            let iterations = 0;
+            
+            const interval = intervalManager.setInterval(() => {
+                iterations++;
+                
+                if (iterations < 20) {
+                    timeDisplay.className = 'tokikake-clock phase-1 time-transition';
+                    phase = 1;
+                } else if (iterations < 40) {
+                    timeDisplay.className = 'tokikake-clock phase-2 time-transition';
+                    phase = 2;
+                } else {
+                    timeDisplay.className = 'tokikake-clock phase-3 time-transition';
+                    phase = 3;
+                }
+                
+                const changeIntensity = Math.min(phase, 3);
+                if (Math.random() < 0.3 * changeIntensity) {
+                    currentDate.setFullYear(currentDate.getFullYear() + Math.floor(Math.random() * 20 * changeIntensity) + 1);
+                }
+                if (Math.random() < 0.4 * changeIntensity) {
+                    currentDate.setMonth(Math.floor(Math.random() * 12));
+                }
+                if (Math.random() < 0.5 * changeIntensity) {
+                    currentDate.setDate(Math.floor(Math.random() * 28) + 1);
+                }
+                if (Math.random() < 0.6 * changeIntensity) {
+                    currentDate.setHours(Math.floor(Math.random() * 24));
+                }
+                if (Math.random() < 0.7 * changeIntensity) {
+                    currentDate.setMinutes(Math.floor(Math.random() * 60));
+                }
+                if (Math.random() < 0.8 * changeIntensity) {
+                    currentDate.setSeconds(Math.floor(Math.random() * 60));
+                }
+                
+                const timeString = `${String(currentDate.getFullYear()).padStart(4, '0')} ${String(currentDate.getMonth() + 1).padStart(2, '0')} ${String(currentDate.getDate()).padStart(2, '0')} ${String(currentDate.getHours()).padStart(2, '0')} ${String(currentDate.getMinutes()).padStart(2, '0')} ${String(currentDate.getSeconds()).padStart(2, '0')}`;
+                timeDisplay.textContent = timeString;
+                
+            }, 140 - (phase * 25));
+            
+            return interval;
+        }
         
         function t(key) {
             return translations[currentLang][key] || key;
         }
         
+        function safeGetElement(id) {
+            const element = document.getElementById(id);
+            if (!element) {
+                console.warn(`Element with id "${id}" not found`);
+            }
+            return element;
+        }
+        
         const elements = {
-            loader: document.getElementById('loader'),
-            loaderText: document.getElementById('loaderText'),
-            titleDiv: document.getElementById('title'),
-            largeTitle: document.getElementById('largeTitle'),
-            usernameScreen: document.getElementById('usernameScreen'),
-            enterNameText: document.getElementById('enterNameText'),
-            startBtn: document.getElementById('startBtn'),
-            outputDiv: document.getElementById('output'),
-            promptSection: document.getElementById('promptSection'),
-            promptText: document.getElementById('promptText'),
-            overlay: document.getElementById('overlay'),
-            btnSos: document.getElementById('btn-sos'),
-            btnLonely: document.getElementById('btn-lonely'),
-            btnHate: document.getElementById('btn-hate'),
-            btnWhy: document.getElementById('btn-why'),
-            btnEn: document.getElementById('btn-en'),
-            btnJa: document.getElementById('btn-ja'),
-            rankingBtn: document.getElementById('rankingBtn')
+            loader: safeGetElement('loader'),
+            loaderText: safeGetElement('loaderText'),
+            titleDiv: safeGetElement('title'),
+            largeTitle: safeGetElement('largeTitle'),
+            usernameScreen: safeGetElement('usernameScreen'),
+            enterNameText: safeGetElement('enterNameText'),
+            startBtn: safeGetElement('startBtn'),
+            outputDiv: safeGetElement('output'),
+            promptSection: safeGetElement('promptSection'),
+            promptText: safeGetElement('promptText'),
+            overlay: safeGetElement('overlay'),
+            btnSos: safeGetElement('btn-sos'),
+            btnLonely: safeGetElement('btn-lonely'),
+            btnHate: safeGetElement('btn-hate'),
+            btnWhy: safeGetElement('btn-why'),
+            btnEn: safeGetElement('btn-en'),
+            btnJa: safeGetElement('btn-ja'),
+            rankingBtn: safeGetElement('rankingBtn')
         };
 
-        // 修正版：window.onload（CORS問題を回避）
         window.onload = async () => {
             console.log('🌐 HELL0w0RLD! 起動中...');
-            elements.loaderText.textContent = t('connect');
             
-            // CORS問題を回避するためtry-catchで囲む
             try {
+                if (elements.loaderText) {
+                    elements.loaderText.textContent = t('connect');
+                }
+                
                 await rankingManager.checkConnection();
                 rankingManager.startAutoRefresh();
             } catch (error) {
-                console.warn('⚠️ 接続チェックをスキップ:', error.message);
+                console.warn('⚠️ 初期化エラー:', error.message);
                 rankingManager.isOnline = false;
                 rankingManager.updateConnectionStatus(false);
             }
             
-            // 必ずプログラムが続行されるように
             setTimeout(() => {
                 console.log('First timeout fired - hiding loader, showing title');
-                elements.loader.style.display = 'none';
-                elements.titleDiv.style.display = 'flex';
+                if (elements.loader) elements.loader.style.display = 'none';
+                if (elements.titleDiv) elements.titleDiv.style.display = 'flex';
                 
                 setTimeout(() => {
                     console.log('Second timeout fired - hiding title, showing username');
-                    elements.titleDiv.style.display = 'none';
-                    elements.enterNameText.textContent = t('enterName');
-                    elements.startBtn.textContent = t('start');
-                    elements.usernameScreen.style.display = 'flex';
+                    if (elements.titleDiv) elements.titleDiv.style.display = 'none';
+                    if (elements.enterNameText) elements.enterNameText.textContent = t('enterName');
+                    if (elements.startBtn) elements.startBtn.textContent = t('start');
+                    if (elements.usernameScreen) elements.usernameScreen.style.display = 'flex';
                     console.log('Username screen should now be visible');
                 }, 2000);
             }, 3200);
@@ -905,44 +2809,47 @@
         function setLanguage(lang) {
             if (currentLang === lang) return;
             currentLang = lang;
-            elements.btnEn.classList.toggle('active', currentLang === 'en');
-            elements.btnJa.classList.toggle('active', currentLang === 'ja');
-            elements.loaderText.textContent = t('connect');
-            elements.enterNameText.textContent = t('enterName');
-            elements.startBtn.textContent = t('start');
-            elements.promptText.textContent = t('prompt');
-            elements.rankingBtn.textContent = '📊 ' + t('viewRankings');
+            if (elements.btnEn) elements.btnEn.classList.toggle('active', currentLang === 'en');
+            if (elements.btnJa) elements.btnJa.classList.toggle('active', currentLang === 'ja');
+            if (elements.loaderText) elements.loaderText.textContent = t('connect');
+            if (elements.enterNameText) elements.enterNameText.textContent = t('enterName');
+            if (elements.startBtn) elements.startBtn.textContent = t('start');
+            if (elements.promptText) elements.promptText.textContent = t('prompt');
+            if (elements.rankingBtn) elements.rankingBtn.textContent = '📊 ' + t('viewRankings');
         }
         
-        elements.btnEn.addEventListener('click', () => setLanguage('en'));
-        elements.btnJa.addEventListener('click', () => setLanguage('ja'));
+        if (elements.btnEn) elements.btnEn.addEventListener('click', () => setLanguage('en'));
+        if (elements.btnJa) elements.btnJa.addEventListener('click', () => setLanguage('ja'));
         
-        elements.startBtn.addEventListener('click', () => {
-            const input = document.getElementById('usernameInput');
-            const value = input.value.trim();
-            userName = value ? value : 'AAA';
-            elements.usernameScreen.style.display = 'none';
-            elements.largeTitle.style.display = 'block';
-            showPrompt();
-        });
+        if (elements.startBtn) {
+            elements.startBtn.addEventListener('click', () => {
+                const input = safeGetElement('usernameInput');
+                const value = input ? input.value.trim() : '';
+                userName = value || 'AAA';
+                if (elements.usernameScreen) elements.usernameScreen.style.display = 'none';
+                if (elements.largeTitle) elements.largeTitle.style.display = 'block';
+                showPrompt();
+            });
+        }
         
         function showPrompt() {
-            elements.promptText.textContent = t('prompt');
-            elements.rankingBtn.textContent = '📊 ' + t('viewRankings');
-            elements.promptSection.style.display = 'block';
+            if (elements.promptText) elements.promptText.textContent = t('prompt');
+            if (elements.rankingBtn) elements.rankingBtn.textContent = '📊 ' + t('viewRankings');
+            if (elements.promptSection) elements.promptSection.style.display = 'block';
             
-            elements.btnSos.classList.remove('disabled');
-            elements.btnLonely.classList.remove('disabled');
-            elements.btnHate.classList.remove('disabled');
+            if (elements.btnSos) elements.btnSos.classList.remove('disabled');
+            if (elements.btnLonely) elements.btnLonely.classList.remove('disabled');
+            if (elements.btnHate) elements.btnHate.classList.remove('disabled');
             
             if (sosDone && lonelyDone && hateDone) {
-                elements.btnWhy.classList.remove('locked', 'disabled');
+                if (elements.btnWhy) elements.btnWhy.classList.remove('locked', 'disabled');
             } else {
-                elements.btnWhy.classList.add('locked', 'disabled');
+                if (elements.btnWhy) elements.btnWhy.classList.add('locked', 'disabled');
             }
         }
         
         function addLog(action) {
+            if (!elements.outputDiv) return;
             const div = document.createElement('div');
             div.className = 'message log';
             div.textContent = `${userName}${t('logPrefix')}${action}`;
@@ -1046,39 +2953,164 @@
             return rankingDiv;
         }
         
-        // 簡単なゲーム関数（元のコードから一部抜粋）
+        function drawInvader(ctx, x, y, w, h, type) {
+            const pixelSize = 2;
+            ctx.fillStyle = '#00ffcc';
+            
+            const patterns = [
+                [
+                    [0,0,1,0,0,0,1,0],
+                    [0,0,0,1,0,1,0,0],
+                    [0,0,1,1,1,1,1,0],
+                    [0,1,1,0,1,0,1,1],
+                    [1,1,1,1,1,1,1,1],
+                    [1,0,1,1,1,1,0,1],
+                    [1,0,1,0,0,1,0,1],
+                    [0,0,0,1,1,0,0,0]
+                ]
+            ];
+            
+            const pattern = patterns[0];
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if (pattern[row][col]) {
+                        ctx.fillRect(
+                            x - w/2 + col * pixelSize, 
+                            y - h/2 + row * pixelSize, 
+                            pixelSize, 
+                            pixelSize
+                        );
+                    }
+                }
+            }
+        }
+        
         function startGame() {
             return new Promise(resolve => {
                 const gameStartTime = Date.now();
+                if (!elements.overlay) return resolve({ success: false, time: 0, score: 0 });
+                
                 elements.overlay.innerHTML = '';
                 
-                const gameMessage = document.createElement('div');
-                gameMessage.textContent = 'ウイルスバスターゲーム開始！';
-                gameMessage.style.fontSize = '18px';
-                gameMessage.style.marginBottom = '20px';
-                elements.overlay.appendChild(gameMessage);
+                const canvas = document.createElement('canvas');
+                canvas.width = 320;
+                canvas.height = 240;
+                canvas.style.background = '#001b1a';
+                canvas.style.border = '2px solid #00ffcc';
+                elements.overlay.appendChild(canvas);
                 
-                const instructions = document.createElement('div');
-                instructions.textContent = 'クリックでゲーム終了';
-                instructions.style.fontSize = '14px';
-                instructions.style.marginBottom = '20px';
-                elements.overlay.appendChild(instructions);
+                const ctx = canvas.getContext('2d');
                 
-                const endBtn = document.createElement('button');
-                endBtn.textContent = 'ゲーム終了';
-                endBtn.style.padding = '12px 24px';
-                endBtn.style.background = '#14ffec';
-                endBtn.style.color = '#151515';
-                endBtn.style.border = 'none';
-                endBtn.style.borderRadius = '8px';
-                endBtn.style.cursor = 'pointer';
-                endBtn.style.fontFamily = 'inherit';
-                elements.overlay.appendChild(endBtn);
+                const scoreBoard = document.createElement('div');
+                scoreBoard.style.marginTop = '8px';
+                scoreBoard.style.color = '#00ffcc';
+                elements.overlay.appendChild(scoreBoard);
                 
-                endBtn.addEventListener('click', () => {
+                const spaceship = { x: canvas.width / 2 - 15, y: canvas.height - 20, w: 30, h: 10, speed: 4 };
+                const bullets = [];
+                const viruses = [];
+                let remaining = 12;
+                let score = 0;
+                
+                for (let r = 0; r < 2; r++) {
+                    for (let c = 0; c < 6; c++) {
+                        viruses.push({ 
+                            x: 30 + c * 40, 
+                            y: 20 + r * 30, 
+                            w: 20, 
+                            h: 16, 
+                            vx: 1 * (Math.random() > 0.5 ? 1 : -1), 
+                            hit: false
+                        });
+                    }
+                }
+                
+                let animationId;
+                let isOver = false;
+                
+                function draw() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    ctx.fillStyle = '#ff0077';
+                    ctx.fillRect(spaceship.x, spaceship.y, spaceship.w, spaceship.h);
+                    
+                    viruses.forEach(v => {
+                        if (!v.hit) {
+                            v.x += v.vx;
+                            if (v.x - v.w/2 < 0 || v.x + v.w/2 > canvas.width) v.vx *= -1;
+                            drawInvader(ctx, v.x, v.y, v.w, v.h, 0);
+                        }
+                    });
+                    
+                    for (let i = bullets.length - 1; i >= 0; i--) {
+                        const b = bullets[i];
+                        b.y -= 4;
+                        ctx.fillStyle = '#ffff00';
+                        ctx.fillRect(b.x - 1, b.y - 8, 2, 8);
+                        
+                        if (b.y < 0) {
+                            bullets.splice(i, 1);
+                            continue;
+                        }
+                        
+                        viruses.forEach(v => {
+                            if (!v.hit) {
+                                if (b.x >= v.x - v.w/2 && b.x <= v.x + v.w/2 && 
+                                    b.y >= v.y - v.h/2 && b.y <= v.y + v.h/2) {
+                                    v.hit = true;
+                                    remaining--;
+                                    score++;
+                                    bullets.splice(i, 1);
+                                }
+                            }
+                        });
+                    }
+                    
+                    const gameTime = (Date.now() - gameStartTime) / 1000;
+                    scoreBoard.textContent = `${t('virusesLeft')}: ${remaining} | ${t('scoreLabel')}: ${score} | ${t('timeLabel')}: ${gameTime.toFixed(1)}s`;
+                    
+                    if (viruses.every(v => v.hit)) {
+                        end(true);
+                    }
+                    
+                    if (!isOver) animationId = requestAnimationFrame(draw);
+                }
+                
+                function shoot() {
+                    bullets.push({ x: spaceship.x + spaceship.w / 2, y: spaceship.y });
+                }
+                
+                function pointerMove(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+                    spaceship.x = x - spaceship.w / 2;
+                    if (spaceship.x < 0) spaceship.x = 0;
+                    if (spaceship.x + spaceship.w > canvas.width) spaceship.x = canvas.width - spaceship.w;
+                }
+                
+                const handleMouseMove = (e) => pointerMove(e);
+                const handleMouseDown = () => shoot();
+                const handleTouchMove = (e) => pointerMove(e);
+                const handleTouchStart = () => shoot();
+                
+                canvas.addEventListener('mousemove', handleMouseMove);
+                canvas.addEventListener('mousedown', handleMouseDown);
+                canvas.addEventListener('touchmove', handleTouchMove);
+                canvas.addEventListener('touchstart', handleTouchStart);
+                
+                function end(success) {
+                    if (isOver) return;
+                    isOver = true;
                     const finalTime = (Date.now() - gameStartTime) / 1000;
-                    resolve({ success: true, time: finalTime, score: 100 });
-                });
+                    cancelAnimationFrame(animationId);
+                    canvas.removeEventListener('mousemove', handleMouseMove);
+                    canvas.removeEventListener('mousedown', handleMouseDown);
+                    canvas.removeEventListener('touchmove', handleTouchMove);
+                    canvas.removeEventListener('touchstart', handleTouchStart);
+                    resolve({ success, time: finalTime, score });
+                }
+                
+                draw();
             });
         }
         
@@ -1089,195 +3121,486 @@
         let hateDone = false;
         
         // SOS button
-        elements.btnSos.addEventListener('click', async () => {
-            if (elements.btnSos.classList.contains('disabled')) return;
-            elements.btnSos.classList.add('disabled');
-            addLog('sos');
-            
-            elements.overlay.innerHTML = '';
-            elements.overlay.style.display = 'flex';
-            
-            const msg = document.createElement('div');
-            msg.textContent = t('scanInit');
-            elements.overlay.appendChild(msg);
-            
-            setTimeout(async () => {
-                msg.textContent = t('virusDetected');
+        if (elements.btnSos) {
+            elements.btnSos.addEventListener('click', async () => {
+                if (elements.btnSos.classList.contains('disabled')) return;
+                elements.btnSos.classList.add('disabled');
+                addLog('sos');
                 
-                const busterBtn = document.createElement('button');
-                busterBtn.textContent = t('virusBtn');
-                busterBtn.style.marginTop = '12px';
-                busterBtn.style.padding = '8px 16px';
-                busterBtn.style.background = '#14ffec';
-                busterBtn.style.color = '#151515';
-                busterBtn.style.border = 'none';
-                busterBtn.style.cursor = 'pointer';
-                busterBtn.style.fontFamily = 'inherit';
-                elements.overlay.appendChild(busterBtn);
+                if (!elements.overlay) return;
+                elements.overlay.innerHTML = '';
+                elements.overlay.style.display = 'flex';
                 
-                busterBtn.addEventListener('click', async () => {
-                    const gameResult = await startGame();
-                    elements.overlay.innerHTML = '';
+                const msg = document.createElement('div');
+                msg.textContent = t('scanInit');
+                elements.overlay.appendChild(msg);
+                
+                const progressMsg = document.createElement('div');
+                progressMsg.style.marginTop = '8px';
+                progressMsg.textContent = t('scanProgress');
+                elements.overlay.appendChild(progressMsg);
+                
+                const heartScanner = document.createElement('div');
+                heartScanner.className = 'heart-scanner';
+                
+                const heartDisplay = document.createElement('div');
+                heartDisplay.className = 'heart-display';
+                heartDisplay.textContent = '♡';
+                heartScanner.appendChild(heartDisplay);
+                
+                const scanGrid = document.createElement('div');
+                scanGrid.className = 'scan-grid';
+                heartScanner.appendChild(scanGrid);
+                
+                const scanLine = document.createElement('div');
+                scanLine.className = 'scan-line';
+                heartScanner.appendChild(scanLine);
+                
+                elements.overlay.appendChild(heartScanner);
+                
+                setTimeout(() => {
+                    msg.textContent = t('virusDetected');
+                    progressMsg.remove();
+                    heartScanner.remove();
                     
-                    const cleanMsg = document.createElement('div');
-                    cleanMsg.innerHTML = t('virusClean').replace(/\n/g, '<br>');
-                    cleanMsg.style.marginBottom = '16px';
-                    elements.overlay.appendChild(cleanMsg);
+                    const virusIcon = document.createElement('div');
+                    virusIcon.style.fontSize = '120px';
+                    virusIcon.style.margin = '20px 0';
+                    virusIcon.style.animation = 'pulse 0.5s infinite';
+                    virusIcon.style.color = '#14ffec';
+                    virusIcon.textContent = '👾';
+                    elements.overlay.appendChild(virusIcon);
                     
-                    await rankingManager.submitScore(userName, gameResult.time, {
-                        score: gameResult.score,
-                        gameType: 'virus_buster'
+                    const busterBtn = document.createElement('button');
+                    busterBtn.textContent = t('virusBtn');
+                    busterBtn.style.marginTop = '12px';
+                    busterBtn.style.padding = '8px 16px';
+                    busterBtn.style.background = '#14ffec';
+                    busterBtn.style.color = '#151515';
+                    busterBtn.style.border = 'none';
+                    busterBtn.style.cursor = 'pointer';
+                    busterBtn.style.fontFamily = 'inherit';
+                    elements.overlay.appendChild(busterBtn);
+                    
+                    busterBtn.addEventListener('click', async () => {
+                        const gameResult = await startGame();
+                        elements.overlay.innerHTML = '';
+                        
+                        const cleanMsg = document.createElement('div');
+                        cleanMsg.innerHTML = t('virusClean').replace(/\n/g, '<br>');
+                        cleanMsg.style.marginBottom = '16px';
+                        elements.overlay.appendChild(cleanMsg);
+                        
+                        await rankingManager.submitScore(userName, gameResult.time, {
+                            score: gameResult.score,
+                            gameType: 'virus_buster'
+                        });
+                        
+                        const rankingDisplay = await displayRankings();
+                        elements.overlay.appendChild(rankingDisplay);
+                        
+                        const closeBtn = createCloseButton(() => {
+                            elements.overlay.style.display = 'none';
+                            sosDone = true;
+                            showPrompt();
+                        });
+                        elements.overlay.appendChild(closeBtn);
                     });
+                }, 4000);
+            });
+        }
+        
+        // Lonely button
+        if (elements.btnLonely) {
+            elements.btnLonely.addEventListener('click', () => {
+                if (elements.btnLonely.classList.contains('disabled')) return;
+                elements.btnLonely.classList.add('disabled');
+                addLog('lonely');
+                
+                if (!elements.overlay) return;
+                elements.overlay.innerHTML = '';
+                elements.overlay.style.display = 'flex';
+                
+                const msg = document.createElement('div');
+                msg.textContent = t('lonelyPrompt');
+                elements.overlay.appendChild(msg);
+                
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = t('lonelyInput');
+                input.style.marginTop = '12px';
+                input.style.padding = '6px 10px';
+                input.style.background = '#111';
+                input.style.color = '#00fff2';
+                input.style.border = '1px solid #00fff2';
+                input.style.fontFamily = 'inherit';
+                elements.overlay.appendChild(input);
+                
+                const okBtn = document.createElement('button');
+                okBtn.textContent = t('whyOk');
+                okBtn.style.marginTop = '8px';
+                okBtn.style.padding = '8px 16px';
+                okBtn.style.background = '#14ffec';
+                okBtn.style.color = '#151515';
+                okBtn.style.border = 'none';
+                okBtn.style.cursor = 'pointer';
+                okBtn.style.fontFamily = 'inherit';
+                elements.overlay.appendChild(okBtn);
+                
+                okBtn.addEventListener('click', () => {
+                    const song = input.value.trim() || (currentLang === 'en' ? 'Unknown song' : '不明な曲');
                     
-                    const rankingDisplay = await displayRankings();
-                    elements.overlay.appendChild(rankingDisplay);
+                    const musicResult = checkMusicDatabase(song);
+                    
+                    if (musicResult) {
+                        elements.overlay.innerHTML = '';
+                        
+                        const titleDiv = document.createElement('div');
+                        titleDiv.style.fontSize = '18px';
+                        titleDiv.style.color = '#e6007e';
+                        titleDiv.style.marginBottom = '8px';
+                        titleDiv.textContent = `${musicResult.title} - ${musicResult.artist}`;
+                        elements.overlay.appendChild(titleDiv);
+                        
+                        const playingMsg = document.createElement('div');
+                        playingMsg.style.fontSize = '14px';
+                        playingMsg.style.marginBottom = '16px';
+                        playingMsg.textContent = t('playingInHead');
+                        elements.overlay.appendChild(playingMsg);
+                        
+                        const waveContainer = document.createElement('div');
+                        waveContainer.className = 'wave-container';
+                        for (let i = 0; i < 20; i++) {
+                            const barEl = document.createElement('div');
+                            barEl.className = 'wave-bar';
+                            barEl.style.animationDelay = (i * 0.1) + 's';
+                            waveContainer.appendChild(barEl);
+                        }
+                        elements.overlay.appendChild(waveContainer);
+                        
+                        const lyricsDiv = document.createElement('div');
+                        lyricsDiv.style.fontSize = '12px';
+                        lyricsDiv.style.lineHeight = '1.4';
+                        lyricsDiv.style.textAlign = 'left';
+                        lyricsDiv.style.maxHeight = '200px';
+                        lyricsDiv.style.overflowY = 'auto';
+                        lyricsDiv.style.padding = '12px';
+                        lyricsDiv.style.background = 'rgba(0, 0, 0, 0.7)';
+                        lyricsDiv.style.borderRadius = '8px';
+                        lyricsDiv.style.marginTop = '16px';
+                        lyricsDiv.style.whiteSpace = 'pre-line';
+                        lyricsDiv.textContent = musicResult.lyrics;
+                        elements.overlay.appendChild(lyricsDiv);
+                        
+                    } else {
+                        elements.overlay.innerHTML = '';
+                        
+                        const waveMsg = document.createElement('div');
+                        waveMsg.textContent = song + t('lonelyWave');
+                        elements.overlay.appendChild(waveMsg);
+                        
+                        const waveContainer = document.createElement('div');
+                        waveContainer.className = 'wave-container';
+                        for (let i = 0; i < 20; i++) {
+                            const barEl = document.createElement('div');
+                            barEl.className = 'wave-bar';
+                            barEl.style.animationDelay = (i * 0.1) + 's';
+                            waveContainer.appendChild(barEl);
+                        }
+                        elements.overlay.appendChild(waveContainer);
+                    }
+                    
+                    const endMsg = document.createElement('div');
+                    endMsg.textContent = t('lonelyEnd');
+                    elements.overlay.appendChild(endMsg);
                     
                     const closeBtn = createCloseButton(() => {
                         elements.overlay.style.display = 'none';
-                        sosDone = true;
+                        lonelyDone = true;
                         showPrompt();
                     });
                     elements.overlay.appendChild(closeBtn);
                 });
-            }, 2000);
-        });
-        
-        // Lonely button
-        elements.btnLonely.addEventListener('click', () => {
-            if (elements.btnLonely.classList.contains('disabled')) return;
-            elements.btnLonely.classList.add('disabled');
-            addLog('lonely');
-            
-            elements.overlay.innerHTML = '';
-            elements.overlay.style.display = 'flex';
-            
-            const msg = document.createElement('div');
-            msg.textContent = t('lonelyPrompt');
-            elements.overlay.appendChild(msg);
-            
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.placeholder = t('lonelyInput');
-            input.style.marginTop = '12px';
-            input.style.padding = '6px 10px';
-            input.style.background = '#111';
-            input.style.color = '#00fff2';
-            input.style.border = '1px solid #00fff2';
-            input.style.fontFamily = 'inherit';
-            elements.overlay.appendChild(input);
-            
-            const okBtn = document.createElement('button');
-            okBtn.textContent = t('whyOk');
-            okBtn.style.marginTop = '8px';
-            okBtn.style.padding = '8px 16px';
-            okBtn.style.background = '#14ffec';
-            okBtn.style.color = '#151515';
-            okBtn.style.border = 'none';
-            okBtn.style.cursor = 'pointer';
-            okBtn.style.fontFamily = 'inherit';
-            elements.overlay.appendChild(okBtn);
-            
-            okBtn.addEventListener('click', () => {
-                const song = input.value.trim() || (currentLang === 'en' ? 'Unknown song' : '不明な曲');
-                
-                elements.overlay.innerHTML = '';
-                
-                const waveMsg = document.createElement('div');
-                waveMsg.textContent = song + t('lonelyWave');
-                elements.overlay.appendChild(waveMsg);
-                
-                const endMsg = document.createElement('div');
-                endMsg.textContent = t('lonelyEnd');
-                elements.overlay.appendChild(endMsg);
-                
-                const closeBtn = createCloseButton(() => {
-                    elements.overlay.style.display = 'none';
-                    lonelyDone = true;
-                    showPrompt();
-                });
-                elements.overlay.appendChild(closeBtn);
             });
-        });
+        }
         
-        // Hate myself button
-        elements.btnHate.addEventListener('click', () => {
-            if (elements.btnHate.classList.contains('disabled')) return;
-            elements.btnHate.classList.add('disabled');
-            addLog('hate myself');
-            
-            elements.overlay.innerHTML = '';
-            elements.overlay.style.display = 'flex';
-            
-            const msg = document.createElement('div');
-            msg.textContent = t('hatePrompt');
-            elements.overlay.appendChild(msg);
-            
-            setTimeout(() => {
-                const endMsg = document.createElement('div');
-                endMsg.textContent = t('hateEnd');
-                elements.overlay.appendChild(endMsg);
+        // Hate myself button - タイムトラベル演出
+        if (elements.btnHate) {
+            elements.btnHate.addEventListener('click', () => {
+                if (elements.btnHate.classList.contains('disabled')) return;
+                elements.btnHate.classList.add('disabled');
+                addLog('hate myself');
                 
-                const closeBtn = createCloseButton(() => {
-                    elements.overlay.style.display = 'none';
-                    hateDone = true;
-                    showPrompt();
+                if (!elements.overlay) return;
+                elements.overlay.innerHTML = '';
+                elements.overlay.style.display = 'flex';
+                elements.overlay.style.flexDirection = 'column';
+                elements.overlay.style.justifyContent = 'center';
+                elements.overlay.style.alignItems = 'center';
+                elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
+                elements.overlay.style.gap = '20px';
+                
+                const msg = document.createElement('div');
+                msg.textContent = t('hatePrompt');
+                msg.style.fontSize = '18px';
+                msg.style.color = '#14ffec';
+                msg.style.zIndex = '20';
+                msg.style.position = 'relative';
+                elements.overlay.appendChild(msg);
+                
+                const timeDisplay = createTokikakeClock();
+                timeDisplay.style.zIndex = '20';
+                timeDisplay.style.position = 'relative';
+                elements.overlay.appendChild(timeDisplay);
+                
+                const pastTravelBtn = document.createElement('button');
+                pastTravelBtn.className = 'time-travel-btn';
+                pastTravelBtn.textContent = '🚗 ' + t('travelToPast');
+                pastTravelBtn.style.zIndex = '20';
+                pastTravelBtn.style.position = 'relative';
+                elements.overlay.appendChild(pastTravelBtn);
+                
+                pastTravelBtn.addEventListener('click', () => {
+                    pastTravelBtn.style.display = 'none';
+                    
+                    const numberRain = createNumberRain(elements.overlay, 12, false);
+                    
+                    const pastMsg = document.createElement('div');
+                    pastMsg.className = 'traveling-message past';
+                    pastMsg.textContent = t('travellingPast');
+                    elements.overlay.appendChild(pastMsg);
+                    
+                    const pastInterval = animateTimeToPastGentle(timeDisplay);
+                    
+                    setTimeout(() => {
+                        intervalManager.clearInterval(pastInterval);
+                        pastMsg.textContent = '時間停止中...';
+                        
+                        setTimeout(() => {
+                            pastMsg.remove();
+                            
+                            const futureTravelBtn = document.createElement('button');
+                            futureTravelBtn.className = 'time-travel-btn future';
+                            futureTravelBtn.textContent = '🚀 ' + t('travelToFuture');
+                            futureTravelBtn.style.zIndex = '20';
+                            futureTravelBtn.style.position = 'relative';
+                            elements.overlay.appendChild(futureTravelBtn);
+                            
+                            futureTravelBtn.addEventListener('click', () => {
+                                elements.overlay.classList.add('future-mode');
+                                futureTravelBtn.style.display = 'none';
+                                
+                                if (numberRain && numberRain.parentNode) {
+                                    numberRain.parentNode.removeChild(numberRain);
+                                }
+                                const futureNumberRain = createNumberRain(elements.overlay, 12, true);
+                                
+                                const futureMsg = document.createElement('div');
+                                futureMsg.className = 'traveling-message future';
+                                futureMsg.textContent = t('travellingFuture');
+                                elements.overlay.appendChild(futureMsg);
+                                
+                                const futureInterval = animateTimeToFutureGentle(timeDisplay);
+                                
+                                setTimeout(() => {
+                                    intervalManager.clearInterval(futureInterval);
+                                    
+                                    if (futureNumberRain && futureNumberRain.parentNode) {
+                                        futureNumberRain.parentNode.removeChild(futureNumberRain);
+                                    }
+                                    
+                                    elements.overlay.innerHTML = '';
+                                    elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
+                                    elements.overlay.classList.remove('future-mode');
+                                    elements.overlay.style.gap = '30px';
+                                    
+                                    const resultContainer = document.createElement('div');
+                                    resultContainer.className = 'travel-result-container';
+                                    
+                                    const header = document.createElement('div');
+                                    header.className = 'travel-result-header';
+                                    header.textContent = '=== TIME TRAVEL ANALYSIS COMPLETE ===';
+                                    resultContainer.appendChild(header);
+                                    
+                                    const status = document.createElement('div');
+                                    status.className = 'travel-result-status';
+                                    status.textContent = '>> STATUS: TEMPORAL DISPLACEMENT SUCCESSFUL';
+                                    resultContainer.appendChild(status);
+                                    
+                                    const dataStream = document.createElement('div');
+                                    dataStream.className = 'data-stream';
+                                    dataStream.textContent = getCurrentTimestamp();
+                                    resultContainer.appendChild(dataStream);
+                                    
+                                    const scanLines = document.createElement('div');
+                                    scanLines.className = 'scan-lines';
+                                    resultContainer.appendChild(scanLines);
+                                    
+                                    const endMsg = document.createElement('div');
+                                    endMsg.className = 'travel-result-message';
+                                    endMsg.textContent = t('hateEnd');
+                                    resultContainer.appendChild(endMsg);
+                                    
+                                    elements.overlay.appendChild(resultContainer);
+                                    
+                                    typewriterEffect(endMsg, t('hateEnd'));
+                                    
+                                    createSparkles(elements.overlay, true);
+                                    
+                                    const closeBtn = createCloseButton(() => {
+                                        elements.overlay.style.display = 'none';
+                                        elements.overlay.style.background = 'rgba(0, 0, 0, 0.85)';
+                                        elements.overlay.style.gap = '';
+                                        hateDone = true;
+                                        showPrompt();
+                                    });
+                                    elements.overlay.appendChild(closeBtn);
+                                }, 6000);
+                            });
+                        }, 2000);
+                    }, 4000);
                 });
-                elements.overlay.appendChild(closeBtn);
-            }, 3000);
-        });
+            });
+        }
         
         // Why button
-        elements.btnWhy.addEventListener('click', () => {
-            if (elements.btnWhy.classList.contains('disabled')) return;
-            addLog('why');
-            
-            elements.overlay.innerHTML = '';
-            elements.overlay.style.display = 'flex';
-            
-            const msg = document.createElement('div');
-            msg.textContent = t('whyPrompt');
-            elements.overlay.appendChild(msg);
-            
-            const clockDisplay = document.createElement('div');
-            clockDisplay.style.fontSize = '48px';
-            clockDisplay.style.color = '#14ffec';
-            clockDisplay.style.marginTop = '20px';
-            
-            function updateClock() {
-                const now = new Date();
-                clockDisplay.textContent = now.toLocaleTimeString();
-            }
-            
-            updateClock();
-            const clockInterval = setInterval(updateClock, 1000);
-            elements.overlay.appendChild(clockDisplay);
-            
-            const closeBtn = createCloseButton(() => {
-                clearInterval(clockInterval);
-                elements.overlay.style.display = 'none';
+        if (elements.btnWhy) {
+            elements.btnWhy.addEventListener('click', () => {
+                if (elements.btnWhy.classList.contains('disabled')) return;
+                addLog('why');
+                
+                if (!elements.overlay) return;
+                elements.overlay.innerHTML = '';
+                elements.overlay.style.display = 'flex';
+                
+                const msg = document.createElement('div');
+                msg.textContent = t('whyPrompt');
+                elements.overlay.appendChild(msg);
+                
+                const bar = document.createElement('div');
+                bar.className = 'scan-bar';
+                const fill = document.createElement('div');
+                fill.className = 'scan-fill';
+                bar.appendChild(fill);
+                elements.overlay.appendChild(bar);
+                
+                let progress = 0;
+                const intv = intervalManager.setInterval(() => {
+                    progress += 2;
+                    fill.style.width = progress + '%';
+                    if (progress >= 60) {
+                        intervalManager.clearInterval(intv);
+                        
+                        const stopMsg = document.createElement('div');
+                        stopMsg.style.marginTop = '8px';
+                        stopMsg.textContent = t('whyStop');
+                        elements.overlay.appendChild(stopMsg);
+                        
+                        const okBtn = document.createElement('button');
+                        okBtn.textContent = t('whyOk');
+                        okBtn.style.marginTop = '8px';
+                        okBtn.style.padding = '8px 16px';
+                        okBtn.style.background = '#14ffec';
+                        okBtn.style.color = '#151515';
+                        okBtn.style.border = 'none';
+                        okBtn.style.cursor = 'pointer';
+                        okBtn.style.fontFamily = 'inherit';
+                        elements.overlay.appendChild(okBtn);
+                        
+                        okBtn.addEventListener('click', () => {
+                            console.log('🎯 WHYボタンのOKが押されました！');
+                            
+                            elements.overlay.innerHTML = '';
+                            elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
+                            
+                            console.log('🏗️ 時計を作成中...');
+                            
+                            const clock = createOriginalClock();
+                            console.log('⏰ 時計要素:', clock);
+                            
+                            elements.overlay.appendChild(clock);
+                            console.log('📍 時計をDOMに追加完了');
+                            
+                            console.log('🚀 時計アニメーション開始...');
+                            let clockInterval = null;
+                            
+                            try {
+                                clockInterval = startOriginalClock();
+                                console.log('✅ 時計アニメーション設定完了, intervalID:', clockInterval);
+                            } catch (error) {
+                                console.error('❌ 時計アニメーション開始エラー:', error);
+                            }
+                            
+                            const closeHandler = () => {
+                                console.log('⏹️ 時計を停止中...');
+                                if (clockInterval) {
+                                    intervalManager.clearInterval(clockInterval);
+                                    console.log('✅ 時計停止完了');
+                                }
+                            };
+                            
+                            const overlayClickHandler = (e) => {
+                                if (e.target === elements.overlay) {
+                                    closeHandler();
+                                    elements.overlay.style.display = 'none';
+                                    elements.overlay.removeEventListener('click', overlayClickHandler);
+                                    document.removeEventListener('keydown', escHandler);
+                                }
+                            };
+                            elements.overlay.addEventListener('click', overlayClickHandler);
+                            
+                            const escHandler = (e) => {
+                                if (e.key === 'Escape') {
+                                    closeHandler();
+                                    elements.overlay.style.display = 'none';
+                                    elements.overlay.removeEventListener('click', overlayClickHandler);
+                                    document.removeEventListener('keydown', escHandler);
+                                }
+                            };
+                            document.addEventListener('keydown', escHandler);
+                            
+                            console.log('🎉 時計表示処理完了！');
+                        });
+                    }
+                }, 400);
             });
-            elements.overlay.appendChild(closeBtn);
-        });
+        }
 
         // ランキングボタン
-        elements.rankingBtn.addEventListener('click', async () => {
-            elements.overlay.innerHTML = '';
-            elements.overlay.style.display = 'flex';
-            
-            const loadingMsg = document.createElement('div');
-            loadingMsg.textContent = '🌐 Loading rankings...';
-            loadingMsg.style.marginBottom = '20px';
-            elements.overlay.appendChild(loadingMsg);
-            
-            const rankingDisplay = await displayRankings();
-            elements.overlay.removeChild(loadingMsg);
-            elements.overlay.appendChild(rankingDisplay);
-            
-            const closeBtn = createCloseButton(() => {
-                elements.overlay.style.display = 'none';
+        if (elements.rankingBtn) {
+            elements.rankingBtn.addEventListener('click', async () => {
+                if (!elements.overlay) return;
+                elements.overlay.innerHTML = '';
+                elements.overlay.style.display = 'flex';
+                
+                const loadingMsg = document.createElement('div');
+                loadingMsg.textContent = '🌐 Loading global rankings...';
+                loadingMsg.style.marginBottom = '20px';
+                elements.overlay.appendChild(loadingMsg);
+                
+                const rankingDisplay = await displayRankings();
+                elements.overlay.removeChild(loadingMsg);
+                elements.overlay.appendChild(rankingDisplay);
+                
+                const closeBtn = createCloseButton(() => {
+                    elements.overlay.style.display = 'none';
+                });
+                elements.overlay.appendChild(closeBtn);
             });
-            elements.overlay.appendChild(closeBtn);
+        }
+
+        // ページアンロード時のクリーンアップ
+        window.addEventListener('beforeunload', () => {
+            console.log('🧹 クリーンアップ開始...');
+            intervalManager.clearAll();
+            rankingManager.cleanup();
+            console.log('✅ クリーンアップ完了');
         });
+
+        // 定期的に接続状態をチェック
+        intervalManager.setInterval(async () => {
+            await rankingManager.checkConnection();
+        }, 15000);
     </script>
 </body>
 </html>
