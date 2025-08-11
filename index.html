@@ -1,261 +1,2735 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>🌐 HELL0w0RLD! 🌐 — fixed</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🌐 HELL0w0RLD! 🌐</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        body {
+            background: #0f0f0f;
+            color: #00fff2;
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            font-size: 16px;
+        }
+        
+        #app {
+            width: 95%;
+            max-width: 640px;
+            border: 2px solid #14ffec;
+            border-radius: 8px;
+            background: #151515;
+            padding: 16px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            position: relative;
+        }
+        
+        h1 {
+            margin: 0;
+            color: #14ffec;
+            text-align: center;
+        }
+        
+        #lang-toggle {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            z-index: 1000;
+        }
+        
+        #lang-toggle button {
+            font-family: inherit;
+            font-size: 12px;
+            padding: 2px 6px;
+            background-color: #e6007e;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        #lang-toggle button.active {
+            background-color: #14ffec;
+            color: #151515;
+        }
+        
+        #loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            text-align: center;
+        }
+        
+        #loader .bar {
+            width: 300px;
+            height: 15px;
+            border: 1px solid #00fff2;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #loader .bar-fill {
+            height: 100%;
+            background: #00fff2;
+            width: 0%;
+            animation: loadbar 3s forwards;
+        }
+        
+        @keyframes loadbar {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        
+        #title {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        #usernameScreen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            text-align: center;
+        }
+        
+        #usernameScreen input {
+            margin: 10px 0;
+            padding: 8px 12px;
+            background: #111;
+            color: #00fff2;
+            border: 1px solid #00fff2;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        
+        #usernameScreen button {
+            padding: 8px 16px;
+            background: #14ffec;
+            color: #151515;
+            border: none;
+            border-radius: 4px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        
+        #largeTitle {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            color: #14ffec;
+            display: none;
+            z-index: 500;
+            text-align: center;
+            text-shadow: 0 0 10px #14ffec;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            text-align: center;
+            padding: 20px;
+            color: #00fff2;
+            box-sizing: border-box;
+        }
+        
+        #output {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            margin-top: 80px;
+            padding-right: 4px;
+        }
+        
+        .message {
+            margin: 4px 0;
+            padding: 6px 10px;
+            border-radius: 8px;
+            line-height: 1.4;
+            max-width: 90%;
+            word-wrap: break-word;
+        }
+        
+        .log {
+            background-color: #073b3a;
+            color: #14ffec;
+            align-self: flex-start;
+        }
+        
+        #promptSection {
+            display: none;
+        }
+        
+        #promptText {
+            margin: 0 0 8px;
+        }
+        
+        #buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        #rankingBtn {
+            grid-column: 1 / -1;
+            background: #e6007e;
+            color: #ffffff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 8px;
+            z-index: 100;
+            position: relative;
+        }
+        
+        #rankingBtn:hover {
+            background: #ff1493;
+        }
+        
+        #rankingBtn:active {
+            background: #c71585;
+        }
+        
+        #buttons button {
+            background: #14ffec;
+            color: #151515;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        #buttons button.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        #buttons button.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+            position: relative;
+        }
+        
+        #buttons button.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+        }
+        
+        .wave-container {
+            display: flex;
+            gap: 4px;
+            margin: 20px 0;
+        }
+        
+        .wave-bar {
+            width: 5px;
+            height: 30px;
+            background: #00fff2;
+            animation: wave 1s infinite;
+            animation-timing-function: ease-in-out;
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1.3); }
+        }
+        
+        .car-container {
+            width: 100%;
+            height: 50px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .car {
+            position: absolute;
+            left: -50px;
+            top: 10px;
+            font-size: 28px;
+            animation: drive 4s linear forwards;
+        }
+        
+        .car.reverse {
+            animation: driveReverse 4s linear forwards;
+        }
+        
+        @keyframes drive {
+            0% { left: -50px; }
+            100% { left: calc(100% + 50px); }
+        }
+        
+        @keyframes driveReverse {
+            0% { left: calc(100% + 50px); }
+            100% { left: -50px; }
+        }
+        
+        .heart-scanner {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            background: #001122;
+            border: 2px solid #00fff2;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .heart-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 120px;
+            color: #14ffec;
+            z-index: 1;
+        }
+        
+        .scan-line {
+            position: absolute;
+            top: -5px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00fff2, transparent);
+            box-shadow: 0 0 10px #00fff2;
+            animation: heartScan 2s linear infinite;
+            z-index: 2;
+        }
+        
+        @keyframes heartScan {
+            0% { top: -5px; }
+            100% { top: 205px; }
+        }
+        
+        .scan-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 255, 242, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 242, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .scan-bar {
+            width: 300px;
+            height: 15px;
+            border: 1px solid #00fff2;
+            margin-top: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scan-fill {
+            height: 100%;
+            background: #00fff2;
+            width: 0%;
+        }
+        
+        #clockDisplay {
+            font-size: 48px;
+            margin-top: 32px;
+            color: #14ffec;
+            text-shadow: 0 0 5px #14ffec;
+            font-weight: bold;
+        }
+        
+        .sparkles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .sparkle {
+            position: absolute;
+            color: #14ffec;
+            font-size: 20px;
+            animation: sparkle 2s infinite;
+        }
+        
+        .sparkle.white {
+            color: #ffffff;
+        }
+        
+        @keyframes sparkle {
+            0% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1) rotate(180deg); }
+            100% { opacity: 0; transform: scale(0) rotate(360deg); }
+        }
+        
+        .close-btn {
+            background: #ffffff;
+            color: #151515;
+            border: 1px solid #666666;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            margin-top: 20px;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+            align-self: center;
+        }
+        
+        .close-btn:hover {
+            opacity: 1;
+        }
+        
+        .ranking {
+            margin-top: 16px;
+            text-align: left;
+            font-size: 12px;
+        }
+        
+        .ranking-entry {
+            margin: 2px 0;
+            color: #00fff2;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        
+        .travel-result {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        /* 改良版：時をかける少女風デジタル時計 */
+        .tokikake-clock {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 64px;
+            font-weight: 700;
+            color: #ff4444;
+            background: #000000;
+            padding: 30px 0px;
+            margin: 30px auto;
+            letter-spacing: 8px;
+            text-align: center;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+            box-shadow: 
+                inset 0 0 30px rgba(255, 68, 68, 0.1),
+                0 0 50px rgba(255, 68, 68, 0.2);
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 5;
+            display: inline-block;
+            width: 100vw;
+            max-width: none;
+            word-break: break-all;
+        }
 
-    body {
-      background: #0f0f0f;
-      color: #00fff2;
-      font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      font-size: 16px;
-    }
+        .tokikake-clock::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 68, 68, 0.3), transparent);
+            animation: gentleScan 3s infinite;
+            z-index: 1;
+        }
 
-    #app {
-      width: 95%;
-      max-width: 640px;
-      border: 2px solid #14ffec;
-      border-radius: 8px;
-      background: #151515;
-      padding: 16px;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      height: 90vh;
-      position: relative;
-    }
+        @keyframes gentleScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
 
-    h1 { margin: 0; color: #14ffec; text-align: center; }
+        /* 段階的グリッチ効果 */
+        .phase-1 {
+            animation: gentleGlitch 2s ease-in-out infinite;
+        }
 
-    #lang-toggle { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; z-index: 1000; }
-    #lang-toggle button { font-family: inherit; font-size: 12px; padding: 2px 6px; background-color: #e6007e; border: none; color: #ffffff; cursor: pointer; border-radius: 4px; }
-    #lang-toggle button.active { background-color: #14ffec; color: #151515; }
+        .phase-2 {
+            animation: mediumGlitch 1s ease-in-out infinite;
+        }
 
-    #loader { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; text-align: center; }
-    #loader .bar { width: 300px; height: 15px; border: 1px solid #00fff2; margin-top: 10px; position: relative; overflow: hidden; }
-    #loader .bar-fill { height: 100%; background: #00fff2; width: 0%; animation: loadbar 3s forwards; }
-    @keyframes loadbar { 0% { width: 0%; } 100% { width: 100%; } }
+        .phase-3 {
+            animation: strongGlitch 0.3s ease-in-out infinite;
+        }
 
-    #title { display: none; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; text-align: center; opacity: 0; animation: fadeIn 1s forwards; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes gentleGlitch {
+            0%, 90% { 
+                transform: translateX(0); 
+                color: #ff4444;
+            }
+            95% { 
+                transform: translateX(-1px); 
+                color: #ff6666;
+            }
+            100% { 
+                transform: translateX(0); 
+                color: #ff4444;
+            }
+        }
 
-    #usernameScreen { display: none; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; text-align: center; }
-    #usernameScreen input { margin: 10px 0; padding: 8px 12px; background: #111; color: #00fff2; border: 1px solid #00fff2; border-radius: 4px; font-family: inherit; font-size: 14px; }
-    #usernameScreen button { padding: 8px 16px; background: #14ffec; color: #151515; border: none; border-radius: 4px; font-family: inherit; cursor: pointer; }
+        @keyframes mediumGlitch {
+            0%, 80% { 
+                transform: translateX(0) scaleX(1); 
+                color: #ff4444;
+            }
+            85% { 
+                transform: translateX(-2px) scaleX(0.99); 
+                color: #ff6666;
+            }
+            90% { 
+                transform: translateX(2px) scaleX(1.01); 
+                color: #ffaa44;
+            }
+            100% { 
+                transform: translateX(0) scaleX(1); 
+                color: #ff4444;
+            }
+        }
 
-    #largeTitle { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); font-size: 20px; color: #14ffec; display: none; z-index: 500; text-align: center; text-shadow: 0 0 10px #14ffec; max-width: 80%; word-wrap: break-word; }
+        @keyframes strongGlitch {
+            0%, 70% { 
+                transform: translateX(0) scaleX(1); 
+                color: #ff4444;
+                text-shadow: 0 0 10px #ff4444;
+            }
+            75% { 
+                transform: translateX(-3px) scaleX(0.97); 
+                color: #ff8888;
+                text-shadow: 2px 0 #00ff88, -2px 0 #4488ff;
+            }
+            80% { 
+                transform: translateX(4px) scaleX(1.03); 
+                color: #ffff44;
+                text-shadow: -2px 0 #ff4488, 2px 0 #44ffff;
+            }
+            85% { 
+                transform: translateX(-1px) scaleX(0.98); 
+                color: #ffffff;
+                text-shadow: 1px 0 #ff4444, -1px 0 #44ff44;
+            }
+            100% { 
+                transform: translateX(0) scaleX(1); 
+                color: #ff4444;
+                text-shadow: 0 0 10px #ff4444;
+            }
+        }
 
-    #overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; display: none; flex-direction: column; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.85); z-index: 1000; text-align: center; padding: 20px; color: #00fff2; box-sizing: border-box; }
+        /* 数字の左右流れエフェクト */
+        .number-flow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            overflow: hidden;
+            z-index: 1;
+            opacity: 0.5;
+        }
 
-    #output { flex-grow: 1; overflow-y: auto; margin-bottom: 12px; margin-top: 80px; padding-right: 4px; }
+        .number-stream-horizontal {
+            position: absolute;
+            color: #ff4444;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            white-space: nowrap;
+            opacity: 0.6;
+            top: 50%;
+            transform: translateY(-50%);
+        }
 
-    .message { margin: 4px 0; padding: 6px 10px; border-radius: 8px; line-height: 1.4; max-width: 90%; word-wrap: break-word; }
-    .log { background-color: #073b3a; color: #14ffec; align-self: flex-start; }
+        .flow-to-right {
+            animation: flowRight 4s linear infinite;
+        }
 
-    #promptSection { display: none; }
-    #promptText { margin: 0 0 8px; }
+        .flow-to-left {
+            animation: flowLeft 4s linear infinite;
+        }
 
-    #buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
-    #rankingBtn { grid-column: 1 / -1; background: #e6007e; color: #ffffff; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.9em; cursor: pointer; font-family: inherit; margin-top: 8px; z-index: 100; position: relative; }
-    #rankingBtn:hover { background: #ff1493; }
-    #rankingBtn:active { background: #c71585; }
-    #buttons button { background: #14ffec; color: #151515; border: none; padding: 8px; border-radius: 6px; font-size: 1em; cursor: pointer; font-family: inherit; }
-    #buttons button.disabled { opacity: 0.4; cursor: not-allowed; }
-    #buttons button.locked { opacity: 0.4; cursor: not-allowed; position: relative; }
-    #buttons button.locked::after { content: '🔒'; position: absolute; top: 50%; right: 8px; transform: translateY(-50%); }
+        @keyframes flowRight {
+            0% { 
+                left: -100%; 
+                opacity: 0; 
+            }
+            10% { 
+                opacity: 0.8; 
+            }
+            90% { 
+                opacity: 0.8; 
+            }
+            100% { 
+                left: 100%; 
+                opacity: 0; 
+            }
+        }
 
-    .heart-scanner { position: relative; width: 200px; height: 200px; margin: 20px auto; background: #001122; border: 2px solid #00fff2; border-radius: 8px; overflow: hidden; }
-    .heart-display { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 120px; color: #14ffec; z-index: 1; }
-    .scan-line { position: absolute; top: -5px; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, #00fff2, transparent); box-shadow: 0 0 10px #00fff2; animation: heartScan 2s linear infinite; z-index: 2; }
-    @keyframes heartScan { 0% { top: -5px; } 100% { top: 205px; } }
-    .scan-grid { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(rgba(0, 255, 242, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 242, 0.1) 1px, transparent 1px); background-size: 20px 20px; }
+        @keyframes flowLeft {
+            0% { 
+                right: -100%; 
+                opacity: 0; 
+            }
+            10% { 
+                opacity: 0.8; 
+            }
+            90% { 
+                opacity: 0.8; 
+            }
+            100% { 
+                right: 100%; 
+                opacity: 0; 
+            }
+        }
 
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
+        /* より優しい背景効果 */
+        .gentle-bg {
+            background: radial-gradient(circle at center, rgba(255, 68, 68, 0.05) 0%, rgba(0, 0, 0, 0.9) 70%);
+        }
 
-    .connection-status { position: absolute; top: 8px; left: 8px; font-size: 10px; padding: 2px 6px; border-radius: 3px; z-index: 1000; }
-    .connection-status.online { background: #00ff00; color: #000; }
-    .connection-status.offline { background: #ff0000; color: #fff; }
+        /* 時間変化の表示を改良 */
+        .time-transition {
+            transition: color 0.2s ease-out;
+        }
 
-    .ranking { margin-top: 16px; text-align: left; font-size: 12px; }
-    .world-stats { margin-top: 12px; padding: 8px; background: rgba(0, 0, 0, 0.5); border-radius: 6px; font-size: 10px; color: #888; }
-  </style>
+        /* 拡大縮小アニメーションを無効化 */
+        .no-scale {
+            transform: none !important;
+            animation: none !important;
+        }
+
+        /* より落ち着いたパルス効果（拡大縮小なし） */
+        .gentle-pulse {
+            animation: gentlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* 数字の横流れエフェクト */
+        .number-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .number-stream {
+            position: absolute;
+            color: #ff4444;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            opacity: 0.4;
+            white-space: nowrap;
+            animation: numberStreamRight linear infinite;
+        }
+
+        .number-stream.left {
+            animation: numberStreamLeft linear infinite;
+        }
+
+        .number-stream.future {
+            color: #44ff44;
+        }
+
+        @keyframes numberStreamRight {
+            0% {
+                transform: translateX(-100vw);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateX(100vw);
+                opacity: 0;
+            }
+        }
+
+        @keyframes numberStreamLeft {
+            0% {
+                transform: translateX(100vw);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateX(-100vw);
+                opacity: 0;
+            }
+        }
+
+        /* 未来モード用の緑色スタイル */
+        .future-mode .tokikake-clock {
+            color: #44ff44;
+            box-shadow: 
+                inset 0 0 30px rgba(68, 255, 68, 0.1),
+                0 0 50px rgba(68, 255, 68, 0.2);
+        }
+
+        .future-mode .tokikake-clock::before {
+            background: linear-gradient(90deg, transparent, rgba(68, 255, 68, 0.3), transparent);
+        }
+
+        /* 未来モードのグリッチ効果を緑色に */
+        .future-mode .phase-1 {
+            animation: gentleGlitchGreen 2s ease-in-out infinite;
+        }
+
+        .future-mode .phase-2 {
+            animation: mediumGlitchGreen 1s ease-in-out infinite;
+        }
+
+        .future-mode .phase-3 {
+            animation: strongGlitchGreen 0.3s ease-in-out infinite;
+        }
+
+        @keyframes gentleGlitchGreen {
+            0%, 90% { 
+                transform: translateX(0); 
+                color: #44ff44;
+            }
+            95% { 
+                transform: translateX(-1px); 
+                color: #66ff66;
+            }
+            100% { 
+                transform: translateX(0); 
+                color: #44ff44;
+            }
+        }
+
+        @keyframes mediumGlitchGreen {
+            0%, 80% { 
+                transform: translateX(0) scaleX(1); 
+                color: #44ff44;
+            }
+            85% { 
+                transform: translateX(-2px) scaleX(0.99); 
+                color: #66ff66;
+            }
+            90% { 
+                transform: translateX(2px) scaleX(1.01); 
+                color: #aaff44;
+            }
+            100% { 
+                transform: translateX(0) scaleX(1); 
+                color: #44ff44;
+            }
+        }
+
+        @keyframes strongGlitchGreen {
+            0%, 70% { 
+                transform: translateX(0) scaleX(1); 
+                color: #44ff44;
+                text-shadow: 0 0 10px #44ff44;
+            }
+            75% { 
+                transform: translateX(-3px) scaleX(0.97); 
+                color: #88ff88;
+                text-shadow: 2px 0 #ff8800, -2px 0 #4488ff;
+            }
+            80% { 
+                transform: translateX(4px) scaleX(1.03); 
+                color: #ffff44;
+                text-shadow: -2px 0 #ff4488, 2px 0 #44ffff;
+            }
+            85% { 
+                transform: translateX(-1px) scaleX(0.98); 
+                color: #ffffff;
+                text-shadow: 1px 0 #44ff44, -1px 0 #ff4444;
+            }
+            100% { 
+                transform: translateX(0) scaleX(1); 
+                color: #44ff44;
+                text-shadow: 0 0 10px #44ff44;
+            }
+        }
+
+        /* トラベリングメッセージのスタイル */
+        .traveling-message {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid;
+            font-size: 16px;
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
+            font-weight: bold;
+            text-shadow: 0 0 5px;
+            z-index: 20;
+            position: relative;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .traveling-message.past {
+            border-color: #ff6666;
+            color: #ff6666;
+            text-shadow: 0 0 5px #ff6666;
+            box-shadow: 0 0 20px rgba(255, 102, 102, 0.3);
+        }
+
+        .traveling-message.future {
+            border-color: #66ff66;
+            color: #66ff66;
+            text-shadow: 0 0 5px #66ff66;
+            box-shadow: 0 0 20px rgba(102, 255, 102, 0.3);
+        }
+
+        /* タイムトラベル結果表示のスタイル */
+        .travel-result-container {
+            background: linear-gradient(145deg, #000000, #111111);
+            border: 2px solid #14ffec;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 90%;
+            box-shadow: 
+                0 0 30px rgba(20, 255, 236, 0.3),
+                inset 0 0 20px rgba(20, 255, 236, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .travel-result-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #14ffec, #e6007e, #14ffec);
+            border-radius: 12px;
+            z-index: -1;
+            animation: borderGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes borderGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* タイムトラベル結果表示のスタイル */
+        .travel-result-container {
+            background: linear-gradient(145deg, #000000, #111111);
+            border: 2px solid #14ffec;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 90%;
+            box-shadow: 
+                0 0 30px rgba(20, 255, 236, 0.3),
+                inset 0 0 20px rgba(20, 255, 236, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes borderGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .travel-result-header {
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            color: #14ffec;
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .travel-result-status {
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            color: #00ff00;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .travel-result-message {
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 10px #ffffff;
+            line-height: 1.4;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .scan-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(20, 255, 236, 0.03) 2px,
+                rgba(20, 255, 236, 0.03) 4px
+            );
+            pointer-events: none;
+            animation: scanMove 3s linear infinite;
+        }
+
+        @keyframes scanMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(8px); }
+        }
+
+        /* オリジナル時計のスタイル（分解図通りのデザイン） */
+        .original-clock {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            margin: 20px auto;
+        }
+
+        /* 中央の大きな円（文字盤） */
+        .clock-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            background: #14ffec;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+            box-shadow: 0 0 25px rgba(20, 255, 236, 0.8);
+        }
+
+        /* 針の基本スタイル */
+        .clock-hand {
+            position: absolute;
+            background: #14ffec;
+            transform-origin: center bottom;
+            box-shadow: 0 0 10px rgba(20, 255, 236, 0.6);
+        }
+
+        /* 細い長い針（秒針） - 左の細い棒 */
+        .second-hand {
+            width: 4px;
+            height: 130px;
+            top: 6.5%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e6007e;
+            z-index: 1;
+            box-shadow: 0 0 8px rgba(230, 0, 126, 0.6);
+        }
+
+        /* 中くらいの針（分針） - 中央の円付き棒 */
+        .minute-hand {
+            width: 8px;
+            height: 110px;
+            top: 13.5%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+
+        /* 分針の先端の円 */
+        .minute-hand::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            background: #14ffec;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 15px rgba(20, 255, 236, 0.8);
+        }
+
+        /* 太い針（時針） - 右の太い丸い棒 */
+        .hour-hand {
+            width: 16px;
+            height: 80px;
+            top: 23%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 8px;
+            z-index: 3;
+        }
+
+        /* 数字のスタイル */
+        .clock-numbers {
+            position: absolute;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 32px;
+            color: #14ffec;
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(20, 255, 236, 1);
+        }
+        .time-travel-btn {
+            padding: 12px 24px;
+            background: #14ffec;
+            color: #151515;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(20, 255, 236, 0.3);
+        }
+
+        .time-travel-btn:hover {
+            background: #00d4c7;
+            box-shadow: 0 0 30px rgba(20, 255, 236, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .time-travel-btn.future {
+            background: #44ff44;
+            color: #000000;
+            box-shadow: 0 0 20px rgba(68, 255, 68, 0.3);
+        }
+
+        .time-travel-btn.future:hover {
+            background: #33cc33;
+            box-shadow: 0 0 30px rgba(68, 255, 68, 0.5);
+        }
+
+        /* レスポンシブ対応 */
+        @media (max-width: 480px) {
+            .tokikake-clock {
+                font-size: 20px;
+                padding: 15px 0px;
+                letter-spacing: 2px;
+            }
+        }
+        
+        .connection-status {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            z-index: 1000;
+        }
+
+        .connection-status.online {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .connection-status.offline {
+            background: #ff0000;
+            color: #fff;
+        }
+
+        .world-stats {
+            margin-top: 12px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 6px;
+            font-size: 10px;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
-  <div id="app">
-    <div id="connection-status" class="connection-status offline">OFFLINE</div>
-
-    <div id="lang-toggle">
-      <button id="btn-en" class="active">ENGLISH</button>
-      <button id="btn-ja">日本語</button>
+    <div id="app">
+        <div id="connection-status" class="connection-status offline">OFFLINE</div>
+        
+        <div id="lang-toggle">
+            <button id="btn-en" class="active">ENGLISH</button>
+            <button id="btn-ja">日本語</button>
+        </div>
+        
+        <div id="largeTitle">🌐HELL0w0RLD!🌐</div>
+        
+        <div id="loader">
+            <h2 id="loaderText">0108 connecting…</h2>
+            <div class="bar">
+                <div class="bar-fill"></div>
+            </div>
+        </div>
+        
+        <div id="title">
+            <h1>🌐HELL0w0RLD!🌐</h1>
+        </div>
+        
+        <div id="usernameScreen">
+            <h2 id="enterNameText">Enter your name:</h2>
+            <input type="text" id="usernameInput" placeholder="Your name here">
+            <br>
+            <button id="startBtn">Start</button>
+        </div>
+        
+        <div id="output"></div>
+        
+        <div id="promptSection">
+            <h2 id="promptText">📡 0108: What's on your mind?</h2>
+            <div id="buttons">
+                <button id="btn-sos">sos</button>
+                <button id="btn-lonely">lonely</button>
+                <button id="btn-hate">hate myself</button>
+                <button id="btn-why" class="locked">why</button>
+            </div>
+            <button id="rankingBtn">📊 View Rankings</button>
+        </div>
+        
+        <div id="overlay"></div>
     </div>
 
-    <div id="largeTitle">🌐HELL0w0RLD!🌐</div>
+    <script>
+        // 元のコードはそのまま保持 + 改良された時計関数を追加
 
-    <div id="loader">
-      <h2 id="loaderText">0108 connecting…</h2>
-      <div class="bar"><div class="bar-fill"></div></div>
-    </div>
+        const RANKING_CONFIG = {
+            endpoints: [
+                'https://jsonplaceholder.typicode.com/posts',
+                'https://httpbin.org/anything',
+                'https://api.github.com/zen'
+            ],
+            rankingEndpoint: 'https://api.jsonstorage.net/v1/json/hellowworld-ranking/create',
+            getEndpoint: 'https://api.jsonstorage.net/v1/json/hellowworld-ranking',
+            maxEntries: 50,
+            cacheDuration: 3000,
+            retryAttempts: 2
+        };
 
-    <div id="title"><h1>🌐HELL0w0RLD!🌐</h1></div>
+        class RealTimeRankingManager {
+            constructor() {
+                this.cache = null;
+                this.cacheTime = 0;
+                this.isOnline = false;
+                this.retryCount = 0;
+                this.sessionId = this.generateSessionId();
+            }
 
-    <div id="usernameScreen">
-      <h2 id="enterNameText">Enter your name:</h2>
-      <input type="text" id="usernameInput" placeholder="Your name here" />
-      <br />
-      <button id="startBtn">Start</button>
-    </div>
+            generateSessionId() {
+                return 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+            }
 
-    <div id="output"></div>
+            async checkConnection() {
+                console.log('🔍 接続テスト開始...');
+                
+                for (let i = 0; i < RANKING_CONFIG.endpoints.length; i++) {
+                    try {
+                        console.log(`テスト ${i+1}: ${RANKING_CONFIG.endpoints[i]}`);
+                        
+                        const response = await Promise.race([
+                            fetch(RANKING_CONFIG.endpoints[i], {
+                                method: 'GET',
+                                cache: 'no-cache',
+                                mode: 'cors'
+                            }),
+                            new Promise((_, reject) => 
+                                setTimeout(() => reject(new Error('Timeout')), 3000)
+                            )
+                        ]);
+                        
+                        if (response.ok) {
+                            this.isOnline = true;
+                            this.updateConnectionStatus(true);
+                            console.log('✅ 接続成功!', RANKING_CONFIG.endpoints[i]);
+                            return true;
+                        } else {
+                            console.log('❌ レスポンスエラー:', response.status);
+                        }
+                    } catch (error) {
+                        console.log('❌ 接続エラー:', error.message);
+                    }
+                }
+                
+                try {
+                    console.log('📡 最終テスト: navigator.onLine');
+                    if (navigator.onLine) {
+                        this.isOnline = true;
+                        this.updateConnectionStatus(true);
+                        console.log('✅ navigator.onLine = true, オンライン判定');
+                        return true;
+                    }
+                } catch (error) {
+                    console.log('❌ navigator.onLine エラー:', error.message);
+                }
+                
+                this.isOnline = false;
+                this.updateConnectionStatus(false);
+                console.log('📱 全て失敗、オフラインモード');
+                return false;
+            }
 
-    <div id="promptSection">
-      <h2 id="promptText">📡 0108: What's on your mind?</h2>
-      <div id="buttons">
-        <button id="btn-sos">sos</button>
-        <button id="btn-lonely">lonely</button>
-        <button id="btn-hate">hate myself</button>
-        <button id="btn-why" class="locked">why</button>
-      </div>
-      <button id="rankingBtn">📊 View Rankings</button>
-    </div>
+            updateConnectionStatus(online) {
+                const statusEl = document.getElementById('connection-status');
+                statusEl.className = `connection-status ${online ? 'online' : 'offline'}`;
+                statusEl.textContent = online ? '🌐 ONLINE' : '📱 OFFLINE';
+            }
 
-    <div id="overlay"></div>
-  </div>
+            async loadRankings() {
+                if (this.cache && (Date.now() - this.cacheTime) < RANKING_CONFIG.cacheDuration) {
+                    console.log('💾 キャッシュから取得');
+                    return this.cache;
+                }
 
-  <script>
-    // ===== Utilities =====
-    class IntervalManager {
-      constructor() { this.intervals = new Set(); this.isCleanedUp = false; }
-      setInterval(cb, d) { if (this.isCleanedUp) return null; const id = setInterval(cb, d); this.intervals.add(id); return id; }
-      clearInterval(id) { if (id) { clearInterval(id); this.intervals.delete(id); } }
-      clearAll() { this.intervals.forEach(id => clearInterval(id)); this.intervals.clear(); this.isCleanedUp = true; }
-    }
-    const intervalManager = new IntervalManager();
+                console.log('🔍 ランキング取得中...');
+                
+                const offlineRankings = this.getOfflineRankings();
+                
+                try {
+                    await this.checkConnection();
+                    if (!this.isOnline) {
+                        console.log('📱 オフラインモード使用');
+                        this.cache = offlineRankings;
+                        this.cacheTime = Date.now();
+                        return this.cache;
+                    }
 
-    // ===== Config & i18n =====
-    const RANKING_CONFIG = { endpoints:[
-      'https://jsonplaceholder.typicode.com/posts',
-      'https://httpbin.org/anything',
-      'https://api.github.com/zen'
-    ], rankingEndpoint:'https://api.jsonstorage.net/v1/json/hellowworld-ranking/create',
-      getEndpoint:'https://api.jsonstorage.net/v1/json/hellowworld-ranking', maxEntries:50, cacheDuration:3000, retryAttempts:2 };
+                    const onlineData = await this.simulateOnlineRankings();
+                    
+                    this.cache = onlineData;
+                    this.cacheTime = Date.now();
+                    this.retryCount = 0;
+                    
+                    console.log('✅ オンラインランキング取得:', onlineData.length, 'entries');
+                    return onlineData;
+                    
+                } catch (error) {
+                    console.warn('⚠️ オンライン取得失敗:', error.message);
+                    this.cache = offlineRankings;
+                    this.cacheTime = Date.now();
+                    return this.cache;
+                }
+            }
 
-    const translations = {
-      en: { connect:'0108 connecting…', enterName:'Enter your name:', start:'Start', prompt:"📡 0108: What's on your mind?", scanInit:'0108 can catch your signal anytime!', scanProgress:'Scanning your heart...', virusDetected:'🚨 Virus detected!', virusBtn:'Launch Virus Buster!', virusClean:'✅ Virus eliminated!\nHeart status: 150% clean.', close:'Close', logPrefix:': ', virusesLeft:'Viruses left', scoreLabel:'Score', timeLabel:'Time', rankingTitle:'⭐ GLOBAL RANKINGS ⭐', viewRankings:'View Rankings', onlineRankings:'🌐 GLOBAL ONLINE', offlineRankings:'📱 LOCAL OFFLINE', yourRank:'Your rank: #', totalPlayers:'Total players worldwide: ' },
-      ja: { connect:'0108 接続中…', enterName:'名前を入力してください:', start:'スタート', prompt:'📡 0108: 調子はどう？', scanInit:'0108はいつでもあなたの信号を受信できます！', scanProgress:'あなたの心をスキャンしています...', virusDetected:'🚨 ウイルス発見！', virusBtn:'ウイルスバスター起動！', virusClean:'✅ ウイルスをやっつけたぞ！\n心の状態: 150%クリーン。', close:'閉じる', logPrefix:'：', virusesLeft:'残りウイルス', scoreLabel:'スコア', timeLabel:'時間', rankingTitle:'⭐ 世界ランキング ⭐', viewRankings:'ランキング表示', onlineRankings:'🌐 世界オンライン', offlineRankings:'📱 ローカルオフライン', yourRank:'あなたの順位: ', totalPlayers:'世界の総プレイヤー数: ' }
-    };
-    function t(key){ return translations[currentLang][key] || key; }
+            async simulateOnlineRankings() {
+                const localRankings = JSON.parse(localStorage.getItem('hellowworld_global_rankings') || '[]');
+                
+                const globalPlayers = [
+                    { name: 'AKIRA_JP', time: 7.8, online: true },
+                    { name: 'Sarah_US', time: 8.9, online: true },
+                    { name: 'Lucas_FR', time: 9.2, online: true },
+                    { name: 'Emma_GB', time: 10.1, online: true },
+                    { name: 'Carlos_BR', time: 10.8, online: true },
+                    { name: 'Nina_DE', time: 11.4, online: true },
+                    { name: 'Jack_AU', time: 12.1, online: true },
+                    { name: 'Priya_IN', time: 12.7, online: true }
+                ].map(entry => ({
+                    ...entry,
+                    time: entry.time + (Math.random() - 0.5) * 1.5,
+                    date: new Date(Date.now() - Math.random() * 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    timestamp: Date.now() - Math.random() * 86400000
+                }));
 
-    // ===== Lyrics placeholder (fixed) =====
-    // 元のエラー原因だったスマートクォート・欠落括弧を避けるため、必要ならここに安全な形で追加してくれ。
-    const otohaLyrics = {
-      "リインカーネーション": `誰も居ない雨夜と正夢 ...`,
-      "Change": `魔法にかけられたみたいに変わってく ...`,
-      "パラドクサー": `曖昧な愛なら要らないから ...`,
-      "IYAIYA": `腰掛けたソファーの上 ...`,
-      "アズライト": `「ハローハロー 調子はどう？」 ...`,
-      "ifのマーメイド": `新たな物語の結末は 全てハッピーエンドにしよう ...`
-    };
+                const combinedRankings = [...localRankings, ...globalPlayers]
+                    .sort((a, b) => a.time - b.time)
+                    .slice(0, RANKING_CONFIG.maxEntries);
 
-    // ===== Ranking manager =====
-    class RealTimeRankingManager {
-      constructor(){ this.cache=null; this.cacheTime=0; this.isOnline=false; this.retryCount=0; this.sessionId=this.generateSessionId(); this.autoRefreshInterval=null; }
-      generateSessionId(){ return 'user_' + Math.random().toString(36).slice(2,11) + '_' + Date.now(); }
-      async checkConnection(){
-        if (window.location.protocol === 'file:'){ this.isOnline=false; this.updateConnectionStatus(false); return false; }
-        for (let i=0;i<RANKING_CONFIG.endpoints.length;i++){
-          try{
-            const response = await Promise.race([
-              fetch(RANKING_CONFIG.endpoints[i], { method:'GET', cache:'no-cache', mode:'cors' }),
-              new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),3000))
-            ]);
-            if(response.ok){ this.isOnline=true; this.updateConnectionStatus(true); return true; }
-          }catch(e){ /* noop */ }
+                return combinedRankings;
+            }
+
+            async submitScore(userName, time, gameData = {}) {
+                console.log('📤 スコア送信開始:', { userName, time });
+                
+                const newEntry = {
+                    name: userName.slice(0, 20),
+                    time: Math.round(time * 10) / 10,
+                    timestamp: Date.now(),
+                    date: new Date().toISOString().split('T')[0],
+                    sessionId: this.sessionId,
+                    online: this.isOnline,
+                    ...gameData
+                };
+
+                this.saveToGlobalLocal(newEntry);
+
+                try {
+                    await this.checkConnection();
+                    if (this.isOnline) {
+                        console.log('🌐 オンライン送信シミュレーション...');
+                        
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        
+                        console.log('🚀 オンライン送信成功! (シミュレーション)');
+                        
+                        if (this.cache) {
+                            this.cache.push(newEntry);
+                            this.cache = this.cache.sort((a, b) => a.time - b.time).slice(0, RANKING_CONFIG.maxEntries);
+                        }
+                        this.cacheTime = 0;
+                        
+                        return true;
+                    } else {
+                        console.log('📱 オフライン送信');
+                        return false;
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ 送信エラー:', error.message);
+                    return false;
+                }
+            }
+
+            saveToGlobalLocal(entry) {
+                try {
+                    const globalRankings = JSON.parse(localStorage.getItem('hellowworld_global_rankings') || '[]');
+                    globalRankings.push(entry);
+                    const sortedRankings = globalRankings.sort((a, b) => a.time - b.time).slice(-30);
+                    localStorage.setItem('hellowworld_global_rankings', JSON.stringify(sortedRankings));
+                    console.log('💾 グローバルローカル保存完了');
+                } catch (error) {
+                    console.warn('グローバル保存失敗:', error);
+                }
+            }
+
+            saveToLocal(userName, time) {
+                try {
+                    const localRankings = JSON.parse(localStorage.getItem('hellowworld_rankings') || '[]');
+                    const newEntry = {
+                        name: userName,
+                        time: time,
+                        date: new Date().toISOString().split('T')[0],
+                        local: true,
+                        timestamp: Date.now()
+                    };
+                    localRankings.push(newEntry);
+                    localStorage.setItem('hellowworld_rankings', JSON.stringify(localRankings.slice(-20)));
+                    console.log('💾 ローカル保存完了');
+                } catch (error) {
+                    console.warn('ローカル保存失敗:', error);
+                }
+            }
+
+            getOfflineRankings() {
+                try {
+                    const localRankings = JSON.parse(localStorage.getItem('hellowworld_rankings') || '[]');
+                    const baseRankings = [
+                        { name: 'AKIRA', time: 8.2 },
+                        { name: '민지', time: 9.1 },
+                        { name: 'ALEX', time: 10.7 },
+                        { name: 'EMMA', time: 11.3 },
+                        { name: 'LUCAS', time: 12.5 },
+                        { name: 'NINA', time: 13.8 },
+                        { name: 'CARLOS', time: 14.2 },
+                        { name: 'SARAH', time: 15.6 },
+                        { name: 'JACK', time: 16.1 },
+                        { name: 'PRIYA', time: 17.9 }
+                    ].map(entry => ({
+                        ...entry,
+                        time: entry.time + (Math.random() - 0.5) * 2,
+                        date: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        offline: true
+                    }));
+
+                    const combinedRankings = [...localRankings, ...baseRankings]
+                        .sort((a, b) => a.time - b.time)
+                        .slice(0, 20);
+
+                    return combinedRankings;
+                } catch (error) {
+                    console.warn('ランキング生成エラー:', error);
+                    return [
+                        { name: 'AKIRA', time: 8.2, date: '2024-08-01', offline: true },
+                        { name: '민지', time: 9.1, date: '2024-08-02', offline: true },
+                        { name: 'ALEX', time: 10.7, date: '2024-08-03', offline: true }
+                    ];
+                }
+            }
+
+            startAutoRefresh() {
+                setInterval(async () => {
+                    if (this.isOnline) {
+                        this.cacheTime = 0;
+                        await this.loadRankings();
+                        console.log('🔄 自動リフレッシュ完了');
+                    }
+                }, 10000);
+            }
         }
-        if (navigator.onLine){ this.isOnline=true; this.updateConnectionStatus(true); return true; }
-        this.isOnline=false; this.updateConnectionStatus(false); return false;
-      }
-      updateConnectionStatus(online){ const el=document.getElementById('connection-status'); if(!el) return; el.className = `connection-status ${online?'online':'offline'}`; el.textContent = online ? '🌐 ONLINE' : '📱 OFFLINE'; }
-      getOfflineRankings(){ const base=[ {name:'0w0',time:8.2}, {name:'ぜんねこ',time:9.1}, {name:'otoha_0108',time:17.9} ].map(e=>({ ...e, time: e.time + (Math.random()-0.5)*2, date: new Date(Date.now()-Math.random()*7*86400000).toISOString().split('T')[0], offline:true })); const local=JSON.parse(localStorage.getItem('hellowworld_rankings')||'[]'); return [...local, ...base].sort((a,b)=>a.time-b.time).slice(0,20); }
-      async simulateOnlineRankings(){ const local=JSON.parse(localStorage.getItem('hellowworld_global_rankings')||'[]'); const global=[ {name:'0w0',time:3.8,online:true}, {name:'ぜんねこ',time:8.9,online:true}, {name:'otoha_0108',time:12.7,online:true} ].map(e=>({ ...e, time:e.time+(Math.random()-0.5)*1.5, date:new Date(Date.now()-Math.random()*2*86400000).toISOString().split('T')[0], timestamp: Date.now()-Math.random()*86400000 })); return [...local, ...global].sort((a,b)=>a.time-b.time).slice(0,RANKING_CONFIG.maxEntries); }
-      async loadRankings(){ if(this.cache && (Date.now()-this.cacheTime)<RANKING_CONFIG.cacheDuration) return this.cache; await this.checkConnection(); if(!this.isOnline){ this.cache=this.getOfflineRankings(); this.cacheTime=Date.now(); return this.cache; } const online=await this.simulateOnlineRankings(); this.cache=online; this.cacheTime=Date.now(); return online; }
-      saveToGlobalLocal(entry){ try{ const g=JSON.parse(localStorage.getItem('hellowworld_global_rankings')||'[]'); g.push(entry); const sorted=g.sort((a,b)=>a.time-b.time).slice(-30); localStorage.setItem('hellowworld_global_rankings', JSON.stringify(sorted)); }catch(e){}
-      }
-      async submitScore(userName,time,gameData={}){ const entry={ name:userName.slice(0,20), time:Math.round(time*10)/10, timestamp:Date.now(), date:new Date().toISOString().split('T')[0], sessionId:this.sessionId, online:this.isOnline, ...gameData }; this.saveToGlobalLocal(entry); await this.checkConnection(); if(this.isOnline){ await new Promise(r=>setTimeout(r,800)); if(this.cache){ this.cache.push(entry); this.cache=this.cache.sort((a,b)=>a.time-b.time).slice(0,RANKING_CONFIG.maxEntries); } this.cacheTime=0; return true; } return false; }
-      startAutoRefresh(){ if(this.autoRefreshInterval) intervalManager.clearInterval(this.autoRefreshInterval); if(window.location.protocol==='file:') return; this.autoRefreshInterval = intervalManager.setInterval(async()=>{ if(this.isOnline){ this.cacheTime=0; await this.loadRankings(); } }, 10000); }
-    }
-    const rankingManager = new RealTimeRankingManager();
 
-    // ===== DOM refs =====
-    function el(id){ return document.getElementById(id); }
-    const elements = { loader:el('loader'), loaderText:el('loaderText'), titleDiv:el('title'), largeTitle:el('largeTitle'), usernameScreen:el('usernameScreen'), enterNameText:el('enterNameText'), startBtn:el('startBtn'), outputDiv:el('output'), promptSection:el('promptSection'), promptText:el('promptText'), overlay:el('overlay'), btnSos:el('btn-sos'), btnLonely:el('btn-lonely'), btnHate:el('btn-hate'), btnWhy:el('btn-why'), btnEn:el('btn-en'), btnJa:el('btn-ja'), rankingBtn:el('rankingBtn') };
+        const rankingManager = new RealTimeRankingManager();
 
-    // ===== State =====
-    let currentLang = 'en';
-    let userName = 'AAA';
-    let sosDone=false, lonelyDone=false, hateDone=false;
+        const translations = {
+            en: {
+                connect: '0108 connecting…',
+                enterName: 'Enter your name:',
+                start: 'Start',
+                prompt: "📡 0108: What's on your mind?",
+                scanInit: '0108 can catch your signal anytime!',
+                scanProgress: 'Scanning your heart...',
+                virusDetected: '🚨 Virus detected!',
+                virusBtn: 'Launch Virus Buster!',
+                virusClean: '✅ Virus eliminated!\nHeart status: 150% clean.',
+                lonelyPrompt: "OK. Let's listen to music with something sweet!🥧",
+                lonelyInput: 'Enter your favorite song name >',
+                lonelyWave: ' is now playing in your head!',
+                lonelyEnd: '0108 is always here to sing for you ♪',
+                hatePrompt: '🚗 Time patrol active!',
+                travelToPast: 'Go to Past',
+                travelToFuture: 'Go to Future',
+                travellingPast: 'Traveling to your [ Past ]…',
+                travellingFuture: 'Traveling to your [ Future ]…',
+                hateEnd: "Every moment's full of light. You're perfect as is✨",
+                whyPrompt: '0108 is thinking…',
+                whyStop: 'This program will never stop until you find the answer.',
+                whyOk: 'OK',
+                close: 'Close',
+                logPrefix: ': ',
+                virusesLeft: 'Viruses left',
+                scoreLabel: 'Score',
+                timeLabel: 'Time',
+                rankingTitle: '⭐ GLOBAL RANKINGS ⭐',
+                playingInHead: 'Playing in your head...',
+                viewRankings: 'View Rankings',
+                onlineRankings: '🌐 GLOBAL ONLINE',
+                offlineRankings: '📱 LOCAL OFFLINE',
+                yourRank: 'Your rank: #',
+                totalPlayers: 'Total players worldwide: '
+            },
+            ja: {
+                connect: '0108 接続中…',
+                enterName: '名前を入力してください:',
+                start: 'スタート',
+                prompt: '📡 0108: 調子はどう？',
+                scanInit: '0108はいつでもあなたの信号を受信できます！',
+                scanProgress: 'あなたの心をスキャンしています...',
+                virusDetected: '🚨 ウイルス発見！',
+                virusBtn: 'ウイルスバスター起動！',
+                virusClean: '✅ ウイルスをやっつけたぞ！\n心の状態: 150%クリーン。',
+                lonelyPrompt: 'よし、甘いものでも食べながら音楽でも聴こう！🥧',
+                lonelyInput: 'お気に入りの曲の名前を入力してください >',
+                lonelyWave: ' を脳内再生中...♪',
+                lonelyEnd: '0108はいつでもあなたと一緒に歌います。',
+                hatePrompt: '🚗 タイムパトロール開始！',
+                travelToPast: '過去へ行く',
+                travelToFuture: '未来へ行く',
+                travellingPast: '[ 過去 ] へ移動中...',
+                travellingFuture: '[ 未来 ] へ移動中...',
+                hateEnd: 'すべての瞬間が光で溢れてる。あなたはそのままで完璧です✨',
+                whyPrompt: '0108は考えています…',
+                whyStop: 'このプログラムは、あなたと答えを見つけるまで止まらない。',
+                whyOk: 'OK',
+                close: '閉じる',
+                logPrefix: '：',
+                virusesLeft: '残りウイルス',
+                scoreLabel: 'スコア',
+                timeLabel: '時間',
+                rankingTitle: '⭐ 世界ランキング ⭐',
+                playingInHead: '脳内再生中...',
+                viewRankings: 'ランキング表示',
+                onlineRankings: '🌐 世界オンライン',
+                offlineRankings: '📱 ローカルオフライン',
+                yourRank: 'あなたの順位: ',
+                totalPlayers: '世界の総プレイヤー数: '
+            }
+        };
+        
+        const otohaLyrics = {
+            'リインカーネーション': `誰も居ない雨夜と正夢
+与えられた花瓶の中で
+回想 瞬間的なフラッシュバッカー
+ひらひらと舞った、藍い涙
 
-    // ===== UI helpers =====
-    function setLanguage(lang){ if(currentLang===lang) return; currentLang=lang; if(elements.btnEn) elements.btnEn.classList.toggle('active', currentLang==='en'); if(elements.btnJa) elements.btnJa.classList.toggle('active', currentLang==='ja'); if(elements.loaderText) elements.loaderText.textContent=t('connect'); if(elements.enterNameText) elements.enterNameText.textContent=t('enterName'); if(elements.startBtn) elements.startBtn.textContent=t('start'); if(elements.promptText) elements.promptText.textContent=t('prompt'); if(elements.rankingBtn) elements.rankingBtn.textContent='📊 '+t('viewRankings'); }
+行方の無い身体は透明
+濁りは今 気体になって
+暗転 盲目的なフリーリセッター
+ばらばらになった、僕らの音
 
-    function showPrompt(){ if(elements.promptText) elements.promptText.textContent=t('prompt'); if(elements.rankingBtn) elements.rankingBtn.textContent='📊 '+t('viewRankings'); if(elements.promptSection) elements.promptSection.style.display='block'; if(elements.btnSos) elements.btnSos.classList.remove('disabled'); if(elements.btnLonely) elements.btnLonely.classList.remove('disabled'); if(elements.btnHate) elements.btnHate.classList.remove('disabled'); if(sosDone && lonelyDone && hateDone){ elements.btnWhy.classList.remove('locked','disabled'); } else { elements.btnWhy.classList.add('locked','disabled'); } }
+生まれ変わって
+また同じ場所で咲いた
+花のように光射す瞼を開いて
+後悔と嘘に塗れた
+あの混沌の夢から逃げた
+貴方は、僕だ。`,
+            'Change': `魔法にかけられたみたいに変わってく
+モノクロの世界飛び出して
+色褪せない音を鳴らそう
+貴方とならどこまでも`,
+            '猫と風船': `寂しくて死んでしまいそうな夜を引き摺って
+触れ合ったって埋まらぬ隙間たち 隠して
+言えないな 痛いな 言葉にできず笑っていた
+空っぽの鳴き声が今日もまた 消えてく`,
+            'パラドクサー': `曖昧な愛なら要らないから
+変わらない確かな 形で居たい
+期待ばっかしたら 貴方は又
+「離れたい」なんてさ きりが無いや`
+        };
+        
+        function checkOtohaLyrics(input) {
+            const inputLower = input.toLowerCase().trim();
+            for (const [songTitle, lyrics] of Object.entries(otohaLyrics)) {
+                if (inputLower === songTitle.toLowerCase() || 
+                    songTitle.toLowerCase().includes(inputLower) ||
+                    inputLower.includes(songTitle.toLowerCase())) {
+                    return { title: songTitle, lyrics: lyrics };
+                }
+            }
+            return null;
+        }
+        
+        // 改良版：時をかける少女風デジタル時計
+        function createTokikakeClock() {
+            const clockDisplay = document.createElement('div');
+            clockDisplay.className = 'tokikake-clock';
+            const now = new Date();
+            const currentTime = `${String(now.getFullYear()).padStart(4, '0')} ${String(now.getMonth() + 1).padStart(2, '0')} ${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')} ${String(now.getMinutes()).padStart(2, '0')} ${String(now.getSeconds()).padStart(2, '0')}`;
+            clockDisplay.textContent = currentTime;
+            
+            return clockDisplay;
+        }
 
-    function addLog(action){ if(!elements.outputDiv) return; const div=document.createElement('div'); div.className='message log'; div.textContent=`${userName}${t('logPrefix')}${action}`; elements.outputDiv.appendChild(div); elements.outputDiv.scrollTop=elements.outputDiv.scrollHeight; }
+        // 数字の横流れエフェクト（修正版）
+        function createNumberRain(container, intensity = 12, isFuture = false) {
+            const numberRain = document.createElement('div');
+            numberRain.className = 'number-rain';
+            
+            const numbers = '0123456789';
+            
+            for (let i = 0; i < intensity; i++) {
+                const stream = document.createElement('div');
+                // 過去は左方向、未来は右方向に統一
+                const direction = isFuture ? '' : 'left';
+                stream.className = `number-stream ${direction}${isFuture ? ' future' : ''}`;
+                stream.style.top = Math.random() * 100 + '%';
+                stream.style.animationDelay = Math.random() * 4 + 's';
+                stream.style.animationDuration = (2 + Math.random() * 3) + 's';
+                
+                // 数字の文字列を生成
+                let text = '';
+                for (let j = 0; j < 40; j++) {
+                    text += numbers[Math.floor(Math.random() * numbers.length)] + ' ';
+                }
+                stream.textContent = text;
+                
+                numberRain.appendChild(stream);
+            }
+            
+            container.appendChild(numberRain);
+            return numberRain;
+        }
 
-    function createCloseButton(cb){ const b=document.createElement('button'); b.className='close-btn'; b.textContent=t('close'); b.addEventListener('click', cb); return b; }
+        // タイムスタンプ生成
+        function getCurrentTimestamp() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            const second = String(now.getSeconds()).padStart(2, '0');
+            return `${year}.${month}.${day}_${hour}:${minute}:${second}`;
+        }
 
-    async function displayRankings(){ const rankingDiv=document.createElement('div'); rankingDiv.className='ranking'; const title=document.createElement('div'); title.style.textAlign='center'; title.style.marginBottom='12px'; title.style.color='#ffff00'; title.style.fontSize='14px'; title.style.fontWeight='bold'; title.textContent=t('rankingTitle'); rankingDiv.appendChild(title); const rankings=await rankingManager.loadRankings(); const statusDiv=document.createElement('div'); statusDiv.style.textAlign='center'; statusDiv.style.marginBottom='8px'; statusDiv.style.fontSize='10px'; statusDiv.style.color=rankingManager.isOnline?'#00ff00':'#ff8800'; statusDiv.textContent=rankingManager.isOnline?t('onlineRankings'):t('offlineRankings'); rankingDiv.appendChild(statusDiv); const container=document.createElement('div'); container.style.background='rgba(0,0,0,0.7)'; container.style.padding='12px'; container.style.borderRadius='8px'; container.style.maxHeight='200px'; container.style.overflowY='auto'; rankings.slice(0,15).forEach((entry,idx)=>{ const row=document.createElement('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.margin='3px 0'; row.style.padding='2px 4px'; row.style.fontSize='11px'; const rank=idx+1; let color='#00fff2'; if(rank===1) color='#ffff00'; else if(rank===2) color='#c0c0c0'; else if(rank===3) color='#cd7f32'; const isMe=entry.name===userName; if(isMe){ row.style.background='rgba(255,255,0,0.2)'; row.style.borderRadius='4px'; }
-      const left=document.createElement('span'); left.style.color=color; left.textContent=`${rank}. ${entry.name.length>15?entry.name.slice(0,15)+'...':entry.name}`; if(isMe) left.style.fontWeight='bold'; const right=document.createElement('span'); right.style.color=color; right.textContent=`${entry.time.toFixed(1)}s`; if(isMe) right.style.fontWeight='bold'; row.appendChild(left); row.appendChild(right); container.appendChild(row); }); rankingDiv.appendChild(container); const stats=document.createElement('div'); stats.className='world-stats'; const total=rankings.length; const myRank=rankings.findIndex(e=>e.name===userName)+1; let txt=t('totalPlayers')+total; if(myRank>0) txt += `\n${t('yourRank')}${myRank}`; stats.textContent=txt; rankingDiv.appendChild(stats); return rankingDiv; }
+        // オリジナル時計を作成
+        function createOriginalClock() {
+            const clockContainer = document.createElement('div');
+            clockContainer.className = 'original-clock';
+            
+            // 時計の目盛りを作成
+            for (let i = 0; i < 12; i++) {
+                const tick = document.createElement('div');
+                tick.className = 'clock-tick';
+                const angle = (i * 30) - 90; // 12時位置を0度とする
+                tick.style.transform = `rotate(${angle}deg)`;
+                tick.style.top = '10px';
+                tick.style.left = '50%';
+                tick.style.marginLeft = '-1px';
+                clockContainer.appendChild(tick);
+            }
+            
+            // 数字を配置
+            const numbers = ['12', '3', '6', '9'];
+            const positions = [
+                { top: '5px', left: '50%', transform: 'translateX(-50%)' },     // 12
+                { top: '50%', right: '5px', transform: 'translateY(-50%)' },    // 3
+                { bottom: '5px', left: '50%', transform: 'translateX(-50%)' },  // 6
+                { top: '50%', left: '5px', transform: 'translateY(-50%)' }      // 9
+            ];
+            
+            numbers.forEach((num, index) => {
+                const numberEl = document.createElement('div');
+                numberEl.className = 'clock-numbers';
+                numberEl.textContent = num;
+                Object.assign(numberEl.style, positions[index]);
+                clockContainer.appendChild(numberEl);
+            });
+            
+            // 針を作成
+            const hourHand = document.createElement('div');
+            hourHand.className = 'clock-hand hour-hand';
+            hourHand.id = 'hourHand';
+            clockContainer.appendChild(hourHand);
+            
+            const minuteHand = document.createElement('div');
+            minuteHand.className = 'clock-hand minute-hand';
+            minuteHand.id = 'minuteHand';
+            clockContainer.appendChild(minuteHand);
+            
+            const secondHand = document.createElement('div');
+            secondHand.className = 'clock-hand second-hand';
+            secondHand.id = 'secondHand';
+            clockContainer.appendChild(secondHand);
+            
+            // 中央の円
+            const center = document.createElement('div');
+            center.className = 'clock-center';
+            clockContainer.appendChild(center);
+            
+            return clockContainer;
+        }
 
-    function drawInvader(ctx,x,y,w,h){ const px=2; ctx.fillStyle='#00ffcc'; const pattern=[[ [0,0,1,0,0,0,1,0],[0,0,0,1,0,1,0,0],[0,0,1,1,1,1,1,0],[0,1,1,0,1,0,1,1],[1,1,1,1,1,1,1,1],[1,0,1,1,1,1,0,1],[1,0,1,0,0,1,0,1],[0,0,0,1,1,0,0,0] ]][0]; for(let r=0;r<8;r++){ for(let c=0;c<8;c++){ if(pattern[r][c]) ctx.fillRect(x-w/2 + c*px, y-h/2 + r*px, px, px); } } }
+        // 時計の針を現在時刻に合わせて更新
+        function updateClockHands() {
+            const now = new Date();
+            const hours = now.getHours() % 12;
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            
+            // 角度を計算（12時位置を0度とする）
+            const hourAngle = (hours * 30) + (minutes * 0.5) - 90; // 時針は分単位でも動く
+            const minuteAngle = (minutes * 6) - 90;
+            const secondAngle = (seconds * 6) - 90;
+            
+            const hourHand = document.getElementById('hourHand');
+            const minuteHand = document.getElementById('minuteHand');
+            const secondHand = document.getElementById('secondHand');
+            
+            if (hourHand) hourHand.style.transform = `translateX(-50%) rotate(${hourAngle}deg)`;
+            if (minuteHand) minuteHand.style.transform = `translateX(-50%) rotate(${minuteAngle}deg)`;
+            if (secondHand) secondHand.style.transform = `translateX(-50%) rotate(${secondAngle}deg)`;
+        }
 
-    function startGame(){ return new Promise(resolve=>{ const start=Date.now(); elements.overlay.innerHTML=''; const canvas=document.createElement('canvas'); canvas.width=320; canvas.height=240; canvas.style.background='#001b1a'; canvas.style.border='2px solid #00ffcc'; elements.overlay.appendChild(canvas); const ctx=canvas.getContext('2d'); const board=document.createElement('div'); board.style.marginTop='8px'; board.style.color='#00ffcc'; elements.overlay.appendChild(board); const ship={ x:canvas.width/2-15, y:canvas.height-20, w:30, h:10 }; const bullets=[]; const viruses=[]; let remaining=12; let score=0;
-      for(let r=0;r<2;r++){ for(let c=0;c<6;c++){ viruses.push({ x:30+c*40, y:20+r*30, w:20, h:16, vx:(Math.random()>0.5?1:-1), hit:false }); } }
-      let anim, over=false;
-      function draw(){ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#ff0077'; ctx.fillRect(ship.x, ship.y, ship.w, ship.h); viruses.forEach(v=>{ if(!v.hit){ v.x += v.vx; if (v.x - v.w/2 < 0 || v.x + v.w/2 > canvas.width) v.vx*=-1; drawInvader(ctx, v.x, v.y, v.w, v.h); } }); for(let i=bullets.length-1;i>=0;i--){ const b=bullets[i]; b.y -= 4; ctx.fillStyle='#ffff00'; ctx.fillRect(b.x-1, b.y-8, 2, 8); if(b.y<0){ bullets.splice(i,1); continue; } viruses.forEach(v=>{ if(!v.hit){ if(b.x>=v.x-v.w/2 && b.x<=v.x+v.w/2 && b.y>=v.y-v.h/2 && b.y<=v.y+v.h/2){ v.hit=true; remaining--; score++; bullets.splice(i,1); } } }); }
-        const tsec=(Date.now()-start)/1000; board.textContent = `${t('virusesLeft')}: ${remaining} | ${t('scoreLabel')}: ${score} | ${t('timeLabel')}: ${tsec.toFixed(1)}s`;
-        if(viruses.every(v=>v.hit)) end(true);
-        if(!over) anim=requestAnimationFrame(draw);
-      }
-      function shoot(){ bullets.push({ x: ship.x + ship.w/2, y: ship.y }); }
-      function pointerMove(e){ const rect=canvas.getBoundingClientRect(); const x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left; ship.x = Math.min(Math.max(0, x - ship.w/2), canvas.width - ship.w); }
-      const onMouseMove=(e)=>pointerMove(e); const onMouseDown=()=>shoot(); const onTouchMove=(e)=>pointerMove(e); const onTouchStart=()=>shoot();
-      canvas.addEventListener('mousemove', onMouseMove); canvas.addEventListener('mousedown', onMouseDown); canvas.addEventListener('touchmove', onTouchMove); canvas.addEventListener('touchstart', onTouchStart);
-      function end(success){ if(over) return; over=true; cancelAnimationFrame(anim); canvas.removeEventListener('mousemove', onMouseMove); canvas.removeEventListener('mousedown', onMouseDown); canvas.removeEventListener('touchmove', onTouchMove); canvas.removeEventListener('touchstart', onTouchStart); const finalTime=(Date.now()-start)/1000; resolve({ success, time: finalTime, score }); }
-      draw();
-    }); }
+        // タイプライター効果
+        function typewriterEffect(element, text, speed = 50) {
+            element.textContent = '';
+            let i = 0;
+            
+            const interval = setInterval(() => {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, speed);
+        }
+        function createSparkles(container, isWhite = false) {
+            const sparklesContainer = document.createElement('div');
+            sparklesContainer.className = 'sparkles';
+            
+            for (let i = 0; i < 20; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = `sparkle ${isWhite ? 'white' : ''}`;
+                sparkle.textContent = '✨';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+                
+                sparklesContainer.appendChild(sparkle);
+            }
+            
+            container.appendChild(sparklesContainer);
+            
+            // 5秒後に自動削除
+            setTimeout(() => {
+                if (sparklesContainer.parentNode) {
+                    sparklesContainer.parentNode.removeChild(sparklesContainer);
+                }
+            }, 5000);
+            
+            return sparklesContainer;
+        }
 
-    // ===== Boot =====
-    window.onload = async () => {
-      try{ if(elements.loaderText) elements.loaderText.textContent=t('connect'); await rankingManager.checkConnection(); rankingManager.startAutoRefresh(); }catch(e){ rankingManager.isOnline=false; rankingManager.updateConnectionStatus(false); }
-      setTimeout(()=>{ if(elements.loader) elements.loader.style.display='none'; if(elements.titleDiv) elements.titleDiv.style.display='flex'; setTimeout(()=>{ if(elements.titleDiv) elements.titleDiv.style.display='none'; if(elements.enterNameText) elements.enterNameText.textContent=t('enterName'); if(elements.startBtn) elements.startBtn.textContent=t('start'); if(elements.usernameScreen) elements.usernameScreen.style.display='flex'; }, 2000); }, 3200);
-    };
+        // 数字の左右流れエフェクト
+        function createNumberFlow(container, direction = 'right', intensity = 8) {
+            const numberFlow = document.createElement('div');
+            numberFlow.className = 'number-flow';
+            
+            const numbers = '0123456789';
+            
+            for (let i = 0; i < intensity; i++) {
+                const stream = document.createElement('div');
+                stream.className = `number-stream-horizontal flow-to-${direction}`;
+                stream.style.top = (Math.random() * 80 + 10) + '%';
+                stream.style.animationDelay = Math.random() * 4 + 's';
+                stream.style.animationDuration = (3 + Math.random() * 2) + 's';
+                
+                let text = '';
+                for (let j = 0; j < 30; j++) {
+                    text += numbers[Math.floor(Math.random() * numbers.length)] + ' ';
+                }
+                stream.textContent = text;
+                
+                numberFlow.appendChild(stream);
+            }
+            
+            container.appendChild(numberFlow);
+            return numberFlow;
+        }
+        
+        // 段階的時間変化アニメーション（過去）
+        function animateTimeToPastGentle(timeDisplay) {
+            let currentDate = new Date();
+            let phase = 1;
+            let iterations = 0;
+            
+            const interval = setInterval(() => {
+                iterations++;
+                
+                // 段階的にグリッチを強化
+                if (iterations < 20) {
+                    timeDisplay.className = 'tokikake-clock phase-1 time-transition';
+                    phase = 1;
+                } else if (iterations < 40) {
+                    timeDisplay.className = 'tokikake-clock phase-2 time-transition';
+                    phase = 2;
+                } else {
+                    timeDisplay.className = 'tokikake-clock phase-3 time-transition';
+                    phase = 3;
+                }
+                
+                // 時間を徐々に過去へ
+                const changeIntensity = Math.min(phase, 3);
+                if (Math.random() < 0.3 * changeIntensity) {
+                    currentDate.setFullYear(currentDate.getFullYear() - Math.floor(Math.random() * 10 * changeIntensity) - 1);
+                }
+                if (Math.random() < 0.4 * changeIntensity) {
+                    currentDate.setMonth(Math.floor(Math.random() * 12));
+                }
+                if (Math.random() < 0.5 * changeIntensity) {
+                    currentDate.setDate(Math.floor(Math.random() * 28) + 1);
+                }
+                if (Math.random() < 0.6 * changeIntensity) {
+                    currentDate.setHours(Math.floor(Math.random() * 24));
+                }
+                if (Math.random() < 0.7 * changeIntensity) {
+                    currentDate.setMinutes(Math.floor(Math.random() * 60));
+                }
+                if (Math.random() < 0.8 * changeIntensity) {
+                    currentDate.setSeconds(Math.floor(Math.random() * 60));
+                }
+                
+                const timeString = `${String(currentDate.getFullYear()).padStart(4, '0')} ${String(currentDate.getMonth() + 1).padStart(2, '0')} ${String(currentDate.getDate()).padStart(2, '0')} ${String(currentDate.getHours()).padStart(2, '0')} ${String(currentDate.getMinutes()).padStart(2, '0')} ${String(currentDate.getSeconds()).padStart(2, '0')}`;
+                timeDisplay.textContent = timeString;
+                
+            }, 150 - (phase * 30)); // 段階的にスピードアップ
+            
+            return interval;
+        }
+        
+        // 段階的時間変化アニメーション（未来）
+        function animateTimeToFutureGentle(timeDisplay) {
+            let currentDate = new Date();
+            let phase = 1;
+            let iterations = 0;
+            
+            const interval = setInterval(() => {
+                iterations++;
+                
+                // 段階的にグリッチを強化
+                if (iterations < 20) {
+                    timeDisplay.className = 'tokikake-clock phase-1 time-transition';
+                    phase = 1;
+                } else if (iterations < 40) {
+                    timeDisplay.className = 'tokikake-clock phase-2 time-transition';
+                    phase = 2;
+                } else {
+                    timeDisplay.className = 'tokikake-clock phase-3 time-transition';
+                    phase = 3;
+                }
+                
+                // 時間を徐々に未来へ
+                const changeIntensity = Math.min(phase, 3);
+                if (Math.random() < 0.3 * changeIntensity) {
+                    currentDate.setFullYear(currentDate.getFullYear() + Math.floor(Math.random() * 20 * changeIntensity) + 1);
+                }
+                if (Math.random() < 0.4 * changeIntensity) {
+                    currentDate.setMonth(Math.floor(Math.random() * 12));
+                }
+                if (Math.random() < 0.5 * changeIntensity) {
+                    currentDate.setDate(Math.floor(Math.random() * 28) + 1);
+                }
+                if (Math.random() < 0.6 * changeIntensity) {
+                    currentDate.setHours(Math.floor(Math.random() * 24));
+                }
+                if (Math.random() < 0.7 * changeIntensity) {
+                    currentDate.setMinutes(Math.floor(Math.random() * 60));
+                }
+                if (Math.random() < 0.8 * changeIntensity) {
+                    currentDate.setSeconds(Math.floor(Math.random() * 60));
+                }
+                
+                const timeString = `${String(currentDate.getFullYear()).padStart(4, '0')} ${String(currentDate.getMonth() + 1).padStart(2, '0')} ${String(currentDate.getDate()).padStart(2, '0')} ${String(currentDate.getHours()).padStart(2, '0')} ${String(currentDate.getMinutes()).padStart(2, '0')} ${String(currentDate.getSeconds()).padStart(2, '0')}`;
+                timeDisplay.textContent = timeString;
+                
+            }, 140 - (phase * 25)); // 段階的にスピードアップ
+            
+            return interval;
+        }
+        
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+        
+        const elements = {
+            loader: document.getElementById('loader'),
+            loaderText: document.getElementById('loaderText'),
+            titleDiv: document.getElementById('title'),
+            largeTitle: document.getElementById('largeTitle'),
+            usernameScreen: document.getElementById('usernameScreen'),
+            enterNameText: document.getElementById('enterNameText'),
+            startBtn: document.getElementById('startBtn'),
+            outputDiv: document.getElementById('output'),
+            promptSection: document.getElementById('promptSection'),
+            promptText: document.getElementById('promptText'),
+            overlay: document.getElementById('overlay'),
+            btnSos: document.getElementById('btn-sos'),
+            btnLonely: document.getElementById('btn-lonely'),
+            btnHate: document.getElementById('btn-hate'),
+            btnWhy: document.getElementById('btn-why'),
+            btnEn: document.getElementById('btn-en'),
+            btnJa: document.getElementById('btn-ja'),
+            rankingBtn: document.getElementById('rankingBtn')
+        };
 
-    // ===== Events =====
-    if(elements.btnEn) elements.btnEn.addEventListener('click', ()=>setLanguage('en'));
-    if(elements.btnJa) elements.btnJa.addEventListener('click', ()=>setLanguage('ja'));
-    if(elements.startBtn) elements.startBtn.addEventListener('click', ()=>{ const input=document.getElementById('usernameInput'); const value=input?input.value.trim():''; userName=value||'AAA'; if(elements.usernameScreen) elements.usernameScreen.style.display='none'; if(elements.largeTitle) elements.largeTitle.style.display='block'; showPrompt(); });
+        window.onload = async () => {
+            console.log('🌐 HELL0w0RLD! 起動中...');
+            elements.loaderText.textContent = t('connect');
+            
+            await rankingManager.checkConnection();
+            rankingManager.startAutoRefresh();
+            
+            setTimeout(() => {
+                console.log('First timeout fired - hiding loader, showing title');
+                elements.loader.style.display = 'none';
+                elements.titleDiv.style.display = 'flex';
+                
+                setTimeout(() => {
+                    console.log('Second timeout fired - hiding title, showing username');
+                    elements.titleDiv.style.display = 'none';
+                    elements.enterNameText.textContent = t('enterName');
+                    elements.startBtn.textContent = t('start');
+                    elements.usernameScreen.style.display = 'flex';
+                    console.log('Username screen should now be visible');
+                }, 2000);
+            }, 3200);
+        };
+        
+        function setLanguage(lang) {
+            if (currentLang === lang) return;
+            currentLang = lang;
+            elements.btnEn.classList.toggle('active', currentLang === 'en');
+            elements.btnJa.classList.toggle('active', currentLang === 'ja');
+            elements.loaderText.textContent = t('connect');
+            elements.enterNameText.textContent = t('enterName');
+            elements.startBtn.textContent = t('start');
+            elements.promptText.textContent = t('prompt');
+            elements.rankingBtn.textContent = '📊 ' + t('viewRankings');
+        }
+        
+        elements.btnEn.addEventListener('click', () => setLanguage('en'));
+        elements.btnJa.addEventListener('click', () => setLanguage('ja'));
+        
+        elements.startBtn.addEventListener('click', () => {
+            const input = document.getElementById('usernameInput');
+            const value = input.value.trim();
+            userName = value ? value : 'AAA';
+            elements.usernameScreen.style.display = 'none';
+            elements.largeTitle.style.display = 'block';
+            showPrompt();
+        });
+        
+        function showPrompt() {
+            elements.promptText.textContent = t('prompt');
+            elements.rankingBtn.textContent = '📊 ' + t('viewRankings');
+            elements.promptSection.style.display = 'block';
+            
+            elements.btnSos.classList.remove('disabled');
+            elements.btnLonely.classList.remove('disabled');
+            elements.btnHate.classList.remove('disabled');
+            
+            if (sosDone && lonelyDone && hateDone) {
+                elements.btnWhy.classList.remove('locked', 'disabled');
+            } else {
+                elements.btnWhy.classList.add('locked', 'disabled');
+            }
+        }
+        
+        function addLog(action) {
+            const div = document.createElement('div');
+            div.className = 'message log';
+            div.textContent = `${userName}${t('logPrefix')}${action}`;
+            elements.outputDiv.appendChild(div);
+            elements.outputDiv.scrollTop = elements.outputDiv.scrollHeight;
+        }
+        
+        function createCloseButton(callback) {
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'close-btn';
+            closeBtn.textContent = t('close');
+            closeBtn.addEventListener('click', callback);
+            return closeBtn;
+        }
 
-    if(elements.rankingBtn) elements.rankingBtn.addEventListener('click', async()=>{ if(!elements.overlay) return; elements.overlay.innerHTML=''; elements.overlay.style.display='flex'; const view=await displayRankings(); elements.overlay.appendChild(view); const close=createCloseButton(()=>{ elements.overlay.style.display='none'; }); elements.overlay.appendChild(close); });
+        async function displayRankings() {
+            const rankingDiv = document.createElement('div');
+            rankingDiv.className = 'ranking';
+            
+            const title = document.createElement('div');
+            title.style.textAlign = 'center';
+            title.style.marginBottom = '12px';
+            title.style.color = '#ffff00';
+            title.style.fontSize = '14px';
+            title.style.fontWeight = 'bold';
+            title.textContent = t('rankingTitle');
+            rankingDiv.appendChild(title);
 
-    // SOS
-    if(elements.btnSos) elements.btnSos.addEventListener('click', async ()=>{
-      if(elements.btnSos.classList.contains('disabled')) return; elements.btnSos.classList.add('disabled'); addLog('sos'); if(!elements.overlay) return; elements.overlay.innerHTML=''; elements.overlay.style.display='flex'; const msg=document.createElement('div'); msg.textContent=t('scanInit'); elements.overlay.appendChild(msg); const progress=document.createElement('div'); progress.style.marginTop='8px'; progress.textContent=t('scanProgress'); elements.overlay.appendChild(progress); const scanner=document.createElement('div'); scanner.className='heart-scanner'; const heart=document.createElement('div'); heart.className='heart-display'; heart.textContent='♡'; scanner.appendChild(heart); const grid=document.createElement('div'); grid.className='scan-grid'; scanner.appendChild(grid); const line=document.createElement('div'); line.className='scan-line'; scanner.appendChild(line); elements.overlay.appendChild(scanner);
-      setTimeout(()=>{ msg.textContent=t('virusDetected'); progress.remove(); scanner.remove(); const icon=document.createElement('div'); icon.style.fontSize='120px'; icon.style.margin='20px 0'; icon.style.animation='pulse 0.5s infinite'; icon.style.color='#14ffec'; icon.textContent='👾'; elements.overlay.appendChild(icon); const buster=document.createElement('button'); buster.textContent=t('virusBtn'); Object.assign(buster.style,{marginTop:'12px',padding:'8px 16px',background:'#14ffec',color:'#151515',border:'none',cursor:'pointer',fontFamily:'inherit'}); elements.overlay.appendChild(buster); buster.addEventListener('click', async()=>{ const result=await startGame(); elements.overlay.innerHTML=''; const done=document.createElement('div'); done.innerHTML=t('virusClean').replace(/\n/g,'<br>'); done.style.marginBottom='16px'; elements.overlay.appendChild(done); await rankingManager.submitScore(userName, result.time, { score: result.score, gameType:'virus_buster' }); const view=await displayRankings(); elements.overlay.appendChild(view); const close=createCloseButton(()=>{ elements.overlay.style.display='none'; sosDone=true; showPrompt(); }); elements.overlay.appendChild(close); }); }, 1800);
-    });
+            const rankings = await rankingManager.loadRankings();
+            
+            const statusDiv = document.createElement('div');
+            statusDiv.style.textAlign = 'center';
+            statusDiv.style.marginBottom = '8px';
+            statusDiv.style.fontSize = '10px';
+            statusDiv.style.color = rankingManager.isOnline ? '#00ff00' : '#ff8800';
+            statusDiv.textContent = rankingManager.isOnline ? t('onlineRankings') : t('offlineRankings');
+            rankingDiv.appendChild(statusDiv);
+            
+            const rankingContainer = document.createElement('div');
+            rankingContainer.style.background = 'rgba(0, 0, 0, 0.7)';
+            rankingContainer.style.padding = '12px';
+            rankingContainer.style.borderRadius = '8px';
+            rankingContainer.style.maxHeight = '200px';
+            rankingContainer.style.overflowY = 'auto';
+            
+            rankings.slice(0, 15).forEach((entry, index) => {
+                const entryDiv = document.createElement('div');
+                entryDiv.style.display = 'flex';
+                entryDiv.style.justifyContent = 'space-between';
+                entryDiv.style.alignItems = 'center';
+                entryDiv.style.margin = '3px 0';
+                entryDiv.style.padding = '2px 4px';
+                entryDiv.style.fontSize = '11px';
+                
+                const rank = index + 1;
+                let rankColor = '#00fff2';
+                if (rank === 1) rankColor = '#ffff00';
+                else if (rank === 2) rankColor = '#c0c0c0';
+                else if (rank === 3) rankColor = '#cd7f32';
+                
+                const isCurrentUser = entry.name === userName;
+                if (isCurrentUser) {
+                    entryDiv.style.background = 'rgba(255, 255, 0, 0.2)';
+                    entryDiv.style.borderRadius = '4px';
+                }
+                
+                const leftPart = document.createElement('span');
+                leftPart.style.color = rankColor;
+                leftPart.style.display = 'flex';
+                leftPart.style.alignItems = 'center';
+                leftPart.style.gap = '4px';
+                
+                const nameText = entry.name.length > 15 ? entry.name.slice(0, 15) + '...' : entry.name;
+                leftPart.textContent = `${rank}. ${nameText}`;
+                if (isCurrentUser) leftPart.style.fontWeight = 'bold';
+                
+                const rightPart = document.createElement('span');
+                rightPart.style.color = rankColor;
+                rightPart.textContent = `${entry.time.toFixed(1)}s`;
+                if (isCurrentUser) rightPart.style.fontWeight = 'bold';
+                
+                entryDiv.appendChild(leftPart);
+                entryDiv.appendChild(rightPart);
+                rankingContainer.appendChild(entryDiv);
+            });
+            
+            rankingDiv.appendChild(rankingContainer);
+            
+            const statsDiv = document.createElement('div');
+            statsDiv.className = 'world-stats';
+            const totalPlayers = rankings.length;
+            const userRank = rankings.findIndex(entry => entry.name === userName) + 1;
+            
+            let statsText = t('totalPlayers') + totalPlayers;
+            if (userRank > 0) {
+                statsText += `\n${t('yourRank')}${userRank}`;
+            }
+            statsDiv.textContent = statsText;
+            rankingDiv.appendChild(statsDiv);
+            
+            return rankingDiv;
+        }
+        
+        function drawInvader(ctx, x, y, w, h, type) {
+            const pixelSize = 2;
+            ctx.fillStyle = '#00ffcc';
+            
+            const patterns = [
+                [
+                    [0,0,1,0,0,0,1,0],
+                    [0,0,0,1,0,1,0,0],
+                    [0,0,1,1,1,1,1,0],
+                    [0,1,1,0,1,0,1,1],
+                    [1,1,1,1,1,1,1,1],
+                    [1,0,1,1,1,1,0,1],
+                    [1,0,1,0,0,1,0,1],
+                    [0,0,0,1,1,0,0,0]
+                ]
+            ];
+            
+            const pattern = patterns[0];
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if (pattern[row][col]) {
+                        ctx.fillRect(
+                            x - w/2 + col * pixelSize, 
+                            y - h/2 + row * pixelSize, 
+                            pixelSize, 
+                            pixelSize
+                        );
+                    }
+                }
+            }
+        }
+        
+        function startGame() {
+            return new Promise(resolve => {
+                const gameStartTime = Date.now();
+                elements.overlay.innerHTML = '';
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = 320;
+                canvas.height = 240;
+                canvas.style.background = '#001b1a';
+                canvas.style.border = '2px solid #00ffcc';
+                elements.overlay.appendChild(canvas);
+                
+                const ctx = canvas.getContext('2d');
+                
+                const scoreBoard = document.createElement('div');
+                scoreBoard.style.marginTop = '8px';
+                scoreBoard.style.color = '#00ffcc';
+                elements.overlay.appendChild(scoreBoard);
+                
+                const spaceship = { x: canvas.width / 2 - 15, y: canvas.height - 20, w: 30, h: 10, speed: 4 };
+                const bullets = [];
+                const viruses = [];
+                let remaining = 12;
+                let score = 0;
+                
+                for (let r = 0; r < 2; r++) {
+                    for (let c = 0; c < 6; c++) {
+                        viruses.push({ 
+                            x: 30 + c * 40, 
+                            y: 20 + r * 30, 
+                            w: 20, 
+                            h: 16, 
+                            vx: 1 * (Math.random() > 0.5 ? 1 : -1), 
+                            hit: false
+                        });
+                    }
+                }
+                
+                let animationId;
+                let isOver = false;
+                
+                function draw() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    ctx.fillStyle = '#ff0077';
+                    ctx.fillRect(spaceship.x, spaceship.y, spaceship.w, spaceship.h);
+                    
+                    viruses.forEach(v => {
+                        if (!v.hit) {
+                            v.x += v.vx;
+                            if (v.x - v.w/2 < 0 || v.x + v.w/2 > canvas.width) v.vx *= -1;
+                            drawInvader(ctx, v.x, v.y, v.w, v.h, 0);
+                        }
+                    });
+                    
+                    for (let i = bullets.length - 1; i >= 0; i--) {
+                        const b = bullets[i];
+                        b.y -= 4;
+                        ctx.fillStyle = '#ffff00';
+                        ctx.fillRect(b.x - 1, b.y - 8, 2, 8);
+                        
+                        if (b.y < 0) {
+                            bullets.splice(i, 1);
+                            continue;
+                        }
+                        
+                        viruses.forEach(v => {
+                            if (!v.hit) {
+                                if (b.x >= v.x - v.w/2 && b.x <= v.x + v.w/2 && 
+                                    b.y >= v.y - v.h/2 && b.y <= v.y + v.h/2) {
+                                    v.hit = true;
+                                    remaining--;
+                                    score++;
+                                    bullets.splice(i, 1);
+                                }
+                            }
+                        });
+                    }
+                    
+                    const gameTime = (Date.now() - gameStartTime) / 1000;
+                    scoreBoard.textContent = `${t('virusesLeft')}: ${remaining} | ${t('scoreLabel')}: ${score} | ${t('timeLabel')}: ${gameTime.toFixed(1)}s`;
+                    
+                    if (viruses.every(v => v.hit)) {
+                        end(true);
+                    }
+                    
+                    if (!isOver) animationId = requestAnimationFrame(draw);
+                }
+                
+                function shoot() {
+                    bullets.push({ x: spaceship.x + spaceship.w / 2, y: spaceship.y });
+                }
+                
+                function pointerMove(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+                    spaceship.x = x - spaceship.w / 2;
+                    if (spaceship.x < 0) spaceship.x = 0;
+                    if (spaceship.x + spaceship.w > canvas.width) spaceship.x = canvas.width - spaceship.w;
+                }
+                
+                canvas.addEventListener('mousemove', pointerMove);
+                canvas.addEventListener('mousedown', shoot);
+                canvas.addEventListener('touchmove', pointerMove);
+                canvas.addEventListener('touchstart', shoot);
+                
+                function end(success) {
+                    if (isOver) return;
+                    isOver = true;
+                    const finalTime = (Date.now() - gameStartTime) / 1000;
+                    cancelAnimationFrame(animationId);
+                    canvas.removeEventListener('mousemove', pointerMove);
+                    canvas.removeEventListener('mousedown', shoot);
+                    canvas.removeEventListener('touchmove', pointerMove);
+                    canvas.removeEventListener('touchstart', shoot);
+                    resolve({ success, time: finalTime, score });
+                }
+                
+                draw();
+            });
+        }
+        
+        let currentLang = 'en';
+        let userName = 'AAA';
+        let sosDone = false;
+        let lonelyDone = false;
+        let hateDone = false;
+        
+        // SOS button
+        elements.btnSos.addEventListener('click', async () => {
+            if (elements.btnSos.classList.contains('disabled')) return;
+            elements.btnSos.classList.add('disabled');
+            addLog('sos');
+            
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            
+            const msg = document.createElement('div');
+            msg.textContent = t('scanInit');
+            elements.overlay.appendChild(msg);
+            
+            const progressMsg = document.createElement('div');
+            progressMsg.style.marginTop = '8px';
+            progressMsg.textContent = t('scanProgress');
+            elements.overlay.appendChild(progressMsg);
+            
+            const heartScanner = document.createElement('div');
+            heartScanner.className = 'heart-scanner';
+            
+            const heartDisplay = document.createElement('div');
+            heartDisplay.className = 'heart-display';
+            heartDisplay.textContent = '♡';
+            heartScanner.appendChild(heartDisplay);
+            
+            const scanGrid = document.createElement('div');
+            scanGrid.className = 'scan-grid';
+            heartScanner.appendChild(scanGrid);
+            
+            const scanLine = document.createElement('div');
+            scanLine.className = 'scan-line';
+            heartScanner.appendChild(scanLine);
+            
+            elements.overlay.appendChild(heartScanner);
+            
+            setTimeout(() => {
+                msg.textContent = t('virusDetected');
+                progressMsg.remove();
+                heartScanner.remove();
+                
+                const virusIcon = document.createElement('div');
+                virusIcon.style.fontSize = '120px';
+                virusIcon.style.margin = '20px 0';
+                virusIcon.style.animation = 'pulse 0.5s infinite';
+                virusIcon.style.color = '#14ffec';
+                virusIcon.textContent = '👾';
+                elements.overlay.appendChild(virusIcon);
+                
+                const busterBtn = document.createElement('button');
+                busterBtn.textContent = t('virusBtn');
+                busterBtn.style.marginTop = '12px';
+                busterBtn.style.padding = '8px 16px';
+                busterBtn.style.background = '#14ffec';
+                busterBtn.style.color = '#151515';
+                busterBtn.style.border = 'none';
+                busterBtn.style.cursor = 'pointer';
+                busterBtn.style.fontFamily = 'inherit';
+                elements.overlay.appendChild(busterBtn);
+                
+                busterBtn.addEventListener('click', async () => {
+                    const gameResult = await startGame();
+                    elements.overlay.innerHTML = '';
+                    
+                    const cleanMsg = document.createElement('div');
+                    cleanMsg.innerHTML = t('virusClean').replace(/\n/g, '<br>');
+                    cleanMsg.style.marginBottom = '16px';
+                    elements.overlay.appendChild(cleanMsg);
+                    
+                    await rankingManager.submitScore(userName, gameResult.time, {
+                        score: gameResult.score,
+                        gameType: 'virus_buster'
+                    });
+                    
+                    const rankingDisplay = await displayRankings();
+                    elements.overlay.appendChild(rankingDisplay);
+                    
+                    const closeBtn = createCloseButton(() => {
+                        elements.overlay.style.display = 'none';
+                        sosDone = true;
+                        showPrompt();
+                    });
+                    elements.overlay.appendChild(closeBtn);
+                });
+            }, 4000);
+        });
+        
+        // Lonely button
+        elements.btnLonely.addEventListener('click', () => {
+            if (elements.btnLonely.classList.contains('disabled')) return;
+            elements.btnLonely.classList.add('disabled');
+            addLog('lonely');
+            
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            
+            const msg = document.createElement('div');
+            msg.textContent = t('lonelyPrompt');
+            elements.overlay.appendChild(msg);
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = t('lonelyInput');
+            input.style.marginTop = '12px';
+            input.style.padding = '6px 10px';
+            input.style.background = '#111';
+            input.style.color = '#00fff2';
+            input.style.border = '1px solid #00fff2';
+            input.style.fontFamily = 'inherit';
+            elements.overlay.appendChild(input);
+            
+            const okBtn = document.createElement('button');
+            okBtn.textContent = t('whyOk');
+            okBtn.style.marginTop = '8px';
+            okBtn.style.padding = '8px 16px';
+            okBtn.style.background = '#14ffec';
+            okBtn.style.color = '#151515';
+            okBtn.style.border = 'none';
+            okBtn.style.cursor = 'pointer';
+            okBtn.style.fontFamily = 'inherit';
+            elements.overlay.appendChild(okBtn);
+            
+            okBtn.addEventListener('click', () => {
+                const song = input.value.trim() || (currentLang === 'en' ? 'Unknown song' : '不明な曲');
+                
+                const otohaResult = checkOtohaLyrics(song);
+                
+                if (otohaResult) {
+                    elements.overlay.innerHTML = '';
+                    
+                    const titleDiv = document.createElement('div');
+                    titleDiv.style.fontSize = '18px';
+                    titleDiv.style.color = '#e6007e';
+                    titleDiv.style.marginBottom = '8px';
+                    titleDiv.textContent = `${otohaResult.title} - 音羽-otoha-`;
+                    elements.overlay.appendChild(titleDiv);
+                    
+                    const playingMsg = document.createElement('div');
+                    playingMsg.style.fontSize = '14px';
+                    playingMsg.style.marginBottom = '16px';
+                    playingMsg.textContent = t('playingInHead');
+                    elements.overlay.appendChild(playingMsg);
+                    
+                    const waveContainer = document.createElement('div');
+                    waveContainer.className = 'wave-container';
+                    for (let i = 0; i < 20; i++) {
+                        const barEl = document.createElement('div');
+                        barEl.className = 'wave-bar';
+                        barEl.style.animationDelay = (i * 0.1) + 's';
+                        waveContainer.appendChild(barEl);
+                    }
+                    elements.overlay.appendChild(waveContainer);
+                    
+                    const lyricsDiv = document.createElement('div');
+                    lyricsDiv.style.fontSize = '12px';
+                    lyricsDiv.style.lineHeight = '1.4';
+                    lyricsDiv.style.textAlign = 'left';
+                    lyricsDiv.style.maxHeight = '200px';
+                    lyricsDiv.style.overflowY = 'auto';
+                    lyricsDiv.style.padding = '12px';
+                    lyricsDiv.style.background = 'rgba(0, 0, 0, 0.7)';
+                    lyricsDiv.style.borderRadius = '8px';
+                    lyricsDiv.style.marginTop = '16px';
+                    lyricsDiv.style.whiteSpace = 'pre-line';
+                    lyricsDiv.textContent = otohaResult.lyrics;
+                    elements.overlay.appendChild(lyricsDiv);
+                    
+                } else {
+                    elements.overlay.innerHTML = '';
+                    
+                    const waveMsg = document.createElement('div');
+                    waveMsg.textContent = song + t('lonelyWave');
+                    elements.overlay.appendChild(waveMsg);
+                    
+                    const waveContainer = document.createElement('div');
+                    waveContainer.className = 'wave-container';
+                    for (let i = 0; i < 20; i++) {
+                        const barEl = document.createElement('div');
+                        barEl.className = 'wave-bar';
+                        barEl.style.animationDelay = (i * 0.1) + 's';
+                        waveContainer.appendChild(barEl);
+                    }
+                    elements.overlay.appendChild(waveContainer);
+                }
+                
+                const endMsg = document.createElement('div');
+                endMsg.textContent = t('lonelyEnd');
+                elements.overlay.appendChild(endMsg);
+                
+                const closeBtn = createCloseButton(() => {
+                    elements.overlay.style.display = 'none';
+                    lonelyDone = true;
+                    showPrompt();
+                });
+                elements.overlay.appendChild(closeBtn);
+            });
+        });
+        
+        // 改良版 Hate myself button - よりソフトなタイムトラベル演出
+        elements.btnHate.addEventListener('click', () => {
+            if (elements.btnHate.classList.contains('disabled')) return;
+            elements.btnHate.classList.add('disabled');
+            addLog('hate myself');
+            
+            // オーバーレイ初期化
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            elements.overlay.style.flexDirection = 'column';
+            elements.overlay.style.justifyContent = 'center';
+            elements.overlay.style.alignItems = 'center';
+            elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
+            elements.overlay.style.gap = '20px';
+            
+            // メッセージ
+            const msg = document.createElement('div');
+            msg.textContent = t('hatePrompt');
+            msg.style.fontSize = '18px';
+            msg.style.color = '#14ffec';
+            msg.style.zIndex = '20';
+            msg.style.position = 'relative';
+            elements.overlay.appendChild(msg);
+            
+            // 改良版時計表示
+            const timeDisplay = createTokikakeClock();
+            timeDisplay.style.zIndex = '20';
+            timeDisplay.style.position = 'relative';
+            elements.overlay.appendChild(timeDisplay);
+            
+            // 過去への旅行確認
+            const pastTravelBtn = document.createElement('button');
+            pastTravelBtn.className = 'time-travel-btn';
+            pastTravelBtn.textContent = '🚗 ' + t('travelToPast');
+            pastTravelBtn.style.zIndex = '20';
+            pastTravelBtn.style.position = 'relative';
+            elements.overlay.appendChild(pastTravelBtn);
+            
+            pastTravelBtn.addEventListener('click', () => {
+                // ボタンを隠す
+                pastTravelBtn.style.display = 'none';
+                
+                // 数字の横流れ背景を開始（過去モード）
+                const numberRain = createNumberRain(elements.overlay, 12, false);
+                
+                const pastMsg = document.createElement('div');
+                pastMsg.className = 'traveling-message past';
+                pastMsg.textContent = t('travellingPast');
+                elements.overlay.appendChild(pastMsg);
+                
+                const pastInterval = animateTimeToPastGentle(timeDisplay);
+                
+                setTimeout(() => {
+                    clearInterval(pastInterval);
+                    pastMsg.className = 'traveling-message stopped';
+                    pastMsg.textContent = '時間停止中...';
+                    
+                    // 時間停止演出（拡大縮小なし）
+                    timeDisplay.className = 'tokikake-clock phase-1 no-scale gentle-pulse';
+                    
+                    setTimeout(() => {
+                        pastMsg.remove();
+                        
+                        // 未来への旅行確認
+                        const futureTravelBtn = document.createElement('button');
+                        futureTravelBtn.className = 'time-travel-btn future';
+                        futureTravelBtn.textContent = '🚀 ' + t('travelToFuture');
+                        futureTravelBtn.style.zIndex = '20';
+                        futureTravelBtn.style.position = 'relative';
+                        elements.overlay.appendChild(futureTravelBtn);
+                        
+                        futureTravelBtn.addEventListener('click', () => {
+                            // 未来モードに切り替え
+                            elements.overlay.classList.add('future-mode');
+                            futureTravelBtn.style.display = 'none';
+                            
+                            // 過去の数字流れを削除して未来の数字流れに切り替え
+                            if (numberRain && numberRain.parentNode) {
+                                numberRain.parentNode.removeChild(numberRain);
+                            }
+                            const futureNumberRain = createNumberRain(elements.overlay, 12, true);
+                            
+                            const futureMsg = document.createElement('div');
+                            futureMsg.className = 'traveling-message future';
+                            futureMsg.textContent = t('travellingFuture');
+                            elements.overlay.appendChild(futureMsg);
+                            
+                            const futureInterval = animateTimeToFutureGentle(timeDisplay);
+                            
+                            setTimeout(() => {
+                                clearInterval(futureInterval);
+                                
+                                // 数字背景削除
+                                if (futureNumberRain && futureNumberRain.parentNode) {
+                                    futureNumberRain.parentNode.removeChild(futureNumberRain);
+                                }
+                                
+                                // 最終演出（デジタル感のある結果表示）
+                                elements.overlay.innerHTML = '';
+                                elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
+                                elements.overlay.classList.remove('future-mode');
+                                elements.overlay.style.gap = '30px';
+                                
+                                // タイムトラベル結果コンテナ
+                                const resultContainer = document.createElement('div');
+                                resultContainer.className = 'travel-result-container';
+                                
+                                // ヘッダー
+                                const header = document.createElement('div');
+                                header.className = 'travel-result-header';
+                                header.textContent = '=== TIME TRAVEL ANALYSIS COMPLETE ===';
+                                resultContainer.appendChild(header);
+                                
+                                // ステータス
+                                const status = document.createElement('div');
+                                status.className = 'travel-result-status';
+                                status.textContent = '>> STATUS: TEMPORAL DISPLACEMENT SUCCESSFUL';
+                                resultContainer.appendChild(status);
+                                
+                                // データストリーム
+                                const dataStream = document.createElement('div');
+                                dataStream.className = 'data-stream';
+                                dataStream.textContent = getCurrentTimestamp();
+                                resultContainer.appendChild(dataStream);
+                                
+                                // スキャンライン
+                                const scanLines = document.createElement('div');
+                                scanLines.className = 'scan-lines';
+                                resultContainer.appendChild(scanLines);
+                                
+                                // メインメッセージ
+                                const endMsg = document.createElement('div');
+                                endMsg.className = 'travel-result-message';
+                                endMsg.textContent = t('hateEnd');
+                                resultContainer.appendChild(endMsg);
+                                
+                                elements.overlay.appendChild(resultContainer);
+                                
+                                // タイピング効果でメッセージを表示
+                                typewriterEffect(endMsg, t('hateEnd'));
+                                
+                                createSparkles(elements.overlay, true);
+                                
+                                // 閉じるボタンを追加
+                                const closeBtn = createCloseButton(() => {
+                                    elements.overlay.style.display = 'none';
+                                    elements.overlay.style.background = 'rgba(0, 0, 0, 0.85)';
+                                    elements.overlay.style.gap = '';
+                                    hateDone = true;
+                                    showPrompt();
+                                });
+                                elements.overlay.appendChild(closeBtn);
+                            }, 6000); // 未来のトラベル時間を6秒に延長
+                        });
+                    }, 2000);
+                }, 4000);
+            });
+        });
+        
+        // Why button
+        elements.btnWhy.addEventListener('click', () => {
+            if (elements.btnWhy.classList.contains('disabled')) return;
+            addLog('why');
+            
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            
+            const msg = document.createElement('div');
+            msg.textContent = t('whyPrompt');
+            elements.overlay.appendChild(msg);
+            
+            const bar = document.createElement('div');
+            bar.className = 'scan-bar';
+            const fill = document.createElement('div');
+            fill.className = 'scan-fill';
+            bar.appendChild(fill);
+            elements.overlay.appendChild(bar);
+            
+            let progress = 0;
+            const intv = setInterval(() => {
+                progress += 2;
+                fill.style.width = progress + '%';
+                if (progress >= 60) {
+                    clearInterval(intv);
+                    
+                    const stopMsg = document.createElement('div');
+                    stopMsg.style.marginTop = '8px';
+                    stopMsg.textContent = t('whyStop');
+                    elements.overlay.appendChild(stopMsg);
+                    
+                    const okBtn = document.createElement('button');
+                    okBtn.textContent = t('whyOk');
+                    okBtn.style.marginTop = '8px';
+                    okBtn.style.padding = '8px 16px';
+                    okBtn.style.background = '#14ffec';
+                    okBtn.style.color = '#151515';
+                    okBtn.style.border = 'none';
+                    okBtn.style.cursor = 'pointer';
+                    okBtn.style.fontFamily = 'inherit';
+                    elements.overlay.appendChild(okBtn);
+                    
+                    okBtn.addEventListener('click', () => {
+                        console.log('🎯 WHYボタンのOKが押されました！');
+                        
+                        elements.overlay.innerHTML = '';
+                        elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
+                        
+                        console.log('🏗️ 時計を作成中...');
+                        
+                        // オリジナル時計を作成して表示
+                        const clock = createOriginalClock();
+                        console.log('⏰ 時計要素:', clock);
+                        
+                        elements.overlay.appendChild(clock);
+                        console.log('📍 時計をDOMに追加完了');
+                        
+                        // 時計のアニメーションを開始
+                        console.log('🚀 時計アニメーション開始...');
+                        try {
+                            // 関数が存在するかチェック
+                            if (typeof startOriginalClock === 'undefined') {
+                                console.error('❌ startOriginalClock 関数が定義されていません！');
+                                
+                                // 直接ここで時計を動かす
+                                console.log('🔧 直接時計を開始します...');
+                                
+                                function updateClock() {
+                                    try {
+                                        const now = new Date();
+                                        const japanTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Tokyo"}));
+                                        
+                                        const hours = japanTime.getHours() % 12;
+                                        const minutes = japanTime.getMinutes();
+                                        const seconds = japanTime.getSeconds();
+                                        
+                                        const hourAngle = (hours * 30) + (minutes * 0.5);
+                                        const minuteAngle = (minutes * 6);  
+                                        const secondAngle = (seconds * 6);
+                                        
+                                        const hourHand = document.getElementById('hourHand');
+                                        const minuteHand = document.getElementById('minuteHand');
+                                        const secondHand = document.getElementById('secondHand');
+                                        
+                                        if (hourHand) {
+                                            hourHand.style.transform = `translateX(-50%) rotate(${hourAngle}deg)`;
+                                            hourHand.style.transformOrigin = 'center bottom';
+                                        }
+                                        if (minuteHand) {
+                                            minuteHand.style.transform = `translateX(-50%) rotate(${minuteAngle}deg)`;
+                                            minuteHand.style.transformOrigin = 'center bottom';
+                                        }
+                                        if (secondHand) {
+                                            secondHand.style.transform = `translateX(-50%) rotate(${secondAngle}deg)`;
+                                            secondHand.style.transformOrigin = 'center bottom';
+                                        }
+                                        
+                                        console.log(`⏰ 時計更新: ${hours}:${minutes}:${seconds}`);
+                                        
+                                    } catch (error) {
+                                        console.error('❌ 時計更新エラー:', error);
+                                    }
+                                }
+                                
+                                // 初回実行
+                                updateClock();
+                                
+                                // 1秒間隔で実行
+                                const clockInterval = setInterval(updateClock, 1000);
+                                console.log('✅ 直接時計アニメーション設定完了, intervalID:', clockInterval);
+                                
+                                // 閉じるハンドラー
+                                const closeHandler = () => {
+                                    console.log('⏹️ 時計を停止中...');
+                                    clearInterval(clockInterval);
+                                    console.log('✅ 時計停止完了');
+                                };
+                                
+                                // イベントリスナー設定
+                                elements.overlay.addEventListener('click', (e) => {
+                                    if (e.target === elements.overlay) {
+                                        closeHandler();
+                                        elements.overlay.style.display = 'none';
+                                    }
+                                });
+                                
+                                const escHandler = (e) => {
+                                    if (e.key === 'Escape') {
+                                        closeHandler();
+                                        elements.overlay.style.display = 'none';
+                                        document.removeEventListener('keydown', escHandler);
+                                    }
+                                };
+                                document.addEventListener('keydown', escHandler);
+                                
+                            } else {
+                                // 関数が存在する場合は通常通り実行
+                                const clockInterval = startOriginalClock();
+                                console.log('✅ 時計アニメーション設定完了, intervalID:', clockInterval);
+                            }
+                            
+                        } catch (error) {
+                            console.error('❌ 時計アニメーション開始エラー:', error);
+                            console.error('エラーの詳細:', error.message);
+                            console.error('エラーのスタック:', error.stack);
+                        }
+                        
+                        console.log('🎉 時計表示処理完了！');
+                    });
+                }
+            }, 400);
+        });
 
-    // Placeholder: other buttons can be wired similarly without affecting boot
-    if(elements.btnLonely) elements.btnLonely.addEventListener('click', ()=>{ addLog('lonely'); lonelyDone=true; showPrompt(); });
-    if(elements.btnHate) elements.btnHate.addEventListener('click', ()=>{ addLog('hate myself'); hateDone=true; showPrompt(); });
-  </script>
+        // ランキングボタン
+        elements.rankingBtn.addEventListener('click', async () => {
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            
+            const loadingMsg = document.createElement('div');
+            loadingMsg.textContent = '🌐 Loading global rankings...';
+            loadingMsg.style.marginBottom = '20px';
+            elements.overlay.appendChild(loadingMsg);
+            
+            const rankingDisplay = await displayRankings();
+            elements.overlay.removeChild(loadingMsg);
+            elements.overlay.appendChild(rankingDisplay);
+            
+            const closeBtn = createCloseButton(() => {
+                elements.overlay.style.display = 'none';
+            });
+            elements.overlay.appendChild(closeBtn);
+        });
+
+        // 定期的に接続状態をチェック
+        setInterval(async () => {
+            await rankingManager.checkConnection();
+        }, 15000);
+
+        // 初期接続チェック
+        rankingManager.checkConnection();
+    </script>
 </body>
 </html>
