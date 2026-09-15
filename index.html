@@ -1,0 +1,3255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="build" content="20260916-001650">
+    <title>🌐 HELL0w0RLD! 🌐</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+
+        body {
+            background: #0f0f0f;
+            color: #00fff2;
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            font-size: 16px;
+        }
+
+        #app {
+            width: 95%;
+            max-width: 640px;
+            border: 2px solid #14ffec;
+            border-radius: 8px;
+            background: #151515;
+            padding: 16px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            position: relative;
+        }
+
+        h1 {
+            margin: 0;
+            color: #14ffec;
+            text-align: center;
+        }
+
+        #lang-toggle {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            z-index: 1000;
+        }
+
+        #lang-toggle button {
+            font-family: inherit;
+            font-size: 12px;
+            padding: 2px 6px;
+            background-color: #e6007e;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        #lang-toggle button.active {
+            background-color: #14ffec;
+            color: #151515;
+        }
+
+        #loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        #loader .bar {
+            width: 300px;
+            height: 15px;
+            border: 1px solid #00fff2;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #loader .bar-fill {
+            height: 100%;
+            background: #00fff2;
+            width: 0%;
+            animation: loadbar 3s forwards;
+        }
+
+        @keyframes loadbar {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        #title {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            min-height: 70vh;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        #usernameScreen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        #usernameScreen input {
+            margin: 10px 0;
+            padding: 8px 12px;
+            background: #111;
+            color: #00fff2;
+            border: 1px solid #00fff2;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        #usernameScreen button {
+            padding: 8px 16px;
+            background: #14ffec;
+            color: #151515;
+            border: none;
+            border-radius: 4px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        #largeTitle {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            color: #14ffec;
+            display: none;
+            z-index: 500;
+            text-align: center;
+            text-shadow: 0 0 10px #14ffec;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            text-align: center;
+            padding: 20px;
+            color: #00fff2;
+            box-sizing: border-box;
+        }
+
+        #output {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            margin-top: 4px;
+            padding-right: 4px;
+        }
+
+        .message {
+            margin: 4px 0;
+            padding: 6px 10px;
+            border-radius: 8px;
+            line-height: 1.4;
+            max-width: 90%;
+            word-wrap: break-word;
+        }
+
+        .log {
+            background-color: #073b3a;
+            color: #14ffec;
+            align-self: flex-start;
+        }
+
+        #promptSection {
+            display: none;
+        }
+
+        #promptText {
+            margin: 0 0 8px;
+        }
+
+        #buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        #rankingBtn, #messagesBtn {
+            grid-column: 1 / -1;
+            background: #e6007e;
+            color: #ffffff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 8px;
+            z-index: 100;
+            position: relative;
+        }
+
+        #rankingBtn:hover, #messagesBtn:hover {
+            background: #ff1493;
+        }
+
+        #rankingBtn:active, #messagesBtn:active {
+            background: #c71585;
+        }
+
+        #buttons button {
+            background: #14ffec;
+            color: #151515;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        #buttons button.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        #buttons button.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+            position: relative;
+        }
+
+        #buttons button.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+        }
+
+        .wave-container {
+            display: flex;
+            gap: 4px;
+            margin: 20px 0;
+        }
+
+        .wave-bar {
+            width: 5px;
+            height: 30px;
+            background: #00fff2;
+            animation: wave 1s infinite;
+            animation-timing-function: ease-in-out;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1.3); }
+        }
+
+        .car-container {
+            width: 100%;
+            height: 50px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .car {
+            position: absolute;
+            left: -50px;
+            top: 10px;
+            font-size: 28px;
+            animation: drive 4s linear forwards;
+        }
+
+        .car.reverse {
+            animation: driveReverse 4s linear forwards;
+        }
+
+        @keyframes drive {
+            0% { left: -50px; }
+            100% { left: calc(100% + 50px); }
+        }
+
+        @keyframes driveReverse {
+            0% { left: calc(100% + 50px); }
+            100% { left: -50px; }
+        }
+
+        .heart-scanner {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            background: #001122;
+            border: 2px solid #00fff2;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .heart-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 120px;
+            color: #14ffec;
+            z-index: 1;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: -5px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00fff2, transparent);
+            box-shadow: 0 0 10px #00fff2;
+            animation: heartScan 2s linear infinite;
+            z-index: 2;
+        }
+
+        @keyframes heartScan {
+            0% { top: -5px; }
+            100% { top: 205px; }
+        }
+
+        .scan-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(0, 255, 242, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 242, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .scan-bar {
+            width: 300px;
+            height: 15px;
+            border: 1px solid #00fff2;
+            margin-top: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scan-fill {
+            height: 100%;
+            background: #00fff2;
+            width: 0%;
+        }
+
+        #clockDisplay {
+            font-size: 48px;
+            margin-top: 32px;
+            color: #14ffec;
+            text-shadow: 0 0 5px #14ffec;
+            font-weight: bold;
+        }
+
+        .sparkles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .sparkle {
+            position: absolute;
+            color: #14ffec;
+            font-size: 20px;
+            animation: sparkle 2s infinite;
+        }
+
+        .sparkle.white {
+            color: #ffffff;
+        }
+
+        @keyframes sparkle {
+            0% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1) rotate(180deg); }
+            100% { opacity: 0; transform: scale(0) rotate(360deg); }
+        }
+
+        .close-btn {
+            background: #ffffff;
+            color: #151515;
+            border: 1px solid #666666;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            margin-top: 20px;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+            align-self: center;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
+        }
+
+        .ranking {
+            margin-top: 16px;
+            text-align: left;
+            font-size: 12px;
+        }
+
+        .ranking-entry {
+            margin: 2px 0;
+            color: #00fff2;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        .travel-result {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .tokikake-clock {
+            font-family: 'DotGothic16', 'Courier New', monospace;
+            font-size: 64px;
+            font-weight: 700;
+            color: #ff4444;
+            background: #000000;
+            padding: 30px 0px;
+            margin: 30px auto;
+            letter-spacing: 8px;
+            text-align: center;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+            box-shadow:
+                inset 0 0 30px rgba(255, 68, 68, 0.1),
+                0 0 50px rgba(255, 68, 68, 0.2);
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 5;
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .tokikake-clock::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 68, 68, 0.3), transparent);
+            animation: gentleScan 3s infinite;
+            z-index: 1;
+        }
+
+        @keyframes gentleScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .phase-1 {
+            animation: gentleGlitch 2s ease-in-out infinite;
+        }
+
+        .phase-2 {
+            animation: mediumGlitch 1s ease-in-out infinite;
+        }
+
+        .phase-3 {
+            animation: strongGlitch 0.3s ease-in-out infinite;
+        }
+
+        @keyframes gentleGlitch {
+            0%, 90% {
+                transform: translateX(0);
+                color: #ff4444;
+            }
+            95% {
+                transform: translateX(-1px);
+                color: #ff6666;
+            }
+            100% {
+                transform: translateX(0);
+                color: #ff4444;
+            }
+        }
+
+        @keyframes mediumGlitch {
+            0%, 80% {
+                transform: translateX(0) scaleX(1);
+                color: #ff4444;
+            }
+            85% {
+                transform: translateX(-2px) scaleX(0.99);
+                color: #ff6666;
+            }
+            90% {
+                transform: translateX(2px) scaleX(1.01);
+                color: #ffaa44;
+            }
+            100% {
+                transform: translateX(0) scaleX(1);
+                color: #ff4444;
+            }
+        }
+
+        @keyframes strongGlitch {
+            0%, 70% {
+                transform: translateX(0) scaleX(1);
+                color: #ff4444;
+                text-shadow: 0 0 10px #ff4444;
+            }
+            75% {
+                transform: translateX(-3px) scaleX(0.97);
+                color: #ff8888;
+                text-shadow: 2px 0 #00ff88, -2px 0 #4488ff;
+            }
+            80% {
+                transform: translateX(4px) scaleX(1.03);
+                color: #ffff44;
+                text-shadow: -2px 0 #ff4488, 2px 0 #44ffff;
+            }
+            85% {
+                transform: translateX(-1px) scaleX(0.98);
+                color: #ffffff;
+                text-shadow: 1px 0 #ff4444, -1px 0 #44ff44;
+            }
+            100% {
+                transform: translateX(0) scaleX(1);
+                color: #ff4444;
+                text-shadow: 0 0 10px #ff4444;
+            }
+        }
+
+        .number-flow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            overflow: hidden;
+            z-index: 1;
+            opacity: 0.5;
+        }
+
+        .number-stream-horizontal {
+            position: absolute;
+            color: #ff4444;
+            font-family: 'DotGothic16', monospace;
+            font-size: 16px;
+            white-space: nowrap;
+            opacity: 0.6;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .flow-to-right {
+            animation: flowRight 4s linear infinite;
+        }
+
+        .flow-to-left {
+            animation: flowLeft 4s linear infinite;
+        }
+
+        @keyframes flowRight {
+            0% {
+                left: -100%;
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                left: 100%;
+                opacity: 0;
+            }
+        }
+
+        @keyframes flowLeft {
+            0% {
+                right: -100%;
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                right: 100%;
+                opacity: 0;
+            }
+        }
+
+        .gentle-bg {
+            background: radial-gradient(circle at center, rgba(255, 68, 68, 0.05) 0%, rgba(0, 0, 0, 0.9) 70%);
+        }
+
+        .time-transition {
+            transition: color 0.2s ease-out;
+        }
+
+        .no-scale {
+            transform: none !important;
+            animation: none !important;
+        }
+
+        .gentle-pulse {
+            animation: gentlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .number-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .number-stream {
+            position: absolute;
+            color: #ff4444;
+            font-family: 'DotGothic16', monospace;
+            font-size: 16px;
+            opacity: 0.4;
+            white-space: nowrap;
+            animation: numberStreamRight linear infinite;
+        }
+
+        .number-stream.left {
+            animation: numberStreamLeft linear infinite;
+        }
+
+        .number-stream.future {
+            color: #44ff44;
+        }
+
+        @keyframes numberStreamRight {
+            0% {
+                transform: translateX(-100vw);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateX(100vw);
+                opacity: 0;
+            }
+        }
+
+        @keyframes numberStreamLeft {
+            0% {
+                transform: translateX(100vw);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateX(-100vw);
+                opacity: 0;
+            }
+        }
+
+        .future-mode .tokikake-clock {
+            color: #44ff44;
+            box-shadow:
+                inset 0 0 30px rgba(68, 255, 68, 0.1),
+                0 0 50px rgba(68, 255, 68, 0.2);
+        }
+
+        .future-mode .tokikake-clock::before {
+            background: linear-gradient(90deg, transparent, rgba(68, 255, 68, 0.3), transparent);
+        }
+
+        .future-mode .phase-1 {
+            animation: gentleGlitchGreen 2s ease-in-out infinite;
+        }
+
+        .future-mode .phase-2 {
+            animation: mediumGlitchGreen 1s ease-in-out infinite;
+        }
+
+        .future-mode .phase-3 {
+            animation: strongGlitchGreen 0.3s ease-in-out infinite;
+        }
+
+        @keyframes gentleGlitchGreen {
+            0%, 90% {
+                transform: translateX(0);
+                color: #44ff44;
+            }
+            95% {
+                transform: translateX(-1px);
+                color: #66ff66;
+            }
+            100% {
+                transform: translateX(0);
+                color: #44ff44;
+            }
+        }
+
+        @keyframes mediumGlitchGreen {
+            0%, 80% {
+                transform: translateX(0) scaleX(1);
+                color: #44ff44;
+            }
+            85% {
+                transform: translateX(-2px) scaleX(0.99);
+                color: #66ff66;
+            }
+            90% {
+                transform: translateX(2px) scaleX(1.01);
+                color: #aaff44;
+            }
+            100% {
+                transform: translateX(0) scaleX(1);
+                color: #44ff44;
+            }
+        }
+
+        @keyframes strongGlitchGreen {
+            0%, 70% {
+                transform: translateX(0) scaleX(1);
+                color: #44ff44;
+                text-shadow: 0 0 10px #44ff44;
+            }
+            75% {
+                transform: translateX(-3px) scaleX(0.97);
+                color: #88ff88;
+                text-shadow: 2px 0 #ff8800, -2px 0 #4488ff;
+            }
+            80% {
+                transform: translateX(4px) scaleX(1.03);
+                color: #ffff44;
+                text-shadow: -2px 0 #ff4488, 2px 0 #44ffff;
+            }
+            85% {
+                transform: translateX(-1px) scaleX(0.98);
+                color: #ffffff;
+                text-shadow: 1px 0 #44ff44, -1px 0 #ff4444;
+            }
+            100% {
+                transform: translateX(0) scaleX(1);
+                color: #44ff44;
+                text-shadow: 0 0 10px #44ff44;
+            }
+        }
+
+        .traveling-message {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid;
+            font-size: 16px;
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
+            font-weight: bold;
+            text-shadow: 0 0 5px;
+            z-index: 20;
+            position: relative;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .traveling-message.past {
+            border-color: #ff6666;
+            color: #ff6666;
+            text-shadow: 0 0 5px #ff6666;
+            box-shadow: 0 0 20px rgba(255, 102, 102, 0.3);
+        }
+
+        .traveling-message.future {
+            border-color: #66ff66;
+            color: #66ff66;
+            text-shadow: 0 0 5px #66ff66;
+            box-shadow: 0 0 20px rgba(102, 255, 102, 0.3);
+        }
+
+        .travel-result-container {
+            background: linear-gradient(145deg, #000000, #111111);
+            border: 2px solid #14ffec;
+            border-radius: 12px;
+            padding: 22px 16px;
+            width: min(92vw, 420px);
+            box-sizing: border-box;
+            max-width: 92%;
+            box-shadow:
+                0 0 30px rgba(20, 255, 236, 0.3),
+                inset 0 0 20px rgba(20, 255, 236, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .travel-result-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #14ffec, #e6007e, #14ffec);
+            border-radius: 12px;
+            z-index: -1;
+            animation: borderGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes borderGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .travel-result-container {
+            background: linear-gradient(145deg, #000000, #111111);
+            border: 2px solid #14ffec;
+            border-radius: 12px;
+            padding: 22px 16px;
+            width: min(92vw, 420px);
+            box-sizing: border-box;
+            max-width: 92%;
+            box-shadow:
+                0 0 30px rgba(20, 255, 236, 0.3),
+                inset 0 0 20px rgba(20, 255, 236, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes borderGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .travel-result-header {
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            color: #14ffec;
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .travel-result-status {
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            color: #00ff00;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .travel-result-message {
+            font-family: 'DotGothic16', 'ＭＳ ゴシック', 'MS Gothic', 'Osaka-Mono', monospace;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 10px #ffffff;
+            line-height: 1.5;
+            text-align: center;
+            letter-spacing: 0;
+            white-space: pre-line;
+            font-size: clamp(15px, 4.6vw, 20px);
+        }
+        .travel-result-header { letter-spacing: 1px; }
+        .tmsg { margin-top: 10px; text-align: left; font-family: DotGothic16, PixelMplus10, monospace; font-size: 12px; line-height: 1.6; color: #14ffec; }
+        .tmsg .h { opacity: .6; }
+        .tmsg .m { color: #fff; word-break: break-word; }
+        .tmsg .m b { color: #ff8aa6; font-weight: normal; }
+        .tmsg input { width: 100%; box-sizing: border-box; margin-top: 8px; padding: 6px 8px; background: #111; color: #14ffec; border: 1px solid #14ffec; font-family: inherit; font-size: 16px; }
+        .tmsg button { margin-top: 6px; padding: 6px 12px; background: #14ffec; color: #151515; border: none; font-family: inherit; cursor: pointer; }
+        .tmsg .note { color: #ff8aa6; min-height: 1.2em; }
+
+        .scan-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(20, 255, 236, 0.03) 2px,
+                rgba(20, 255, 236, 0.03) 4px
+            );
+            pointer-events: none;
+            animation: scanMove 3s linear infinite;
+        }
+
+        @keyframes scanMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(8px); }
+        }
+
+        .original-clock {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            margin: 20px auto;
+        }
+
+        .clock-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            background: #14ffec;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+            box-shadow: 0 0 25px rgba(20, 255, 236, 0.8);
+        }
+
+        .clock-hand {
+            position: absolute;
+            background: #14ffec;
+            transform-origin: center bottom;
+            box-shadow: 0 0 10px rgba(20, 255, 236, 0.6);
+        }
+
+        .second-hand {
+            width: 4px;
+            height: 130px;
+            top: 6.5%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e6007e;
+            z-index: 1;
+            box-shadow: 0 0 8px rgba(230, 0, 126, 0.6);
+        }
+
+        .minute-hand {
+            width: 8px;
+            height: 110px;
+            top: 13.5%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+
+        .minute-hand::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            background: #14ffec;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 15px rgba(20, 255, 236, 0.8);
+        }
+
+        .hour-hand {
+            width: 16px;
+            height: 80px;
+            top: 23%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 8px;
+            z-index: 3;
+        }
+
+        .clock-numbers {
+            position: absolute;
+            font-family: 'DotGothic16', monospace;
+            font-size: 32px;
+            color: #14ffec;
+            font-weight: bold;
+            text-shadow: 0 0 15px rgba(20, 255, 236, 1);
+        }
+        .time-travel-btn {
+            padding: 12px 24px;
+            background: #14ffec;
+            color: #151515;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(20, 255, 236, 0.3);
+        }
+
+        .time-travel-btn:hover {
+            background: #00d4c7;
+            box-shadow: 0 0 30px rgba(20, 255, 236, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .time-travel-btn.future {
+            background: #44ff44;
+            color: #000000;
+            box-shadow: 0 0 20px rgba(68, 255, 68, 0.3);
+        }
+
+        .time-travel-btn.future:hover {
+            background: #33cc33;
+            box-shadow: 0 0 30px rgba(68, 255, 68, 0.5);
+        }
+
+        @media (max-width: 480px) {
+            .tokikake-clock {
+                font-size: clamp(15px, 5vw, 20px);
+                padding: 15px 0px;
+                letter-spacing: clamp(1px, 0.6vw, 2px);
+            }
+        }
+
+        .connection-status {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            z-index: 1000;
+        }
+
+        .connection-status.online {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .connection-status.offline {
+            background: #ff0000;
+            color: #fff;
+        }
+
+        .world-stats {
+            margin-top: 12px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 6px;
+            font-size: 10px;
+            color: #888;
+        }
+
+        #glitchLayer{position:fixed;inset:0;pointer-events:none;z-index:9999;display:none}
+        #glitchLayer .band{position:absolute;left:0;right:0}
+        html.inv{filter:invert(1) hue-rotate(90deg)}
+        #glitchLayer.on{display:block;opacity:1}
+        #glitchLayer::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 2px,transparent 2px 4px);animation:gl-scan .22s linear 1}
+        body.glitching{animation:gl-shake .22s steps(3,end) 1}
+        @keyframes gl-shake{0%{transform:translate(0,0)}33%{transform:translate(-2px,0)}66%{transform:translate(2px,-1px)}100%{transform:translate(0,0)}}
+        #glitchLayer .tear{left:0;right:0}
+        @keyframes gl-scan{0%{transform:translateY(-6px)}100%{transform:translateY(6px)}}
+        @media (prefers-reduced-motion:reduce){body.glitching{animation:none}}
+
+        .vitals{margin-top:8px;font-size:11px;line-height:1.7;letter-spacing:.06em;text-align:left;min-height:6em;color:#14ffec}
+        .vitals div{opacity:0;animation:vit-in .01s steps(1,end) forwards}
+        .vitals div.warn{color:#ff3355;text-shadow:0 0 8px #ff3355aa}
+        @keyframes vit-in{to{opacity:1}}
+        .heart-display.bad{color:#ff3355 !important;animation:heart-bad .3s steps(2,end) infinite !important;text-shadow:0 0 14px #ff3355;transform-origin:center}
+        @keyframes heart-bad{0%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.06)}100%{transform:translate(-50%,-50%) scale(1)}}
+        .heart-scanner.bad .scan-line{animation-duration:.5s !important;background:linear-gradient(90deg,transparent,#ff3355,transparent) !important}
+
+        #sublim{position:fixed;left:50%;top:40%;width:min(50vmin,300px);transform:translate(-50%,-50%);pointer-events:none;z-index:9997;opacity:0;mix-blend-mode:screen;filter:blur(.6px) saturate(.7)}
+        #sublim.on{animation:sub-blink var(--sd,90ms) steps(1,end) 1}
+        @keyframes sub-blink{0%{opacity:var(--so,.22);transform:translate(-50%,-50%)}60%{opacity:var(--so,.22);transform:translate(-50.6%,-50%)}100%{opacity:0}}
+        #promptText{white-space:pre-line;text-wrap:balance;line-height:1.35}
+
+        #termbg{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden;opacity:.13;mix-blend-mode:screen;font-family:'DotGothic16','PixelMplus10',monospace;font-size:10px;line-height:1.35;color:#14ffec;padding:8px 10px;white-space:pre;mask-image:linear-gradient(180deg,transparent 0,#000 12%,#000 88%,transparent 100%);-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 12%,#000 88%,transparent 100%)}
+        #termbg .l{display:block}
+        .message.log{font-family:'DotGothic16','PixelMplus10',monospace;white-space:pre-wrap}
+        .cur::after{content:"▮";animation:cur-blink .9s steps(1,end) infinite;margin-left:1px}
+        @keyframes cur-blink{50%{opacity:0}}
+        #bootlog{font-family:'DotGothic16','PixelMplus10',monospace;font-size:9.5px;line-height:1.4;color:#14ffec;opacity:.85;text-align:left;margin:10px auto 0;width:min(84vw,340px);max-width:84vw;white-space:pre-wrap;overflow-wrap:anywhere;overflow:hidden;min-height:9em;box-sizing:border-box}
+        #raRate{position:fixed;right:8px;bottom:6px;font-family:'DotGothic16','PixelMplus10',monospace;font-size:9px;letter-spacing:.18em;color:#14ffec;opacity:.28;pointer-events:none;z-index:600}
+        #mainlog{font-family:'DotGothic16','PixelMplus10',monospace;font-size:11px;line-height:1.45;color:#14ffec;text-align:left;margin:0 auto 10px;width:min(90vw,360px);max-width:90vw;white-space:pre-wrap;overflow-wrap:anywhere;min-height:7.3em;max-height:46vh;overflow-y:auto}
+        #mainlog .pl{color:#fff;text-shadow:0 0 8px #14ffec99}
+
+        .spin12{position:relative;width:64px;height:64px;margin:16px auto;animation:spin12 1s steps(12,end) infinite}
+        .spin12 i{position:absolute;left:50%;top:50%;width:6px;height:18px;margin:-32px 0 0 -3px;border-radius:3px;background:#14ffec;transform-origin:3px 32px}
+        @keyframes spin12{to{transform:rotate(360deg)}}
+
+        .player{display:flex;align-items:center;gap:10px;margin:10px 0 6px;font-family:'DotGothic16','PixelMplus10',monospace;font-size:11px;color:#14ffec}
+        .player .pb{width:14px;text-align:center;font-size:12px}
+        .player .tr{position:relative;flex:1;height:3px;background:rgba(20,255,236,.22);border-radius:2px}
+        .player .fi{position:absolute;left:0;top:0;bottom:0;width:0;background:#14ffec;border-radius:2px;box-shadow:0 0 6px #14ffec88}
+        .player .kn{position:absolute;top:50%;left:0;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:#fff;box-shadow:0 0 8px #14ffec}
+        .player .tm{width:34px;text-align:right;font-variant-numeric:tabular-nums;opacity:.85}.player .tm.l{text-align:left}
+        input,button,select,textarea{font-family:'DotGothic16','PixelMplus10',monospace}
+</style>
+</head>
+<body>
+    <div id="app">
+        <div id="connection-status" class="connection-status offline">OFFLINE</div>
+        
+        <div id="lang-toggle">
+            <button id="btn-en" class="active">ENGLISH</button>
+            <button id="btn-ja">日本語</button>
+        </div>
+        
+        <div id="largeTitle" style="display:none;align-items:center;justify-content:center;gap:8px;white-space:nowrap"><span>🌐</span><img src="hellowworld-logo.png" alt="HELL0w0RLD!" style="width:150px;max-width:56vw;image-rendering:pixelated;filter:drop-shadow(0 0 8px #14ffec88);vertical-align:middle"><span>🌐</span></div>
+        
+        <div id="loader">
+            <h2 id="loaderText">0108 connecting…</h2>
+            <div id="bootlog"></div>
+            <div class="bar">
+                <div class="bar-fill"></div>
+            </div>
+        </div>
+        
+        <div id="title">
+            <h1 style="margin:0;display:flex;align-items:center;justify-content:center;gap:12px;white-space:nowrap"><span>🌐</span><img src="hellowworld-logo.png" alt="HELL0w0RLD!" style="width:min(62vw,340px);image-rendering:pixelated;filter:drop-shadow(0 0 14px #14ffec88)"><span>🌐</span></h1>
+        </div>
+        
+        <div id="usernameScreen">
+            <h2 id="enterNameText" style="font-size:clamp(15px,5.4vw,22px);text-wrap:balance">Enter your name:</h2>
+            <input type="text" id="usernameInput" placeholder="Your name here">
+            <div id="nameWarn" style="display:none;color:#ff3355;font-size:12px;margin-top:6px;text-shadow:0 0 8px #ff335588"></div>
+            <br>
+            <div style="display:flex;gap:10px;justify-content:center;align-items:center"><button id="startBtn" style="margin:0;height:36px;padding:0 16px;box-sizing:border-box;line-height:1">Start</button><button id="nameCancelBtn" class="close-btn" style="display:none;margin:0;height:36px;padding:0 16px;box-sizing:border-box;line-height:1;font-size:13px">close</button></div>
+        </div>
+        
+        <div id="mainlog" style="margin-top:76px"></div>
+        <div id="output"></div>
+        
+        <div id="promptSection">
+            <h2 id="promptText" style="display:none">📡 0108: What's on your mind?</h2>
+            <div id="buttons">
+                <button id="btn-sos">sos</button>
+                <button id="btn-lonely">lonely</button>
+                <button id="btn-hate">hate myself</button>
+                <button id="btn-why" class="locked">why</button>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-start"><button id="rankingBtn" style="display:none">rankings</button><button id="messagesBtn" style="display:none">messages</button></div>
+            <div id="nameBadge" style="display:none;margin-top:10px;font-size:12px;opacity:.75">👤 <span id="nameBadgeText"></span> <button id="changeNameBtn" style="font:inherit;background:none;border:1px solid currentColor;border-radius:4px;padding:2px 8px;margin-left:6px;cursor:pointer;color:inherit">change name</button></div>
+        </div>
+        
+        <div id="overlay"></div>
+    </div>
+
+    <script>
+
+        const RANKING_CONFIG = {
+            endpoints: [
+                'https://jsonplaceholder.typicode.com/posts',
+                'https://httpbin.org/anything',
+                'https://api.github.com/zen'
+            ],
+            rankingEndpoint: 'https://hellowworld-rank.nagi-line-bot.workers.dev/rank',
+            getEndpoint: 'https://hellowworld-rank.nagi-line-bot.workers.dev/rank',
+            maxEntries: 50,
+            cacheDuration: 3000,
+            retryAttempts: 2
+        };
+
+        class RealTimeRankingManager {
+            constructor() {
+                this.cache = null;
+                this.cacheTime = 0;
+                this.isOnline = false;
+                this.retryCount = 0;
+                this.sessionId = this.generateSessionId();
+            }
+
+            generateSessionId() {
+                return 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+            }
+
+            async checkConnection() {
+
+                try {
+                    const r = await fetch(RANKING_CONFIG.getEndpoint, { method: 'GET', cache: 'no-store' });
+                    this.isOnline = r.ok;
+                } catch (e) { this.isOnline = false; }
+                this.updateConnectionStatus(this.isOnline);
+                return this.isOnline;
+            }
+
+            updateConnectionStatus(online) {
+                const statusEl = document.getElementById('connection-status');
+                statusEl.className = `connection-status ${online ? 'online' : 'offline'}`;
+                statusEl.textContent = online ? '🌐 ONLINE' : '📱 OFFLINE';
+            }
+
+            async loadRankings() {
+                if (this.cache && (Date.now() - this.cacheTime) < RANKING_CONFIG.cacheDuration) {
+                    console.log('💾 キャッシュから取得');
+                    return this.cache;
+                }
+
+                console.log('🔍 ランキング取得中...');
+
+                const offlineRankings = this.getOfflineRankings();
+
+                try {
+                    await this.checkConnection();
+                    if (!this.isOnline) {
+                        console.log('📱 オフラインモード使用');
+                        this.cache = offlineRankings;
+                        this.cacheTime = Date.now();
+                        return this.cache;
+                    }
+
+                    const onlineData = await this.simulateOnlineRankings();
+
+                    this.cache = onlineData;
+                    this.cacheTime = Date.now();
+                    this.retryCount = 0;
+
+                    console.log('✅ オンラインランキング取得:', onlineData.length, 'entries');
+                    return onlineData;
+
+                } catch (error) {
+                    console.warn('⚠️ オンライン取得失敗:', error.message);
+                    this.cache = offlineRankings;
+                    this.cacheTime = Date.now();
+                    return this.cache;
+                }
+            }
+
+            async simulateOnlineRankings() {
+
+                const r = await fetch(RANKING_CONFIG.getEndpoint + '?name=' + encodeURIComponent(userName || ''), { cache: 'no-store' });
+                if (!r.ok) throw new Error('rank api ' + r.status);
+                const j = await r.json();
+                const rows = this.bestByName((j.top || []).map(e => ({ name: e.name, time: e.time, date: e.date, online: true })));
+                this.totalPlayers = j.total || rows.length; this.me = j.me || null;
+                return rows.slice(0, RANKING_CONFIG.maxEntries);
+            }
+
+            async submitScore(userName, time, gameData = {}) {
+                console.log('📤 スコア送信開始:', { userName, time });
+
+                const newEntry = {
+                    name: userName.slice(0, 20),
+                    time: Math.round(time * 10) / 10,
+                    timestamp: Date.now(),
+                    date: new Date().toISOString().split('T')[0],
+                    sessionId: this.sessionId,
+                    online: this.isOnline,
+                    ...gameData
+                };
+
+                this.saveToGlobalLocal(newEntry);
+
+                try {
+                    await this.checkConnection();
+                    if (this.isOnline) {
+
+                        const r = await fetch(RANKING_CONFIG.rankingEndpoint, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: newEntry.name, time: newEntry.time }) });
+                        if (!r.ok) throw new Error('rank api ' + r.status);
+                        const j = await r.json();
+                        this.lastRank = j.rank || null; this.totalPlayers = j.total || null;
+                        this.cache = (j.top || []).map(e => ({ name: e.name, time: e.time, date: e.date, online: true }));
+                        this.cacheTime = Date.now();
+                        console.log('🚀 送信成功 rank=', this.lastRank, '/', this.totalPlayers);
+                        return true;
+                    } else {
+                        console.log('📱 オフライン送信');
+                        return false;
+                    }
+
+                } catch (error) {
+                    console.error('❌ 送信エラー:', error.message);
+                    return false;
+                }
+            }
+
+            saveToGlobalLocal(entry) {
+                try {
+                    const globalRankings = JSON.parse(localStorage.getItem('hellowworld_global_rankings') || '[]');
+                    globalRankings.push(entry);
+                    const sortedRankings = globalRankings.sort((a, b) => a.time - b.time).slice(-30);
+                    localStorage.setItem('hellowworld_global_rankings', JSON.stringify(sortedRankings));
+                    console.log('💾 グローバルローカル保存完了');
+                } catch (error) {
+                    console.warn('グローバル保存失敗:', error);
+                }
+            }
+
+            saveToLocal(userName, time) {
+                try {
+                    const localRankings = JSON.parse(localStorage.getItem('hellowworld_rankings') || '[]');
+                    const newEntry = {
+                        name: userName,
+                        time: time,
+                        date: new Date().toISOString().split('T')[0],
+                        local: true,
+                        timestamp: Date.now()
+                    };
+                    localRankings.push(newEntry);
+                    localStorage.setItem('hellowworld_rankings', JSON.stringify(localRankings.slice(-20)));
+                    console.log('💾 ローカル保存完了');
+                } catch (error) {
+                    console.warn('ローカル保存失敗:', error);
+                }
+            }
+
+            bestByName(list) { const m = new Map(); for (const x of list || []) { const k = String(x.name || '').toLowerCase(); if (!m.has(k) || x.time < m.get(k).time) m.set(k, x); } return [...m.values()].sort((a, b) => a.time - b.time); }
+            getOfflineRankings() {
+
+                try {
+                    const localRankings = JSON.parse(localStorage.getItem('hellowworld_rankings') || '[]');
+                    return this.bestByName(localRankings).slice(0, 20);
+                } catch (error) { return []; }
+            }
+
+            async recoverLost() {
+                try {
+                    const done = JSON.parse(localStorage.getItem('hellowworld_resent') || '[]');
+                    const a = JSON.parse(localStorage.getItem('hellowworld_global_rankings') || '[]');
+                    const b = JSON.parse(localStorage.getItem('hellowworld_rankings') || '[]');
+                    const mine = [...a, ...b].filter(x => x && x.name && x.time > 0);
+                    if (!mine.length) return;
+
+                    const lost = mine.filter(x => String(x.date || '') >= '2026-09-15');
+                    if (!lost.length) return;
+
+                    const best = new Map();
+                    for (const x of lost) {
+                        const k = String(x.name).toLowerCase();
+                        if (!best.has(k) || x.time < best.get(k).time) best.set(k, x);
+                    }
+                    const srv = await fetch(RANKING_CONFIG.getEndpoint, { cache: 'no-store' }).then(r => r.json()).catch(() => null);
+                    if (!srv || !srv.ok) return;
+                    const have = new Map((srv.top || []).map(e => [String(e.name).toLowerCase(), e.time]));
+                    let sent = 0;
+                    for (const [k, x] of best) {
+                        const tag = k + '@' + x.time;
+                        if (done.includes(tag)) continue;
+                        const h = have.get(k);
+                        if (h !== undefined && h <= x.time) { done.push(tag); continue; }
+                        const r = await fetch(RANKING_CONFIG.rankingEndpoint, {
+                            method: 'POST', headers: { 'content-type': 'application/json' },
+                            body: JSON.stringify({ name: x.name, time: x.time }),
+                        }).catch(() => null);
+                        if (r && r.ok) { done.push(tag); sent++; console.log('↩︎ 記録を送り直しました', x.name, x.time); }
+                        if (sent >= 3) break;
+                    }
+                    localStorage.setItem('hellowworld_resent', JSON.stringify(done.slice(-50)));
+                    if (sent) { this.cacheTime = 0; await this.loadRankings(); }
+                } catch (e) { console.warn('取り戻し 失敗:', e.message); }
+            }
+
+            startAutoRefresh() {
+                setTimeout(() => this.recoverLost(), 2500);
+                setInterval(async () => {
+                    if (this.isOnline) {
+                        this.cacheTime = 0;
+                        await this.loadRankings();
+                        console.log('🔄 自動リフレッシュ完了');
+                    }
+                }, 10000);
+            }
+        }
+
+        const rankingManager = new RealTimeRankingManager();
+
+        const translations = {
+            en: {
+                connect: '0108 connecting…',
+                enterName: 'Enter your name:',
+                nameRequired: '⚠ name required — 0108 needs to know who is calling',
+                nameTaken: '⚠ that name is already in use',
+                start: 'Start',
+                prompt: "📡 0108:\nWhat's on your mind?",
+                scanInit: '0108 can catch your signal anytime!',
+                raScanInit: 'Signal received. Diagnosis will be provided.',
+                raPrompt: '▮▮▮▮:\nState your request.',
+                promptLine: '📡 0108: What’s on your mind? > ',
+                raPromptLine: '▮▮▮▮: State your request. > ',
+                raLonely: 'Understood. Selecting the music that fits you best.',
+                scanProgress: 'Scanning your heart...',
+                vitals: ['HR  61 → 88 → 125 → 212 bpm ▲', 'SIGNAL  unstable', 'SLEEP  2h40m', 'TEMP  36.2 → 37.4', '⚠ irregular rhythm detected'],
+                virusDetected: '🚨 Virus detected!',
+                virusBtn: 'Launch Virus Buster!',
+                virusClean: '✅ Virus eliminated!\nHeart status: 150% clean.',
+                lonelyPrompt: "OK. Let's listen to music with something sweet!🥧",
+                lonelyInput: 'how do you feel right now? (or a song title) >',
+                lonelyWave: ' is now playing in your head!',
+                lonelyEnd: '0108 is always here to sing for you ♪',
+                lonelyNote: '(no sound here — it plays in your head. listen for real on streaming)',
+                lonelyHow: 'type how you feel, or a song title. one track gets picked for your head.',
+                cancel: 'close',
+                hatePrompt: '🚗 Time patrol active!',
+                travelToPast: 'Go to Past',
+                travelToFuture: 'Go to Future',
+                travellingPast: 'Traveling to your [ Past ]…',
+                travellingFuture: 'Traveling to your [ Future ]…',
+                hateEnd: "Every moment's full of light. You're perfect as is✨",
+                whyPrompt: '0108 is thinking…',
+                whyStop: 'This program will never stop until you find the answer.',
+                whyOk: 'OK',
+                close: 'Close',
+                logPrefix: ': ',
+                virusesLeft: 'Viruses left',
+                scoreLabel: 'Score',
+                timeLabel: 'Time',
+                rankingTitle: '⭐ GLOBAL RANKINGS ⭐',
+                playingInHead: 'Playing in your head...',
+                viewRankings: 'rankings',
+                messagesBtn: 'messages',
+                onlineRankings: '🌐 GLOBAL ONLINE',
+                offlineRankings: '📱 LOCAL OFFLINE',
+                yourRank: 'Your rank: #',
+                totalPlayers: 'Total players worldwide: '
+            },
+            ja: {
+                connect: '0108 接続中…',
+                enterName: '名前を入力してください:',
+                nameRequired: '⚠ 名前が空です — 0108 は誰の信号か分からないと繋げません',
+                nameTaken: '⚠ その名前はすでに誰かが使っています',
+                start: 'スタート',
+                prompt: '📡 0108:\n調子はどう？',
+                scanInit: '0108はいつでもあなたの信号を受信できます！',
+                raScanInit: '信号を受信しました。診断を提供します。',
+                raPrompt: '▮▮▮▮:\nご要望をどうぞ。',
+                promptLine: '📡 0108: 調子はどう？ > ',
+                raPromptLine: '▮▮▮▮: ご要望をどうぞ。 > ',
+                raLonely: '了解しました。あなたに最適な音楽を選びます。',
+                scanProgress: 'あなたの心をスキャンしています...',
+                vitals: ['心拍  61 → 88 → 125 → 212 ▲', '信号  不安定', '睡眠  2時間40分', '体温  36.2 → 37.4', '⚠ 不整なリズムを検出'],
+                virusDetected: '🚨 ウイルス発見！',
+                virusBtn: 'ウイルスバスター起動！',
+                virusClean: '✅ ウイルスをやっつけたぞ！\n心の状態: 150%クリーン。',
+                lonelyPrompt: 'よし、甘いものでも食べながら音楽でも聴こう！🥧',
+                lonelyInput: '今どんな気持ち？（曲名でもOK） >',
+                lonelyWave: ' を脳内再生中...♪',
+                lonelyEnd: '0108はいつでもあなたと一緒に歌います。',
+                lonelyNote: '（ここでは音は出ません。頭の中で流れている想定。本当に聴くのは配信で）',
+                lonelyHow: '今の気持ちか曲名を打つと、頭の中で流す一曲を選びます。',
+                cancel: '閉じる',
+                hatePrompt: '🚗 タイムパトロール開始！',
+                travelToPast: '過去へ行く',
+                travelToFuture: '未来へ行く',
+                travellingPast: '[ 過去 ] へ移動中...',
+                travellingFuture: '[ 未来 ] へ移動中...',
+                hateEnd: 'すべての瞬間が光で溢れてる。あなたはそのままで完璧です✨',
+                whyPrompt: '0108は考えています…',
+                whyStop: 'このプログラムは、あなたと答えを見つけるまで止まらない。',
+                whyOk: 'OK',
+                close: '閉じる',
+                logPrefix: '：',
+                virusesLeft: '残りウイルス',
+                scoreLabel: 'スコア',
+                timeLabel: '時間',
+                rankingTitle: '⭐ 世界ランキング ⭐',
+                playingInHead: '脳内再生中...',
+                viewRankings: 'ランキング',
+                messagesBtn: '伝言',
+                onlineRankings: '🌐 世界オンライン',
+                offlineRankings: '📱 ローカルオフライン',
+                yourRank: 'あなたの順位: ',
+                totalPlayers: '世界の総プレイヤー数: '
+            }
+        };
+
+        const otohaLyrics = {};
+
+        const SONGS = [{"t": "Change", "a": ["チェンジ"], "ms": 172008}, {"t": "Do Re Mi", "a": ["doremi", "ドレミ"], "ms": 211187}, {"t": "IYAIYA", "a": ["iyaiya", "イヤイヤ"], "ms": 223507}, {"t": "MAD HONEY", "a": ["madhoney", "マッドハニー"], "ms": 216853}, {"t": "PLAMO", "a": ["plamo", "プラモ"], "ms": 176773}, {"t": "Returner", "a": ["リターナー"], "ms": 201093}, {"t": "engine", "a": ["エンジン"], "ms": 195133}, {"t": "ifのマーメイド", "a": ["if no mermaid", "ifのマーメイド", "イフのマーメイド"], "ms": 254453}, {"t": "no man's world", "a": ["no mans world", "nomansworld", "ノーマンズワールド"], "ms": 258160}, {"t": "pineapple tart", "a": ["pineapple", "パイナップルタルト", "ピネアップルタルト", "ピネアップル", "パイナップル"], "ms": 229987}, {"t": "あのミュージシャンのせいで", "a": ["あのミュージシャン"], "ms": 244000}, {"t": "あるものねだり", "a": ["arumono nedari"], "ms": 200547}, {"t": "かざぐるま", "a": ["kazaguruma", "風車"], "ms": 292067}, {"t": "さよなら僕の初恋", "a": ["sayonara boku no hatsukoi", "さよなら僕の初恋"], "ms": 253533}, {"t": "しゅるれりら", "a": ["shururerira", "シュルレリラ"], "ms": 197707}, {"t": "ほな、さいなら!", "a": ["hona sainara", "ほなさいなら"], "ms": 238613}, {"t": "アズライト", "a": ["azurite"], "ms": 174120}, {"t": "ダンスホール", "a": ["dance hall"], "ms": 213533}, {"t": "ハッピー・エンド・ロール", "a": ["happy end roll", "ハッピーエンドロール"], "ms": 326627}, {"t": "パラドクサー", "a": ["paradoxer"], "ms": 197979}, {"t": "ヒューマノイドラブ", "a": ["humanoid love"], "ms": 294920}, {"t": "ユウナギ", "a": ["yunagi", "夕凪"], "ms": 247507}, {"t": "リインカーネーション", "a": ["reincarnation"], "ms": 214490}, {"t": "人生階段", "a": ["jinsei kaidan", "じんせいかいだん"], "ms": 237720}, {"t": "六秒間", "a": ["6秒間", "roku byokan", "ろくびょうかん"], "ms": 250373}, {"t": "地球最後の一日", "a": ["chikyu saigo no ichinichi", "ちきゅうさいごのいちにち"], "ms": 234347}, {"t": "大生解", "a": ["daiseikai", "たいせいかい", "大正解"], "ms": 292840}, {"t": "拝啓生きたがりの僕へ", "a": ["haikei", "拝啓 生きたがりの僕へ"], "ms": 219333}, {"t": "犬鬼灯", "a": ["inuhozuki", "いぬほおずき"], "ms": 256320}, {"t": "狂信者のパレード - The Parade of Battlers", "a": ["kyoshinsha no parade", "parade of battlers", "狂信者のパレード"], "ms": 251000}, {"t": "猫と風船", "a": ["neko to fusen", "ねことふうせん"], "ms": 209027}, {"t": "闇夜のダンサー -Dancer in the Dark Night", "a": ["dancer in the dark night", "やみよのダンサー", "闇夜のダンサー"], "ms": 239893}, {"t": "集合地点", "a": ["shugo chiten", "しゅうごうちてん"], "ms": 199587}, {"t": "電光石火", "a": ["denkosekka", "でんこうせっか"], "ms": 222800}, {"t": "駆落", "a": ["kakeochi", "かけおち"], "ms": 192039}, {"t": "鮮やかなグレー", "a": ["azayaka na gray", "あざやかなグレー"], "ms": 231573}];
+        function nrm(t){ return String(t||'').normalize('NFKC').toLowerCase().replace(/[\u3041-\u3096]/g,c=>String.fromCharCode(c.charCodeAt(0)+0x60)).replace(/[\s　'’"!！?？・･\-–—_.。、,:：/]/g,''); }
+        function lev(a,b){ const m=a.length,n=b.length; if(!m)return n; if(!n)return m; const d=[]; for(let i=0;i<=m;i++){d[i]=[i]; for(let j=1;j<=n;j++) d[i][j]=i?0:j;} for(let i=1;i<=m;i++)for(let j=1;j<=n;j++) d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); return d[m][n]; }
+
+        const TMSG_BAD = /f+u+c+k|s+h+i+t|b+i+t+c+h|c+u+n+t|d+i+c+k|a+s+s+h+o+l+e|n+i+g+g|f+a+g+|r+e+t+a+r+d|w+h+o+r+e|s+l+u+t|死ね|しね|殺す|ころす|殺し|きもい|キモい|キモ|うざい|ウザ|くたばれ|消えろ|きえろ|ブス|ぶす|バカ|ばか|馬鹿|アホ|あほ|クソ|くそ|糞|ちんこ|まんこ|セックス|レイプ|ゴミ|カス|デブ|きしょ|きもち悪|気持ち悪|自殺|しにたい|死にたい/i;
+        function tmsgProblem(txt) {
+            const ja = currentLang === 'ja';
+            const q = String(txt || '').normalize('NFKC').trim();
+            if (q.length < 2) return ja ? '短すぎます' : 'too short';
+            if (q.length > 80) return ja ? '長すぎます（80 文字まで）' : 'too long (80 max)';
+            if (/https?:|www\.|\.com|\.jp|@/i.test(q)) return ja ? 'リンクは残せません' : 'no links';
+            if (new Set(q.replace(/\s/g, '')).size < Math.min(3, q.length)) return ja ? '意味のある言葉にしてください' : 'use real words';
+            if (/(.)\1{3,}/.test(q)) return ja ? '意味のある言葉にしてください' : 'use real words';
+            if (!/[\p{L}]/u.test(q) || (q.replace(/[^\p{L}]/gu, '').length < 2)) return ja ? '意味のある言葉にしてください' : 'use real words';
+            if (TMSG_BAD.test(q)) return ja ? 'その言葉は未来へ持って行けません' : "that word can't travel";
+            return '';
+        }
+
+        const TMSG_SEED = [
+            { name: 'oto', text: '明日も当たり前に一緒に生きていこう', at: '2025-08-11' },
+            { name: 'T0T0', text: 'なんびゃくねんごでも、みまもってるよ！', at: '2026-08-30' },
+        ];
+
+        function myTok() { try { let t = localStorage.getItem('hellowworld_tok'); if (!t) { t = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('hellowworld_tok', t); } return t; } catch (e) { return ''; } }
+        function myIds() { try { return JSON.parse(localStorage.getItem('hellowworld_mymsgs') || '[]'); } catch (e) { return []; } }
+        function showTimeMessages() {
+            const ja = currentLang === 'ja';
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            const term = document.createElement('div');
+            term.style.cssText = 'font-family:DotGothic16,PixelMplus10,monospace;font-size:12px;line-height:1.7;text-align:left;width:min(92vw,360px);max-width:calc(100vw - 48px);box-sizing:border-box;white-space:pre-wrap;overflow-wrap:anywhere;color:#14ffec';
+            elements.overlay.appendChild(term);
+            const line = (txt, cls) => { const d = document.createElement('div'); d.textContent = txt; if (cls) d.className = cls; term.appendChild(d); return d; };
+            line('=== TIME MESSAGES ===').style.cssText = 'text-align:center;letter-spacing:1px;margin-bottom:8px';
+            line(ja ? '他の旅人が残した伝言:' : 'left by other travelers:').style.opacity = '.6';
+            const list = document.createElement('div'); list.style.cssText = 'max-height:42vh;overflow-y:auto;padding-right:4px;-webkit-overflow-scrolling:touch'; term.appendChild(list);
+            const render = (arr) => {
+                list.innerHTML = '';
+                const mine = myIds(); let me = userName; try { me = me || localStorage.getItem('hellowworld_name') || ''; } catch (e) {}
+                TMSG_SEED.concat(arr || []).forEach(x => {
+                    const d = document.createElement('div'); d.style.cssText = 'color:#fff;margin:4px 0';
+                    const b = document.createElement('span'); b.style.color = '#ff8aa6'; b.textContent = '[' + String(x.at || '').slice(0, 10) + '] ' + x.name;
+                    d.appendChild(b);
+                    if (x.id && (mine.includes(x.id) || (x.open && x.name === me))) {
+                        const del = document.createElement('button'); del.textContent = ja ? '消す' : 'delete'; del.style.cssText = 'margin-left:8px;font:inherit;font-size:11px;background:none;color:#ff8aa6;border:1px solid #ff8aa6;padding:1px 6px;cursor:pointer';
+                        del.addEventListener('click', async () => {
+                            del.disabled = true;
+                            try { const r = await fetch('https://hellowworld-rank.nagi-line-bot.workers.dev/tmsg/delete', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: x.id, tok: myTok(), name: userName }) }); const j = await r.json(); if (j.ok) { try { localStorage.setItem('hellowworld_mymsgs', JSON.stringify(mine.filter(i => i !== x.id))); } catch (e) {} render(j.list || []); addResult(['time message deleted']); } else del.disabled = false; } catch (e) { del.disabled = false; }
+                        });
+                        d.appendChild(del);
+                    }
+                    d.appendChild(document.createTextNode('\n  ' + x.text)); list.appendChild(d);
+                });
+                list.scrollTop = list.scrollHeight;
+            };
+            render([]);
+            fetch('https://hellowworld-rank.nagi-line-bot.workers.dev/tmsg').then(r => r.json()).then(j => render(j.list || [])).catch(() => {});
+            const box = document.createElement('div'); box.className = 'tmsg'; term.appendChild(box);
+            line.call(null, '');
+            const lab = document.createElement('div'); lab.className = 'h'; lab.textContent = ja ? '次の旅人へ伝言を残す:' : 'leave a message for the next traveler:'; box.appendChild(lab);
+            const tinput = document.createElement('input'); tinput.maxLength = 80; tinput.placeholder = '>'; box.appendChild(tinput);
+            const tbtn = document.createElement('button'); tbtn.textContent = ja ? '残す' : 'leave it'; box.appendChild(tbtn);
+            const tnote = document.createElement('div'); tnote.className = 'note'; box.appendChild(tnote);
+            tbtn.addEventListener('click', async () => {
+                const txt = tinput.value.trim(); const why = tmsgProblem(txt);
+                if (why) { tnote.textContent = why; return; }
+                tbtn.disabled = true; tnote.textContent = '...';
+
+                const draftKey = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+                try {
+                    const q = JSON.parse(localStorage.getItem('hellowworld_tmsg_queue') || '[]');
+                    q.push({ k: draftKey, name: userName, text: txt, lang: currentLang, at: new Date().toISOString() });
+                    localStorage.setItem('hellowworld_tmsg_queue', JSON.stringify(q.slice(-20)));
+                } catch (e) {}
+                const dropDraft = () => { try {
+                    const q = JSON.parse(localStorage.getItem('hellowworld_tmsg_queue') || '[]');
+                    localStorage.setItem('hellowworld_tmsg_queue', JSON.stringify(q.filter(x => x.k !== draftKey)));
+                } catch (e) {} };
+                try {
+                    if (IS_TEST_HOST) throw new Error('test host');
+                    const r = await fetch('https://hellowworld-rank.nagi-line-bot.workers.dev/tmsg', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: userName, text: txt, lang: currentLang, tok: myTok() }) });
+                    const j = await r.json();
+                    if (j.ok) { dropDraft(); if (j.id) { try { localStorage.setItem('hellowworld_mymsgs', JSON.stringify(myIds().concat([j.id]))); } catch (e) {} } tnote.textContent = ja ? '未来へ送りました' : 'sent to the future'; tinput.value = ''; render(j.list || []); addResult(['time message left: ' + txt]); }
+                    else { dropDraft(); tnote.textContent = j.error || 'rejected'; tbtn.disabled = false; }
+                } catch (e) { tnote.textContent = ja ? '届きませんでした。あとで自動で送ります' : "couldn't reach. will retry later"; tbtn.disabled = false; }
+            });
+            const closeBtn = createCloseButton(() => { elements.overlay.style.display = 'none'; showPrompt(); });
+            closeBtn.style.marginTop = '14px';
+            elements.overlay.appendChild(closeBtn);
+        }
+
+        async function resendTmsgQueue() {
+            let q; try { q = JSON.parse(localStorage.getItem('hellowworld_tmsg_queue') || '[]'); } catch (e) { return; }
+            if (!q || !q.length) return;
+            const left = [];
+            for (const x of q) {
+                try {
+                    const r = await fetch('https://hellowworld-rank.nagi-line-bot.workers.dev/tmsg', {
+                        method: 'POST', headers: { 'content-type': 'application/json' },
+                        body: JSON.stringify({ name: x.name, text: x.text, lang: x.lang, tok: myTok() }),
+                    });
+                    const j = await r.json();
+                    if (j.ok) { console.log('↩︎ 伝言を送り直しました'); if (j.id) { try { localStorage.setItem('hellowworld_mymsgs', JSON.stringify(myIds().concat([j.id]))); } catch (e) {} } }
+                    else if (!j.error || /already|dup/i.test(String(j.error))) {  }
+                    else left.push(x);
+                } catch (e) { left.push(x); }
+            }
+            try { localStorage.setItem('hellowworld_tmsg_queue', JSON.stringify(left.slice(-20))); } catch (e) {}
+        }
+        setTimeout(resendTmsgQueue, 4000);
+
+        (function t0t0Notice() {
+            try {
+                if (Date.now() > Date.parse('2026-09-16T00:00:00+09:00')) return;
+                if (localStorage.getItem('hellowworld_note_0915') === '1') return;
+                const TXT = {
+                    ja: {
+                        head: '=== EMERGENCY LOG ===',
+                        body: [
+                            '本日 17:42-19:30、',
+                            '{X} によるサイバー攻撃を確認。',
+                            '未登録の常駐プロセスによって一時撃退された模様。',
+                            '',
+                            '伝言も阻害されていたため、再度入力を推奨。',
+                            '引き続き監視を続ける。',
+                        ],
+                        stamp: '2026.09.15 19:42 JST 発信',
+                        close: '閉じる', other: 'English',
+                    },
+                    en: {
+                        head: '=== EMERGENCY LOG ===',
+                        body: [
+                            'today 17:42-19:30 JST,',
+                            'cyber attack by {X} detected.',
+                            'temporarily repelled by',
+                            'an unregistered resident process.',
+                            '',
+                            'messages were also blocked.',
+                            're-entry recommended.',
+                            'monitoring continues.',
+                        ],
+                        stamp: 'issued 2026.09.15 19:42 JST',
+                        close: 'close', other: '日本語',
+                    },
+                };
+                let lang = 'en';
+                const wrap = document.createElement('div');
+                wrap.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;'
+                  + 'justify-content:center;background:rgba(0,0,0,.72);padding:16px';
+                const box = document.createElement('div');
+                box.style.cssText = 'background:#120d16;color:#ffd2d6;border:1px solid #ff2d3d;border-radius:4px;'
+                  + 'padding:18px 16px 14px;font-family:DotGothic16,PixelMplus10,monospace;font-size:12px;'
+                  + 'line-height:1.9;width:min(92vw,380px);max-height:86vh;overflow-y:auto;'
+                  + 'box-shadow:0 0 34px rgba(255,45,61,.34);position:relative';
+                wrap.appendChild(box);
+                const draw = () => {
+                    const T = TXT[lang];
+                    box.innerHTML = '';
+                    const h = document.createElement('div');
+                    h.textContent = T.head;
+                    h.style.cssText = 'text-align:center;letter-spacing:1px;color:#ff2d3d;margin-bottom:12px';
+                    box.appendChild(h);
+                    const glitchSpans = [];
+                    T.body.forEach(s => {
+                        const d = document.createElement('div');
+                        if (s.indexOf('{X}') >= 0) {
+                            const a = s.split('{X}');
+                            d.appendChild(document.createTextNode(a[0]));
+
+                            const g = document.createElement('span');
+                            g.style.cssText = 'display:inline-block;width:5.2em;height:1.05em;'
+                              + 'vertical-align:-0.18em;background:#ff2d3d;border-radius:1px;'
+                              + 'position:relative;overflow:hidden';
+                            const sl = document.createElement('span');
+                            sl.style.cssText = 'position:absolute;inset:0;background:repeating-linear-gradient('
+                              + '0deg,rgba(0,0,0,.45) 0 1px,transparent 1px 3px)';
+                            g.appendChild(sl);
+                            d.appendChild(g); glitchSpans.push(g);
+                            d.appendChild(document.createTextNode(a[1] || ''));
+                        } else { d.textContent = s; }
+                        d.style.minHeight = s ? '' : '10px';
+                        box.appendChild(d);
+                    });
+
+                    if (glitchSpans.length) {
+                        const tick = setInterval(() => {
+                            if (!document.body.contains(box)) { clearInterval(tick); return; }
+                            const on = Math.random() < 0.24;
+                            glitchSpans.forEach(g => {
+                                const inner = g.firstChild;
+                                if (!inner) return;
+                                inner.style.transform = on
+                                  ? 'translate(' + (Math.random() * 4 - 2).toFixed(1) + 'px,'
+                                    + (Math.random() * 2 - 1).toFixed(1) + 'px)'
+                                  : '';
+                                inner.style.opacity = on ? '0.35' : '1';
+                                g.style.filter = on ? 'brightness(1.5)' : '';
+                            });
+                        }, 140);
+                    }
+
+                    const st = document.createElement('div');
+                    st.textContent = T.stamp;
+                    st.style.cssText = 'text-align:right;margin-top:16px;color:#7a6b74;font-size:10px;letter-spacing:.5px';
+                    box.appendChild(st);
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display:flex;gap:8px;justify-content:space-between;margin-top:16px';
+                    const sw = document.createElement('button');
+                    sw.textContent = T.other;
+                    sw.style.cssText = 'background:none;border:1px solid #8ad7ff;color:#8ad7ff;border-radius:4px;'
+                      + 'padding:5px 12px;font-family:inherit;font-size:11px;cursor:pointer';
+                    sw.onclick = () => { lang = (lang === 'ja') ? 'en' : 'ja'; draw(); };
+                    const cl = document.createElement('button');
+                    cl.textContent = T.close;
+                    cl.style.cssText = 'background:#ff2d3d;border:0;color:#120d16;border-radius:4px;'
+                      + 'padding:5px 16px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer';
+                    cl.onclick = () => {
+                        try { localStorage.setItem('hellowworld_note_0915', '1'); } catch (e) {}
+                        wrap.remove();
+                    };
+                    row.appendChild(sw); row.appendChild(cl);
+                    box.appendChild(row);
+                };
+                draw();
+
+                window.__notice0915 = () => {
+                    if (window.__notice0915done) return; window.__notice0915done = true;
+                    setTimeout(() => document.body.appendChild(wrap), 400);
+                };
+            } catch (e) {}
+        })();
+
+        function matchSong(input){
+            const q=nrm(input); if(!q) return null;
+            let best=null, bestScore=99;
+            for(const sg of SONGS){ const keys=[sg.t].concat(sg.a).map(nrm);
+                for(const k of keys){ if(!k) continue; let sc=99;
+                    if(k===q) sc=0; else if(q.length>=3&&(k.includes(q)||q.includes(k))) sc=1; else if(q.length>=3){ const d=lev(q,k); const lim=q.length<=4?1:Math.max(1,Math.floor(k.length*0.25)); if(d<=lim&&Math.abs(k.length-q.length)<=2) sc=2+d; }
+                    if(sc<bestScore){bestScore=sc;best=sg;} } }
+            return best;
+        }
+        function checkOtohaLyrics(input) {
+            const inputLower = input.toLowerCase().trim();
+            for (const [songTitle, lyrics] of Object.entries(otohaLyrics)) {
+                if (inputLower === songTitle.toLowerCase() ||
+                    songTitle.toLowerCase().includes(inputLower) ||
+                    inputLower.includes(songTitle.toLowerCase())) {
+                    return { title: songTitle, lyrics: lyrics };
+                }
+            }
+            return null;
+        }
+
+        function createTokikakeClock() {
+            const clockDisplay = document.createElement('div');
+            clockDisplay.className = 'tokikake-clock';
+            const now = new Date();
+            const currentTime = `${String(now.getFullYear()).padStart(4, '0')} ${String(now.getMonth() + 1).padStart(2, '0')} ${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')} ${String(now.getMinutes()).padStart(2, '0')} ${String(now.getSeconds()).padStart(2, '0')}`;
+            clockDisplay.textContent = currentTime;
+
+            return clockDisplay;
+        }
+
+        function createNumberRain(container, intensity = 12, isFuture = false) {
+            const numberRain = document.createElement('div');
+            numberRain.className = 'number-rain';
+
+            const numbers = '0123456789';
+
+            for (let i = 0; i < intensity; i++) {
+                const stream = document.createElement('div');
+
+                const direction = isFuture ? '' : 'left';
+                stream.className = `number-stream ${direction}${isFuture ? ' future' : ''}`;
+                stream.style.top = Math.random() * 100 + '%';
+                stream.style.animationDelay = Math.random() * 4 + 's';
+                stream.style.animationDuration = (2 + Math.random() * 3) + 's';
+                const depth = Math.random(); stream.style.fontSize = (9 + depth * 9) + 'px'; stream.style.opacity = String(0.25 + depth * 0.6); stream.style.filter = depth < 0.4 ? 'blur(0.6px)' : '';
+
+                let text = '';
+                for (let j = 0; j < 40; j++) {
+                    text += numbers[Math.floor(Math.random() * numbers.length)] + ' ';
+                }
+                stream.textContent = text;
+
+                numberRain.appendChild(stream);
+            }
+
+            container.appendChild(numberRain);
+            return numberRain;
+        }
+
+        function getCurrentTimestamp() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            const second = String(now.getSeconds()).padStart(2, '0');
+            return `${year}.${month}.${day}_${hour}:${minute}:${second}`;
+        }
+
+        function createOriginalClock() {
+            const clockContainer = document.createElement('div');
+            clockContainer.className = 'original-clock';
+
+            for (let i = 0; i < 12; i++) {
+                const tick = document.createElement('div');
+                tick.className = 'clock-tick';
+                const angle = (i * 30) - 90;
+                tick.style.transform = `rotate(${angle}deg)`;
+                tick.style.top = '10px';
+                tick.style.left = '50%';
+                tick.style.marginLeft = '-1px';
+                clockContainer.appendChild(tick);
+            }
+
+            const numbers = ['12', '3', '6', '9'];
+            const positions = [
+                { top: '5px', left: '50%', transform: 'translateX(-50%)' },
+                { top: '50%', right: '5px', transform: 'translateY(-50%)' },
+                { bottom: '5px', left: '50%', transform: 'translateX(-50%)' },
+                { top: '50%', left: '5px', transform: 'translateY(-50%)' }
+            ];
+
+            numbers.forEach((num, index) => {
+                const numberEl = document.createElement('div');
+                numberEl.className = 'clock-numbers';
+                numberEl.textContent = num;
+                Object.assign(numberEl.style, positions[index]);
+                clockContainer.appendChild(numberEl);
+            });
+
+            const hourHand = document.createElement('div');
+            hourHand.className = 'clock-hand hour-hand';
+            hourHand.id = 'hourHand';
+            clockContainer.appendChild(hourHand);
+
+            const minuteHand = document.createElement('div');
+            minuteHand.className = 'clock-hand minute-hand';
+            minuteHand.id = 'minuteHand';
+            clockContainer.appendChild(minuteHand);
+
+            const secondHand = document.createElement('div');
+            secondHand.className = 'clock-hand second-hand';
+            secondHand.id = 'secondHand';
+            clockContainer.appendChild(secondHand);
+
+            const center = document.createElement('div');
+            center.className = 'clock-center';
+            clockContainer.appendChild(center);
+
+            return clockContainer;
+        }
+
+        function updateClockHands() {
+            const now = new Date();
+            const hours = now.getHours() % 12;
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            const hourAngle = (hours * 30) + (minutes * 0.5);
+            const minuteAngle = (minutes * 6);
+            const secondAngle = (seconds * 6);
+
+            const hourHand = document.getElementById('hourHand');
+            const minuteHand = document.getElementById('minuteHand');
+            const secondHand = document.getElementById('secondHand');
+
+            if (hourHand) hourHand.style.transform = `translateX(-50%) rotate(${hourAngle}deg)`;
+            if (minuteHand) minuteHand.style.transform = `translateX(-50%) rotate(${minuteAngle}deg)`;
+            if (secondHand && !secondHand.dataset.glitch) secondHand.style.transform = `translateX(-50%) rotate(${secondAngle}deg)`;
+        }
+
+        function typewriterEffect(element, text, speed = 50) {
+            element.textContent = '';
+            let i = 0;
+
+            element.dataset.typing = '1';
+            const interval = setInterval(() => {
+                if (i < text.length) {
+                    i++; element.textContent = text.slice(0, i);
+                } else {
+                    element.textContent = text; delete element.dataset.typing;
+                    clearInterval(interval);
+                }
+            }, speed);
+        }
+        function createSparkles(container, isWhite = false) {
+            const sparklesContainer = document.createElement('div');
+            sparklesContainer.className = 'sparkles';
+
+            for (let i = 0; i < 20; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = `sparkle ${isWhite ? 'white' : ''}`;
+                sparkle.textContent = '✨';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+
+                sparklesContainer.appendChild(sparkle);
+            }
+
+            container.appendChild(sparklesContainer);
+
+            setTimeout(() => {
+                if (sparklesContainer.parentNode) {
+                    sparklesContainer.parentNode.removeChild(sparklesContainer);
+                }
+            }, 5000);
+
+            return sparklesContainer;
+        }
+
+        function createNumberFlow(container, direction = 'right', intensity = 8) {
+            const numberFlow = document.createElement('div');
+            numberFlow.className = 'number-flow';
+
+            const numbers = '0123456789';
+
+            for (let i = 0; i < intensity; i++) {
+                const stream = document.createElement('div');
+                stream.className = `number-stream-horizontal flow-to-${direction}`;
+                stream.style.top = (Math.random() * 80 + 10) + '%';
+                stream.style.animationDelay = Math.random() * 4 + 's';
+                stream.style.animationDuration = (3 + Math.random() * 2) + 's';
+
+                let text = '';
+                for (let j = 0; j < 30; j++) {
+                    text += numbers[Math.floor(Math.random() * numbers.length)] + ' ';
+                }
+                stream.textContent = text;
+
+                numberFlow.appendChild(stream);
+            }
+
+            container.appendChild(numberFlow);
+            return numberFlow;
+        }
+
+        function animateTimeToPastGentle(timeDisplay) {
+            let currentDate = new Date();
+            let phase = 1;
+            let iterations = 0;
+
+            const interval = setInterval(() => {
+                iterations++;
+
+                if (iterations < 20) {
+                    timeDisplay.className = 'tokikake-clock phase-1 time-transition';
+                    phase = 1;
+                } else if (iterations < 40) {
+                    timeDisplay.className = 'tokikake-clock phase-2 time-transition';
+                    phase = 2;
+                } else {
+                    timeDisplay.className = 'tokikake-clock phase-3 time-transition';
+                    phase = 3;
+                }
+
+                const changeIntensity = Math.min(phase, 3);
+                if (Math.random() < 0.3 * changeIntensity) {
+                    currentDate.setFullYear(currentDate.getFullYear() - Math.floor(Math.random() * 10 * changeIntensity) - 1);
+                }
+                if (Math.random() < 0.4 * changeIntensity) {
+                    currentDate.setMonth(Math.floor(Math.random() * 12));
+                }
+                if (Math.random() < 0.5 * changeIntensity) {
+                    currentDate.setDate(Math.floor(Math.random() * 28) + 1);
+                }
+                if (Math.random() < 0.6 * changeIntensity) {
+                    currentDate.setHours(Math.floor(Math.random() * 24));
+                }
+                if (Math.random() < 0.7 * changeIntensity) {
+                    currentDate.setMinutes(Math.floor(Math.random() * 60));
+                }
+                if (Math.random() < 0.8 * changeIntensity) {
+                    currentDate.setSeconds(Math.floor(Math.random() * 60));
+                }
+
+                const timeString = `${String(currentDate.getFullYear()).padStart(4, '0')} ${String(currentDate.getMonth() + 1).padStart(2, '0')} ${String(currentDate.getDate()).padStart(2, '0')} ${String(currentDate.getHours()).padStart(2, '0')} ${String(currentDate.getMinutes()).padStart(2, '0')} ${String(currentDate.getSeconds()).padStart(2, '0')}`;
+                timeDisplay.textContent = timeString;
+
+            }, 150 - (phase * 30));
+
+            return interval;
+        }
+
+        function animateTimeToFutureGentle(timeDisplay) {
+            let currentDate = new Date();
+            let phase = 1;
+            let iterations = 0;
+
+            const interval = setInterval(() => {
+                iterations++;
+
+                if (iterations < 20) {
+                    timeDisplay.className = 'tokikake-clock phase-1 time-transition';
+                    phase = 1;
+                } else if (iterations < 40) {
+                    timeDisplay.className = 'tokikake-clock phase-2 time-transition';
+                    phase = 2;
+                } else {
+                    timeDisplay.className = 'tokikake-clock phase-3 time-transition';
+                    phase = 3;
+                }
+
+                const changeIntensity = Math.min(phase, 3);
+                if (Math.random() < 0.3 * changeIntensity) {
+                    currentDate.setFullYear(currentDate.getFullYear() + Math.floor(Math.random() * 20 * changeIntensity) + 1);
+                }
+                if (Math.random() < 0.4 * changeIntensity) {
+                    currentDate.setMonth(Math.floor(Math.random() * 12));
+                }
+                if (Math.random() < 0.5 * changeIntensity) {
+                    currentDate.setDate(Math.floor(Math.random() * 28) + 1);
+                }
+                if (Math.random() < 0.6 * changeIntensity) {
+                    currentDate.setHours(Math.floor(Math.random() * 24));
+                }
+                if (Math.random() < 0.7 * changeIntensity) {
+                    currentDate.setMinutes(Math.floor(Math.random() * 60));
+                }
+                if (Math.random() < 0.8 * changeIntensity) {
+                    currentDate.setSeconds(Math.floor(Math.random() * 60));
+                }
+
+                const timeString = `${String(currentDate.getFullYear()).padStart(4, '0')} ${String(currentDate.getMonth() + 1).padStart(2, '0')} ${String(currentDate.getDate()).padStart(2, '0')} ${String(currentDate.getHours()).padStart(2, '0')} ${String(currentDate.getMinutes()).padStart(2, '0')} ${String(currentDate.getSeconds()).padStart(2, '0')}`;
+                timeDisplay.textContent = timeString;
+
+            }, 140 - (phase * 25));
+
+            return interval;
+        }
+
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+
+        const elements = {
+            loader: document.getElementById('loader'),
+            loaderText: document.getElementById('loaderText'),
+            titleDiv: document.getElementById('title'),
+            largeTitle: document.getElementById('largeTitle'),
+            usernameScreen: document.getElementById('usernameScreen'),
+            enterNameText: document.getElementById('enterNameText'),
+            startBtn: document.getElementById('startBtn'),
+            outputDiv: document.getElementById('output'),
+            promptSection: document.getElementById('promptSection'),
+            promptText: document.getElementById('promptText'),
+            overlay: document.getElementById('overlay'),
+            btnSos: document.getElementById('btn-sos'),
+            btnLonely: document.getElementById('btn-lonely'),
+            btnHate: document.getElementById('btn-hate'),
+            btnWhy: document.getElementById('btn-why'),
+            btnEn: document.getElementById('btn-en'),
+            btnJa: document.getElementById('btn-ja'),
+            rankingBtn: document.getElementById('rankingBtn')
+        };
+
+        window.onload = async () => {
+            console.log('🌐 HELL0w0RLD! 起動中...');
+            elements.loaderText.textContent = t('connect');
+
+            await rankingManager.checkConnection();
+            rankingManager.startAutoRefresh();
+
+            setTimeout(() => {
+                console.log('First timeout fired - hiding loader, showing title');
+                elements.loader.style.display = 'none';
+                elements.titleDiv.style.display = 'flex';
+
+                setTimeout(() => {
+                    console.log('Second timeout fired - hiding title, showing username');
+                    let saved = null; try { saved = localStorage.getItem('hellowworld_name'); } catch (e) {}
+                    flyLogo(() => {
+                        if (saved) {
+                            userName = saved;
+                            showPrompt();
+                            return;
+                        }
+                        elements.enterNameText.textContent = t('enterName');
+                        elements.startBtn.textContent = t('start');
+                        elements.usernameScreen.style.display = 'flex';
+                    });
+                }, 2000);
+            }, 3200);
+        };
+
+        function setLanguage(lang) {
+            if (currentLang === lang) return;
+            currentLang = lang;
+            elements.btnEn.classList.toggle('active', currentLang === 'en');
+            elements.btnJa.classList.toggle('active', currentLang === 'ja');
+            elements.loaderText.textContent = t('connect');
+            elements.enterNameText.textContent = t('enterName');
+            elements.startBtn.textContent = t('start');
+            renderMainLog(true);
+            elements.rankingBtn.textContent = t('viewRankings'); document.getElementById('messagesBtn').textContent = t('messagesBtn');
+            const cb = document.getElementById('changeNameBtn'); if (cb) cb.textContent = currentLang === 'ja' ? '名前変更' : 'change name';
+            const warn = document.getElementById('nameWarn'); if (warn && warn.style.display === 'block') warn.textContent = /使っています|in use/.test(warn.textContent) ? t('nameTaken') : t('nameRequired');
+            const li = document.querySelector('#overlay input[placeholder]'); if (li && !li.dataset.retry && /気持ち|feel/.test(li.placeholder)) li.placeholder = t('lonelyInput');
+            const ask = document.getElementById('lonelyAsk'); if (ask) ask.textContent = currentLang === 'ja' ? 'まだ読めない。もう少し言葉を足して、もう一度 OK' : "can't read it yet. add a few words and press OK again";
+        }
+
+        elements.btnEn.addEventListener('click', () => setLanguage('en'));
+        elements.btnJa.addEventListener('click', () => setLanguage('ja'));
+
+        elements.startBtn.addEventListener('click', () => {
+            const input = document.getElementById('usernameInput');
+            const value = input.value.trim();
+            const warn = document.getElementById('nameWarn');
+            if (!value) {
+                warn.textContent = t('nameRequired'); warn.style.display = 'block';
+                input.style.outline = '2px solid #ff3355'; input.focus();
+                input.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:180,easing:'steps(3,end)'});
+                return;
+            }
+            if (/^(t0t0|oto)$/i.test(value.normalize('NFKC'))) {
+                warn.textContent = t('nameTaken'); warn.style.display = 'block';
+                input.style.outline = '2px solid #ff3355'; input.focus();
+                input.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:180,easing:'steps(3,end)'});
+                return;
+            }
+            warn.style.display = 'none'; input.style.outline = '';
+            userName = value;
+            try { localStorage.setItem('hellowworld_name', userName); } catch (e) {}
+            elements.usernameScreen.style.display = 'none';
+            elements.largeTitle.style.display = 'flex';
+            showPrompt();
+        });
+
+        function showNameBadge() {
+            const b = document.getElementById('nameBadge'); if (!b) return;
+            const cb = document.getElementById('changeNameBtn'); if (cb) cb.textContent = currentLang === 'ja' ? '名前変更' : 'change name';
+            document.getElementById('nameBadgeText').textContent = userName;
+            b.style.display = 'block';
+        }
+        document.getElementById('changeNameBtn').addEventListener('click', () => {
+            const input = document.getElementById('usernameInput');
+            input.value = userName === 'AAA' ? '' : userName;
+            elements.promptSection.style.display = 'none';
+            elements.largeTitle.style.display = 'none';
+            elements.enterNameText.textContent = t('enterName');
+            elements.startBtn.textContent = t('start');
+            const cancel = document.getElementById('nameCancelBtn'); cancel.textContent = t('cancel'); cancel.style.display = 'inline-block';
+            elements.usernameScreen.style.display = 'flex';
+            input.focus();
+        });
+        document.getElementById('nameCancelBtn').addEventListener('click', () => {
+            document.getElementById('nameWarn').style.display = 'none';
+            elements.usernameScreen.style.display = 'none';
+            elements.largeTitle.style.display = 'flex';
+            showPrompt();
+        });
+
+        const RA_START = Date.UTC(2026, 8, 14), RA_END = Date.UTC(2027, 3, 23);
+        function raRate() { const r = 0.03 + 0.97 * Math.min(1, Math.max(0, (Date.now() - RA_START) / (RA_END - RA_START))); return Math.round(r * 100); }
+        function raVoice() { return Math.random() < 0.10 + raRate() / 400; }
+
+        function worldLine() { return null; }
+
+        let mainlogDone = false, mainlogTyping = false;
+        const PROMPTS = () => ['📡 0108: What’s on your mind? > ', '📡 0108: 調子はどう？ > ', '▮▮▮▮: State your request. > ', '▮▮▮▮: ご要望をどうぞ。 > '];
+        function renderMainLog(force) {
+            const M = document.getElementById('mainlog'); if (!M) return;
+            if (mainlogTyping) return;
+            if (mainlogDone) {
+
+                const cur = M.querySelector('.pl.cur');
+                if (cur) { if (PROMPTS().includes(cur.textContent)) cur.textContent = t('promptLine'); }
+                else { const d = document.createElement('div'); d.className = 'pl cur'; d.textContent = t('promptLine'); M.appendChild(d); }
+                return;
+            }
+            mainlogDone = true; mainlogTyping = true;
+            const lines = ['$ python3 0108.py', 'import time'].concat(Math.random() < 0.4 ? ['load ra.sys … ok'] : []).concat(['def main():', '    print("🌐 HELL0w0RLD! 🌐 ")', '    while True:', '', '🌐 HELL0w0RLD! 🌐 ']);
+            const useRa = raVoice();
+            const esc = l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+            const paint = (n) => { M.innerHTML = lines.slice(0, n).map(l => '<div>' + esc(l === '' ? ' ' : l) + '</div>').join('') + (n >= lines.length ? '<div class="pl cur">' + esc(useRa ? t('raPromptLine') : t('promptLine')) + '</div>' : ''); };
+            let n = 0;
+            (function step() { paint(++n); if (n < lines.length) setTimeout(step, 90 + Math.random() * 160); else { mainlogTyping = false; if (useRa) setTimeout(() => { const c = M.querySelector('.pl.cur'); if (c && PROMPTS().includes(c.textContent)) c.textContent = t('promptLine'); }, 900 + Math.random() * 900); } })();
+        }
+
+        function flyLogo(done) {
+            const from = document.querySelector('#title h1'), lt = elements.largeTitle, to = lt;
+            if (!from || !to) { if (lt) lt.style.display = 'flex'; done(); return; }
+            const A = from.getBoundingClientRect();
+            lt.style.display = 'flex'; lt.style.visibility = 'hidden';
+            const B = to.getBoundingClientRect();
+            const c = from.cloneNode(true); c.style.cssText = 'position:fixed;margin:0;left:' + A.left + 'px;top:' + A.top + 'px;width:' + A.width + 'px;height:' + A.height + 'px;z-index:900;transform-origin:top left;display:flex;align-items:center;justify-content:center;gap:12px;white-space:nowrap;font-size:' + getComputedStyle(from).fontSize;
+            document.body.appendChild(c);
+            elements.titleDiv.style.display = 'none';
+            const dx = B.left - A.left, dy = B.top - A.top, sc = B.width / A.width;
+            const anim = c.animate([{ transform: 'translate(0,0) scale(1)' }, { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(' + sc + ')' }], { duration: 650, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' });
+            anim.onfinish = () => { lt.style.visibility = ''; c.remove(); done(); };
+            setTimeout(() => { if (c.isConnected) { lt.style.visibility = ''; c.remove(); done(); } }, 900);
+        }
+
+        const NEW_HOST = '';
+        const MIG_KEYS = ['hellowworld_name', 'hellowworld_first', 'hellowworld_sos_done', 'hellowworld_hate_done', 'hellowworld_why_unlocked', 'hellowworld_tok', 'hellowworld_mymsgs', 'hellowworld_rankings', 'hellowworld_lang'];
+        (function migrate() {
+            try {
+                const m = location.hash.match(/^#m=([A-Za-z0-9_-]+)/);
+                if (m) {
+                    const j = JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g, '+').replace(/_/g, '/')))));
+                    for (const k of MIG_KEYS) if (j[k] != null && localStorage.getItem(k) == null) localStorage.setItem(k, j[k]);
+                    history.replaceState(null, '', location.pathname + location.search);
+                    return;
+                }
+                if (NEW_HOST && /github\.io$/.test(location.hostname)) {
+                    const j = {}; for (const k of MIG_KEYS) { const v = localStorage.getItem(k); if (v != null) j[k] = v; }
+                    const b = btoa(unescape(encodeURIComponent(JSON.stringify(j)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+                    location.replace('https://' + NEW_HOST + '/' + (b ? '#m=' + b : ''));
+                }
+            } catch (e) {}
+        })();
+        (async () => {
+            try {
+                const mine = (document.querySelector('meta[name=build]') || {}).content || '';
+                const u = new URL(location.href); if (u.searchParams.get('b') === mine || !mine) return;
+                const r = await fetch(location.pathname + '?nc=' + Date.now(), { cache: 'no-store' }); const txt = await r.text();
+                const m = txt.match(/name="build" content="([^"]+)"/); if (m && m[1] !== mine) { u.searchParams.set('b', m[1]); location.replace(u.toString()); }
+            } catch (e) {}
+        })();
+        try { if (!localStorage.getItem('hellowworld_first')) localStorage.setItem('hellowworld_first', new Date().toISOString().slice(0, 10)); } catch (e) {}
+        const IS_TEST_HOST = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+        let visitSent = false;
+        function showPrompt() {
+
+            let hd = hateDone; try { hd = hd || localStorage.getItem('hellowworld_hate_done') === '1'; } catch (e) {}
+            const mb = document.getElementById('messagesBtn'); if (mb) { mb.style.display = hd ? 'inline-block' : 'none'; mb.textContent = t('messagesBtn'); }
+            let sd = sosDone; try { sd = sd || localStorage.getItem('hellowworld_sos_done') === '1'; } catch (e) {}
+            elements.rankingBtn.style.display = sd ? 'inline-block' : 'none';
+            showNameBadge();
+            if (!visitSent && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) { visitSent = true; try { fetch('https://hellowworld-rank.nagi-line-bot.workers.dev/visit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: userName, lang: currentLang }) }).catch(() => {}); } catch (e) {} }
+            renderMainLog(false);
+            elements.rankingBtn.textContent = t('viewRankings');
+            elements.promptSection.style.display = 'block';
+            if (window.__notice0915) window.__notice0915();
+
+            elements.btnSos.classList.remove('disabled');
+            elements.btnLonely.classList.remove('disabled');
+            elements.btnHate.classList.remove('disabled');
+
+            let unlockedBefore = false; try { unlockedBefore = localStorage.getItem('hellowworld_why_unlocked') === '1'; } catch (e) {}
+            if (sosDone && lonelyDone && hateDone) { try { localStorage.setItem('hellowworld_why_unlocked', '1'); } catch (e) {} }
+            if ((sosDone && lonelyDone && hateDone) || unlockedBefore) {
+                elements.btnWhy.classList.remove('locked', 'disabled');
+            } else {
+                elements.btnWhy.classList.add('locked', 'disabled');
+            }
+        }
+
+        function addLog(action) {
+
+            const M = document.getElementById('mainlog'); if (!M) return;
+            let pl = M.querySelector('.pl.cur');
+            if (!pl) { pl = document.createElement('div'); pl.className = 'pl cur'; pl.textContent = t('promptLine'); M.appendChild(pl); }
+            const base = t('promptLine'); let i = 0;
+            (function typeNext() {
+                pl.textContent = base + action.slice(0, ++i);
+                M.scrollTop = M.scrollHeight;
+                if (i < action.length) setTimeout(typeNext, 45 + Math.random() * 60);
+                else setTimeout(() => { pl.classList.remove('cur'); }, 150);
+            })();
+        }
+
+        function addResult(lines) {
+            const ts = new Date().toTimeString().slice(0, 8);
+            const M = document.getElementById('mainlog') || elements.outputDiv;
+            const stale = M.querySelector('.pl.cur'); if (stale) stale.classList.remove('cur');
+            const wl = worldLine(); const all = (Array.isArray(lines) ? lines : [lines]).concat(wl ? [wl] : []);
+            const div = document.createElement('div');
+            div.style.opacity = '.75';
+            div.textContent = all.map((l, i) => (i ? '           ' : '[' + ts + '] ') + l).join('\n');
+            M.appendChild(div);
+            const pr = document.createElement('div'); pr.className = 'pl cur'; pr.textContent = t('promptLine');
+            M.appendChild(pr);
+            M.scrollTop = M.scrollHeight;
+        }
+        function createCloseButton(callback) {
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'close-btn';
+            closeBtn.textContent = t('close');
+            closeBtn.addEventListener('click', callback);
+            return closeBtn;
+        }
+
+        async function displayRankings() {
+            const rankingDiv = document.createElement('div');
+            rankingDiv.className = 'ranking';
+
+            const title = document.createElement('div');
+            title.style.textAlign = 'center';
+            title.style.marginBottom = '12px';
+            title.style.color = '#ffff00';
+            title.style.fontSize = '14px';
+            title.style.fontWeight = 'bold';
+            title.textContent = t('rankingTitle');
+            rankingDiv.appendChild(title);
+
+            const rankings = rankingManager.bestByName(await rankingManager.loadRankings());
+
+            const statusDiv = document.createElement('div');
+            statusDiv.style.textAlign = 'center';
+            statusDiv.style.marginBottom = '8px';
+            statusDiv.style.fontSize = '10px';
+            statusDiv.style.color = rankingManager.isOnline ? '#00ff00' : '#ff8800';
+            statusDiv.textContent = rankingManager.isOnline ? t('onlineRankings') : t('offlineRankings');
+            rankingDiv.appendChild(statusDiv);
+
+            const rankingContainer = document.createElement('div');
+            rankingContainer.style.background = 'rgba(0, 0, 0, 0.7)';
+            rankingContainer.style.padding = '12px';
+            rankingContainer.style.borderRadius = '8px';
+            rankingContainer.style.maxHeight = '200px';
+            rankingContainer.style.overflowY = 'auto';
+
+            rankings.slice(0, 15).forEach((entry, index) => {
+                const entryDiv = document.createElement('div');
+                entryDiv.style.display = 'flex';
+                entryDiv.style.justifyContent = 'space-between';
+                entryDiv.style.alignItems = 'center';
+                entryDiv.style.margin = '3px 0';
+                entryDiv.style.padding = '2px 4px';
+                entryDiv.style.fontSize = '11px';
+
+                const rank = index + 1;
+                let rankColor = '#00fff2';
+                if (rank === 1) rankColor = '#ffff00';
+                else if (rank === 2) rankColor = '#c0c0c0';
+                else if (rank === 3) rankColor = '#cd7f32';
+
+                const isCurrentUser = entry.name === userName;
+                if (isCurrentUser) {
+                    entryDiv.style.background = 'rgba(255, 255, 0, 0.2)';
+                    entryDiv.style.borderRadius = '4px';
+                }
+
+                const leftPart = document.createElement('span');
+                leftPart.style.color = rankColor;
+                leftPart.style.display = 'flex';
+                leftPart.style.alignItems = 'center';
+                leftPart.style.gap = '4px';
+
+                const nameText = entry.name.length > 15 ? entry.name.slice(0, 15) + '...' : entry.name;
+                leftPart.textContent = `${rank}. ${nameText}`;
+                if (isCurrentUser) leftPart.style.fontWeight = 'bold';
+
+                const rightPart = document.createElement('span');
+                rightPart.style.color = rankColor;
+                rightPart.textContent = `${entry.time.toFixed(1)}s`;
+                if (isCurrentUser) rightPart.style.fontWeight = 'bold';
+
+                entryDiv.appendChild(leftPart);
+                entryDiv.appendChild(rightPart);
+                rankingContainer.appendChild(entryDiv);
+            });
+
+            const me = rankingManager.me;
+            if (me && me.rank > 15 && !rankings.slice(0, 15).some(e => e.name === userName)) {
+                for (let k = 0; k < 3; k++) { const dots = document.createElement('div'); dots.textContent = '・'; dots.style.cssText = 'text-align:left;padding:0 4px 0 22px;color:#00fff2;opacity:.6;font-size:11px;line-height:1.15'; rankingContainer.appendChild(dots); }
+                const mine = document.createElement('div');
+                mine.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin:3px 0;padding:2px 4px;font-size:11px;background:rgba(255,255,0,0.2);border-radius:4px;font-weight:bold;color:#00fff2';
+                const l = document.createElement('span'); l.textContent = me.rank + '. ' + (me.name.length > 15 ? me.name.slice(0, 15) + '...' : me.name);
+                const rr = document.createElement('span'); rr.textContent = Number(me.time).toFixed(1) + 's';
+                mine.appendChild(l); mine.appendChild(rr); rankingContainer.appendChild(mine);
+            }
+            rankingDiv.appendChild(rankingContainer);
+
+            const statsDiv = document.createElement('div');
+            statsDiv.className = 'world-stats';
+            const totalPlayers = rankings.length;
+            const userRank = (rankings.findIndex(entry => entry.name === userName) + 1) || (rankingManager.me ? rankingManager.me.rank : 0);
+
+            statsDiv.textContent = '';
+
+            return rankingDiv;
+        }
+
+        function drawInvader(ctx, x, y, w, h, type) {
+            const pixelSize = 2;
+            ctx.fillStyle = '#00ffcc';
+
+            const patterns = [
+                [
+                    [0,0,1,0,0,0,1,0],
+                    [0,0,0,1,0,1,0,0],
+                    [0,0,1,1,1,1,1,0],
+                    [0,1,1,0,1,0,1,1],
+                    [1,1,1,1,1,1,1,1],
+                    [1,0,1,1,1,1,0,1],
+                    [1,0,1,0,0,1,0,1],
+                    [0,0,0,1,1,0,0,0]
+                ]
+            ];
+
+            const pattern = patterns[0];
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if (pattern[row][col]) {
+                        ctx.fillRect(
+                            x - w/2 + col * pixelSize,
+                            y - h/2 + row * pixelSize,
+                            pixelSize,
+                            pixelSize
+                        );
+                    }
+                }
+            }
+        }
+
+        function startGame() {
+            return new Promise(resolve => {
+                const gameStartTime = Date.now();
+                elements.overlay.innerHTML = '';
+
+                const canvas = document.createElement('canvas');
+                canvas.width = 320;
+                canvas.height = 240;
+                canvas.style.background = '#001b1a';
+                canvas.style.border = '2px solid #00ffcc'; canvas.style.maxWidth = 'calc(100vw - 24px)'; canvas.style.height = 'auto'; canvas.style.boxSizing = 'border-box';
+                elements.overlay.appendChild(canvas);
+
+                const ctx = canvas.getContext('2d');
+
+                const scoreBoard = document.createElement('div');
+                scoreBoard.style.marginTop = '8px';
+                scoreBoard.style.color = '#00ffcc';
+                elements.overlay.appendChild(scoreBoard);
+
+                const spaceship = { x: canvas.width / 2 - 12, y: canvas.height - 24, w: 24, h: 20, speed: 4 };
+
+                const TOTO = ['...GGGGGG...', '..GGGGGGGG..', '.GGGGGGGGGG.', '.GBBBBBBBBG.', 'GGBCCBBCCBGG', 'GGBCCBBCCBGG', '.GBBBBBBBBG.', '.GGGGGGGGGG.', 'A.GGGGGGGG.A', 'A...GGGG...A'];
+                const TOTO_BLINK = ['...GGGGGG...', '..GGGGGGGG..', '.GGGGGGGGGG.', '.GBBBBBBBBG.', 'GGBBBBBBBBGG', 'GGBCCBBCCBGG', '.GBBBBBBBBG.', '.GGGGGGGGGG.', 'A.GGGGGGGG.A', 'A...GGGG...A'];
+                function drawToto(x, y, white, hurt) {
+                    const map = (Math.floor(Date.now() / 200) % 17 === 0) ? TOTO_BLINK : TOTO;
+                    const col = { G: white ? '#ffffff' : '#d4d4d4', B: '#111111', C: hurt ? '#111111' : '#5ce1ff', A: '#8a8a8a' };
+                    for (let r = 0; r < map.length; r++) for (let c = 0; c < map[r].length; c++) { const k = map[r][c]; if (k === '.') continue; ctx.fillStyle = col[k]; ctx.fillRect(x + c * 2, y + r * 2, 2, 2); }
+                    if (hurt) {
+                        ctx.fillStyle = '#ff2244';
+                        [8, 16].forEach(cx => { for (let i = 0; i < 7; i++) { ctx.fillRect(x + cx - 3 + i, y + 7 + i, 1, 1); ctx.fillRect(x + cx + 3 - i, y + 7 + i, 1, 1); } });
+                    }
+                }
+                const bullets = [];
+                const viruses = [];
+
+                const ROWS = 4, COLS = 9;
+                let remaining = ROWS * COLS;
+                let score = 0;
+                const enemyShots = [];
+                let lastEnemyShot = 0, hitFlash = 0, invulnUntil = 0, penalty = 0;
+
+                for (let r = 0; r < ROWS; r++) {
+                    for (let c = 0; c < COLS; c++) {
+                        viruses.push({
+                            x: 22 + c * 34,
+                            y: 16 + r * 22,
+                            w: 14,
+                            h: 11,
+                            vx: (1.1 + Math.random() * 0.6) * (r % 2 ? 1 : -1),
+                            hit: false
+                        });
+                    }
+                }
+
+                let animationId;
+                let isOver = false;
+
+                function draw() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    const nowT = Date.now();
+                    drawToto(spaceship.x, spaceship.y, nowT < invulnUntil && Math.floor(nowT / 60) % 2, nowT < invulnUntil);
+                    if (hitFlash > 0) { ctx.fillStyle = 'rgba(255,0,80,' + (hitFlash * 0.35) + ')'; ctx.fillRect(0, 0, canvas.width, canvas.height); hitFlash -= 0.12; }
+
+                    const alive = viruses.filter(v => !v.hit);
+                    const gap = Math.max(220, 550 - (viruses.length - alive.length) * 8);
+                    if (alive.length && nowT - lastEnemyShot > gap) {
+                        const v = alive[Math.random() * alive.length | 0];
+                        enemyShots.push({ x: v.x, y: v.y + v.h / 2, vy: 2.0 + Math.random() * 0.8 });
+                        lastEnemyShot = nowT;
+                    }
+                    for (let i = enemyShots.length - 1; i >= 0; i--) {
+                        const e = enemyShots[i]; e.y += e.vy;
+                        ctx.fillStyle = '#ff3355'; ctx.fillRect(e.x - 1, e.y, 2, 7);
+                        if (e.y > canvas.height) { enemyShots.splice(i, 1); continue; }
+                        if (nowT > invulnUntil && e.x >= spaceship.x && e.x <= spaceship.x + spaceship.w && e.y + 7 >= spaceship.y && e.y <= spaceship.y + spaceship.h) {
+                            enemyShots.splice(i, 1); penalty += 2; hitFlash = 1; invulnUntil = nowT + 900;
+                        }
+                    }
+
+                    viruses.forEach(v => {
+                        if (!v.hit) {
+                            v.x += v.vx;
+                            v.y += 0.05;
+                            if (v.y > canvas.height - 40) v.y = canvas.height - 40;
+                            if (v.x - v.w/2 < 0 || v.x + v.w/2 > canvas.width) v.vx *= -1;
+                            drawInvader(ctx, v.x, v.y, v.w, v.h, 0);
+                        }
+                    });
+
+                    for (let i = bullets.length - 1; i >= 0; i--) {
+                        const b = bullets[i];
+                        b.y -= 4;
+                        ctx.fillStyle = '#ffff00';
+                        ctx.fillRect(b.x - 1, b.y - 8, 2, 8);
+
+                        if (b.y < 0) {
+                            bullets.splice(i, 1);
+                            continue;
+                        }
+
+                        viruses.forEach(v => {
+                            if (!v.hit) {
+                                if (b.x >= v.x - v.w/2 && b.x <= v.x + v.w/2 &&
+                                    b.y >= v.y - v.h/2 && b.y <= v.y + v.h/2) {
+                                    v.hit = true;
+                                    remaining--;
+                                    score++;
+                                    bullets.splice(i, 1);
+                                }
+                            }
+                        });
+                    }
+
+                    const gameTime = (Date.now() - gameStartTime) / 1000 + penalty;
+                    scoreBoard.textContent = `${t('virusesLeft')}: ${remaining} | ${t('scoreLabel')}: ${score} | ${t('timeLabel')}: ${gameTime.toFixed(1)}s` + (penalty ? ` (+${penalty}s)` : ''); scoreBoard.style.whiteSpace = 'nowrap'; scoreBoard.style.fontSize = 'clamp(10px,3.4vw,13px)';
+
+                    if (viruses.every(v => v.hit)) {
+                        end(true);
+                    }
+
+                    if (!isOver) animationId = requestAnimationFrame(draw);
+                }
+
+                function shoot() {
+                    bullets.push({ x: spaceship.x + spaceship.w / 2, y: spaceship.y });
+                }
+
+                function pointerMove(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+                    spaceship.x = x - spaceship.w / 2;
+                    if (spaceship.x < 0) spaceship.x = 0;
+                    if (spaceship.x + spaceship.w > canvas.width) spaceship.x = canvas.width - spaceship.w;
+                }
+
+                canvas.addEventListener('mousemove', pointerMove);
+                canvas.addEventListener('mousedown', shoot);
+                canvas.addEventListener('touchmove', pointerMove);
+                canvas.addEventListener('touchstart', shoot);
+
+                function end(success) {
+                    if (isOver) return;
+                    isOver = true;
+                    const finalTime = (Date.now() - gameStartTime) / 1000 + penalty;
+                    cancelAnimationFrame(animationId);
+                    canvas.removeEventListener('mousemove', pointerMove);
+                    canvas.removeEventListener('mousedown', shoot);
+                    canvas.removeEventListener('touchmove', pointerMove);
+                    canvas.removeEventListener('touchstart', shoot);
+                    resolve({ success, time: finalTime, score });
+                }
+
+                draw();
+            });
+        }
+
+        let currentLang = 'en';
+        let userName = 'AAA';
+        let sosDone = false;
+        let lonelyDone = false;
+        let hateDone = false;
+
+        elements.btnSos.addEventListener('click', async () => {
+            addLog('sos');
+
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+
+            const msg = document.createElement('div');
+            msg.textContent = raVoice() ? t('raScanInit') : t('scanInit');
+            elements.overlay.appendChild(msg);
+
+            const progressMsg = document.createElement('div');
+            progressMsg.style.marginTop = '8px';
+            progressMsg.textContent = t('scanProgress');
+            elements.overlay.appendChild(progressMsg);
+
+            const heartScanner = document.createElement('div');
+            heartScanner.className = 'heart-scanner';
+
+            const heartDisplay = document.createElement('div');
+            heartDisplay.className = 'heart-display';
+            heartDisplay.textContent = '♡';
+            heartScanner.appendChild(heartDisplay);
+
+            const scanGrid = document.createElement('div');
+            scanGrid.className = 'scan-grid';
+            heartScanner.appendChild(scanGrid);
+
+            const scanLine = document.createElement('div');
+            scanLine.className = 'scan-line';
+            heartScanner.appendChild(scanLine);
+
+            elements.overlay.appendChild(heartScanner);
+
+            const bar = document.createElement('div'); bar.style.cssText = 'font-family:DotGothic16,PixelMplus10,monospace;font-size:12px;margin-top:6px;letter-spacing:.05em'; elements.overlay.appendChild(bar);
+            for (let i = 0; i <= 10; i++) setTimeout(() => { bar.textContent = 'Scanning your heart... [' + '█'.repeat(i) + '-'.repeat(10 - i) + ']'; }, i * 360);
+            const vitals = document.createElement('div'); vitals.className = 'vitals'; elements.overlay.appendChild(vitals);
+            const vlines = (t('vitals') || []).slice(); if (Math.random() < 0.35) vlines.splice(2, 0, 'observer: external');
+            vlines.forEach((line, i) => {
+                setTimeout(() => {
+                    const d = document.createElement('div'); d.textContent = line; if (/irregular|不整|observer/.test(line) || i >= vlines.length - 2) d.className = 'warn'; vitals.appendChild(d);
+                    if (i === vlines.length - 1) { heartDisplay.textContent = '♥'; heartDisplay.classList.add('bad'); heartScanner.classList.add('bad'); }
+                }, 500 + i * 620);
+            });
+
+            setTimeout(() => {
+                vitals.remove(); bar.remove();
+                msg.textContent = t('virusDetected');
+                progressMsg.remove();
+                heartScanner.remove();
+
+                const virusIcon = document.createElement('div');
+                virusIcon.style.fontSize = '120px';
+                virusIcon.style.margin = '20px 0';
+                virusIcon.style.animation = 'pulse 0.5s infinite';
+                virusIcon.style.color = '#14ffec';
+                virusIcon.textContent = '👾';
+                elements.overlay.appendChild(virusIcon);
+
+                const busterBtn = document.createElement('button');
+                busterBtn.textContent = t('virusBtn');
+                busterBtn.style.marginTop = '12px';
+                busterBtn.style.padding = '8px 16px';
+                busterBtn.style.background = '#14ffec';
+                busterBtn.style.color = '#151515';
+                busterBtn.style.border = 'none';
+                busterBtn.style.cursor = 'pointer';
+                busterBtn.style.fontFamily = 'inherit';
+                elements.overlay.appendChild(busterBtn);
+
+                busterBtn.addEventListener('click', async () => {
+                    const gameResult = await startGame();
+                    elements.overlay.innerHTML = '';
+
+                    const cleanMsg = document.createElement('div');
+                    cleanMsg.innerHTML = t('virusClean').replace(/\n/g, '<br>');
+                    cleanMsg.style.marginBottom = '16px';
+                    elements.overlay.appendChild(cleanMsg);
+
+                    await rankingManager.submitScore(userName, gameResult.time, {
+                        score: gameResult.score,
+                        gameType: 'virus_buster'
+                    });
+
+                    const rankingDisplay = await displayRankings();
+                    elements.overlay.appendChild(rankingDisplay);
+
+                    const closeBtn = createCloseButton(() => {
+                        elements.overlay.style.display = 'none';
+                        sosDone = true; try { localStorage.setItem('hellowworld_sos_done', '1'); } catch (e) {}
+                        addResult(['sos … done', 'virus x' + gameResult.score + '  time ' + gameResult.time.toFixed(1) + 's' + (rankingManager.lastRank ? '  rank #' + rankingManager.lastRank + '' : ''), 'heart 150% clean']);
+                        showPrompt();
+                    });
+                    elements.overlay.appendChild(closeBtn);
+                });
+            }, 4000);
+        });
+
+        elements.btnLonely.addEventListener('click', () => {
+            addLog('lonely');
+
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+
+            const msg = document.createElement('div');
+            msg.textContent = raVoice() ? t('raLonely') : t('lonelyPrompt');
+            msg.style.cssText = 'max-width:90vw;text-align:center;text-wrap:balance';
+            elements.overlay.appendChild(msg);
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = t('lonelyInput');
+            input.style.marginTop = '12px';
+            input.style.padding = '6px 10px';
+            input.style.background = '#111';
+            input.style.color = '#00fff2';
+            input.style.border = '1px solid #00fff2';
+            input.style.fontFamily = 'inherit';
+            input.style.fontSize = '16px';
+            elements.overlay.appendChild(input);
+
+            const okBtn = document.createElement('button');
+            okBtn.textContent = t('whyOk');
+            okBtn.style.marginTop = '8px';
+            okBtn.style.padding = '8px 16px';
+            okBtn.style.background = '#14ffec';
+            okBtn.style.color = '#151515';
+            okBtn.style.border = 'none';
+            okBtn.style.cursor = 'pointer';
+            okBtn.style.fontFamily = 'inherit';
+            const row = document.createElement('div'); row.style.cssText = 'display:flex;gap:8px;align-items:center;margin-top:8px';
+            okBtn.style.marginTop = '0';
+            row.appendChild(okBtn);
+            const cancelBtn = createCloseButton(() => { elements.overlay.style.display = 'none'; showPrompt(); }); cancelBtn.textContent = t('cancel');
+            [okBtn, cancelBtn].forEach(b => { b.style.height = '36px'; b.style.padding = '0 16px'; b.style.fontSize = '13px'; b.style.boxSizing = 'border-box'; b.style.lineHeight = '1'; b.style.margin = '0'; });
+            row.appendChild(cancelBtn);
+            elements.overlay.appendChild(row);
+
+            okBtn.addEventListener('click', async () => {
+                const raw = input.value.trim(); if (!raw) { input.focus(); return; }
+                let hit = matchSong(raw), byMood = false, why = '';
+                if (!hit) {
+
+                    okBtn.disabled = true; const dots = document.createElement('div'); dots.className = 'spin12'; dots.style.marginTop = '10px';
+                    for (let k = 0; k < 12; k++) { const b = document.createElement('i'); b.style.transform = 'rotate(' + (k * 30) + 'deg)'; b.style.opacity = String(0.15 + 0.85 * (k / 11)); dots.appendChild(b); }
+                    elements.overlay.appendChild(dots);
+                    let mt = null, netFail = false;
+                    try {
+                        const ctrl = new AbortController(); const tm = setTimeout(() => ctrl.abort(), 12000);
+                        const r = await fetch('https://hellowworld-rank.nagi-line-bot.workers.dev/mood', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: raw, lang: currentLang }), signal: ctrl.signal });
+                        clearTimeout(tm); const j = await r.json(); if (j.ok && j.title) { mt = j.title; why = j.why || ''; }
+                        else if (j.ok && !j.title) mt = null;
+                    } catch (e) { netFail = true; }
+                    dots.remove(); okBtn.disabled = false;
+                    if (netFail) {
+                        let ask = document.getElementById('lonelyAsk');
+                        if (!ask) { ask = document.createElement('div'); ask.id = 'lonelyAsk'; ask.style.cssText = 'margin-top:8px;color:#ff8aa6;font-size:13px'; input.parentNode.insertBefore(ask, input.nextSibling); }
+                        ask.textContent = currentLang === 'ja' ? '今つながらない。少ししてから、もう一度 OK' : "can't reach the signal. try OK again in a moment";
+                        input.focus(); return;
+                    }
+                    if (!mt && !input.dataset.retry) {
+                        input.dataset.retry = '1';
+                        let ask = document.getElementById('lonelyAsk');
+                        if (!ask) { ask = document.createElement('div'); ask.id = 'lonelyAsk'; ask.style.cssText = 'margin-top:8px;color:#ff8aa6;font-size:13px'; input.parentNode.insertBefore(ask, input.nextSibling); }
+                        ask.textContent = currentLang === 'ja' ? 'まだ読めない。もう少し言葉を足して、もう一度 OK' : "can't read it yet. add a few words and press OK again";
+                        input.focus(); return;
+                    }
+                    mt = mt || '大生解';
+                    hit = matchSong(mt) || { t: mt }; byMood = true;
+                }
+                const title = hit ? hit.t : raw;
+                elements.overlay.innerHTML = '';
+                const term = document.createElement('div');
+                term.style.cssText = 'font-family:DotGothic16,PixelMplus10,monospace;font-size:12px;line-height:1.6;text-align:left;width:min(90vw,340px);white-space:pre-wrap;overflow-wrap:anywhere;color:#14ffec';
+                elements.overlay.appendChild(term);
+                const line = (txt, cls) => { const d = document.createElement('div'); d.textContent = txt; if (cls) d.className = cls; term.appendChild(d); return d; };
+                line('> ' + raw);
+                if (byMood) { const sc = line('scanning mood ... ok'); sc.style.opacity = '.6'; }
+                const tl = line("Now Playing '" + title + "' in your head!"); tl.style.color = '#fff'; tl.style.textShadow = '0 0 8px #14ffec99';
+                if (currentLang === 'ja') { const jl = line('『' + title + '』が、あなたの頭の中で流れています'); jl.style.cssText = 'color:#fff;opacity:.85'; }
+                if (hit && !byMood && nrm(raw) !== nrm(hit.t)) { const dy = line('  ' + (currentLang === 'ja' ? 'もしかして: ' : 'did you mean: ') + hit.t + ' ✓'); dy.style.opacity = '.8'; }
+
+                const t0 = Date.now();
+                let bar = null, timer = null;
+                if (hit && hit.ms) {
+                    bar = document.createElement('div'); bar.className = 'player';
+                    bar.innerHTML = '<span class="pb">▶</span><span class="tm l">0:00</span><span class="tr"><span class="fi"></span><span class="kn"></span></span><span class="tm">-' + Math.floor(hit.ms / 60000) + ':' + String(Math.floor(hit.ms / 1000) % 60).padStart(2, '0') + '</span>';
+                    term.appendChild(bar);
+                    const fi = bar.querySelector('.fi'), kn = bar.querySelector('.kn'), tl = bar.querySelector('.tm.l'), tr = bar.querySelector('.tm:not(.l)'), pb = bar.querySelector('.pb');
+                    const fmt = ms => Math.floor(ms / 60000) + ':' + String(Math.floor(ms / 1000) % 60).padStart(2, '0');
+                    const upd = () => { const el = Math.min(hit.ms, Date.now() - t0); const p = el / hit.ms; fi.style.width = (p * 100) + '%'; kn.style.left = (p * 100) + '%'; tl.textContent = fmt(el); tr.textContent = '-' + fmt(hit.ms - el); if (el >= hit.ms) { pb.textContent = '■'; clearInterval(timer); } };
+                    upd(); timer = setInterval(upd, 200);
+                } else {
+                    const waveContainer = document.createElement('div');
+                    waveContainer.className = 'wave-container';
+                    for (let i = 0; i < 20; i++) { const barEl = document.createElement('div'); barEl.className = 'wave-bar'; barEl.style.animationDelay = (i * 0.1) + 's'; waveContainer.appendChild(barEl); }
+                    term.appendChild(waveContainer);
+                }
+
+                let stat = null;
+                try {
+                    if (IS_TEST_HOST) throw new Error('test host');
+                    const r = await fetch('https://hellowworld-rank.nagi-line-bot.workers.dev/play', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: userName, song: title }) });
+                    stat = await r.json();
+                } catch (e) {}
+                const others = (stat && stat.ok && stat.others) ? stat.others.filter(n => !/^aaa$/i.test(n)) : [];
+                if (others.length) { const o = line('  also in someone’s head today: ' + others.join(', ')); o.style.color = '#ff8aa6'; }
+                const endMsg = line(t('lonelyEnd')); endMsg.style.marginTop = '8px';
+                const closeBtn = createCloseButton(() => {
+                    if (timer) clearInterval(timer);
+                    elements.overlay.style.display = 'none';
+                    lonelyDone = true;
+                    const played = Math.min(hit && hit.ms ? hit.ms : 0, Date.now() - t0);
+                    addResult(['lonely … done', (byMood ? 'mood: ' + raw + ' → ' : 'in head: ') + title + (hit && hit.ms ? '  ' + Math.floor(played / 60000) + ':' + String(Math.floor(played / 1000) % 60).padStart(2, '0') + ' played' : '')].concat(others.length ? ['with ' + others.slice(0, 3).join(', ')] : []));
+                    showPrompt();
+                });
+                elements.overlay.appendChild(closeBtn);
+            });
+        });
+
+        elements.btnHate.addEventListener('click', () => {
+            addLog('hate myself');
+
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+            elements.overlay.style.flexDirection = 'column';
+            elements.overlay.style.justifyContent = 'center';
+            elements.overlay.style.alignItems = 'center';
+            elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
+            elements.overlay.style.gap = '20px';
+
+            const msg = document.createElement('div');
+            msg.textContent = t('hatePrompt');
+            const ja = currentLang === 'ja';
+            const sub = document.createElement('div'); sub.textContent = ja ? '自分が嫌いになりそう？なら時間旅行に行こうぜ。' : 'about to hate yourself? then let’s go time traveling.'; sub.style.cssText = 'font-size:14px;color:#fff;z-index:20;position:relative;margin-top:-6px;text-align:center;max-width:90vw;text-wrap:balance'; elements.overlay.appendChild(sub);
+            msg.style.fontSize = '18px';
+            msg.style.color = '#14ffec';
+            msg.style.zIndex = '20';
+            msg.style.position = 'relative';
+            elements.overlay.appendChild(msg);
+
+            const timeDisplay = createTokikakeClock();
+            let first = null; try { first = localStorage.getItem('hellowworld_first'); } catch (e) {}
+            const firstDate = new Date('1947-06-01T00:00:00');
+            const FUTURE_STOP = new Date('2125-12-17T00:00:00');
+            const fmtClock = (d) => `${String(d.getFullYear()).padStart(4, '0')} ${String(d.getMonth() + 1).padStart(2, '0')} ${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')} ${String(d.getMinutes()).padStart(2, '0')} ${String(d.getSeconds()).padStart(2, '0')}`;
+            let readT = Date.now();
+            let traveling = false; const tick = setInterval(() => { if (!traveling) { readT = Date.now(); timeDisplay.textContent = fmtClock(new Date(readT)); } if (!timeDisplay.isConnected) clearInterval(tick); }, 250);
+            const leap = (target, ms) => new Promise(res => {
+                traveling = true;
+                const from = readT, t0 = performance.now();
+                const tg = new Date(target), dir = target < from ? -1 : 1;
+                const iv = setInterval(() => {
+                    const p = Math.min(1, (performance.now() - t0) / ms), e = 1 - Math.pow(1 - p, 3);
+                    readT = from + (target - from) * e;
+                    const spin = Math.max(0, 1 - p / 0.85);
+                    const d = new Date(readT);
+                    const pick = (k, real, rnd) => (spin > k ? rnd() : real);
+                    const y = pick(0.15, tg.getFullYear(), () => tg.getFullYear() + dir * (1 + Math.random() * 60 * spin | 0));
+                    const mo = pick(0.3, spin > 0 ? tg.getMonth() + 1 : d.getMonth() + 1, () => 1 + Math.random() * 12 | 0);
+                    const da = pick(0.45, spin > 0 ? tg.getDate() : d.getDate(), () => 1 + Math.random() * 28 | 0);
+                    const h = pick(0.6, spin > 0 ? tg.getHours() : d.getHours(), () => Math.random() * 24 | 0);
+                    const mi = pick(0.75, spin > 0 ? tg.getMinutes() : d.getMinutes(), () => Math.random() * 60 | 0);
+                    const se = pick(0.9, spin > 0 ? tg.getSeconds() : d.getSeconds(), () => Math.random() * 60 | 0);
+                    let txt = `${String(y).padStart(4, '0')} ${String(mo).padStart(2, '0')} ${String(da).padStart(2, '0')} ${String(h).padStart(2, '0')} ${String(mi).padStart(2, '0')} ${String(se).padStart(2, '0')}`;
+                    timeDisplay.className = 'tokikake-clock time-transition ' + (p < 0.35 ? 'phase-1' : p < 0.8 ? 'phase-2' : 'phase-3');
+                    timeDisplay.textContent = txt;
+                    if (p >= 1) { clearInterval(iv); readT = target; timeDisplay.textContent = fmtClock(new Date(target)); timeDisplay.className = 'tokikake-clock phase-1 no-scale gentle-pulse'; res(); }
+                }, 33);
+            });
+            const stopLine = (txt) => new Promise(res => { const d = document.createElement('div'); d.className = 'traveling-message stopped'; d.style.cssText = 'color:#fff;font-size:15px;text-align:center;max-width:90vw;z-index:20;position:relative;text-wrap:balance'; elements.overlay.appendChild(d); let k = 0; const iv = setInterval(() => { k++; d.textContent = txt.slice(0, k); if (k >= txt.length) { clearInterval(iv); setTimeout(() => res(d), 1700); } }, 45); });
+            timeDisplay.style.zIndex = '20';
+            timeDisplay.style.position = 'relative';
+            elements.overlay.appendChild(timeDisplay);
+
+            const pastTravelBtn = document.createElement('button');
+            pastTravelBtn.className = 'time-travel-btn';
+            pastTravelBtn.textContent = '🚗 ' + t('travelToPast');
+            pastTravelBtn.style.zIndex = '20';
+            pastTravelBtn.style.position = 'relative';
+            elements.overlay.appendChild(pastTravelBtn);
+
+            pastTravelBtn.addEventListener('click', () => {
+
+                pastTravelBtn.style.display = 'none';
+
+                const numberRain = createNumberRain(elements.overlay, 22, false);
+
+                const pastMsg = document.createElement('div');
+                pastMsg.className = 'traveling-message past';
+                pastMsg.textContent = t('travellingPast');
+                elements.overlay.appendChild(pastMsg);
+
+                (async () => {
+                    await leap(Date.now() - 86400e3, 900);
+                    await leap(firstDate.getTime(), 3400);
+                    if (window.__zap) window.__zap();
+                    pastMsg.remove();
+                    if (numberRain && numberRain.parentNode) numberRain.style.opacity = '.35';
+                    const sl = await stopLine(ja ? 'あなたは、確かにあの日々を生きてきたんだ。' : 'you really did live through those days.');
+                    {
+
+                        const futureTravelBtn = document.createElement('button');
+                        futureTravelBtn.className = 'time-travel-btn future';
+                        futureTravelBtn.textContent = '🚀 ' + t('travelToFuture');
+                        futureTravelBtn.style.zIndex = '20';
+                        futureTravelBtn.style.position = 'relative';
+                        elements.overlay.appendChild(futureTravelBtn);
+
+                        futureTravelBtn.addEventListener('click', () => {
+
+                            elements.overlay.classList.add('future-mode');
+                            futureTravelBtn.style.display = 'none';
+
+                            if (numberRain && numberRain.parentNode) {
+                                numberRain.parentNode.removeChild(numberRain);
+                            }
+                            const futureNumberRain = createNumberRain(elements.overlay, 22, true);
+
+                            const futureMsg = document.createElement('div');
+                            futureMsg.className = 'traveling-message future';
+                            futureMsg.textContent = t('travellingFuture');
+                            elements.overlay.appendChild(futureMsg);
+
+                            sl.remove();
+                            (async () => {
+                                await leap(Date.now() + 86400e3, 1200);
+                                await leap(FUTURE_STOP.getTime(), 3400);
+                                if (window.__zap) window.__zap();
+                                futureMsg.remove(); futureNumberRain.style.opacity = '.35';
+                                await stopLine(ja ? 'あなたに、もう痛みは必要ない。' : 'you don’t need the pain anymore.');
+                                if (futureNumberRain && futureNumberRain.parentNode) futureNumberRain.parentNode.removeChild(futureNumberRain);
+
+                                elements.overlay.innerHTML = '';
+                                elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
+                                elements.overlay.classList.remove('future-mode');
+                                elements.overlay.style.gap = '30px';
+
+                                const resultContainer = document.createElement('div');
+                                resultContainer.className = 'travel-result-container';
+
+                                const header = document.createElement('div');
+                                header.className = 'travel-result-header';
+                                header.textContent = '=== TIME TRAVEL ===';
+                                resultContainer.appendChild(header);
+
+                                const status = document.createElement('div');
+                                status.className = 'travel-result-status';
+                                status.textContent = '>> ANALYSIS COMPLETE\n>> DISPLACEMENT: OK'; status.style.whiteSpace = 'pre-line';
+                                resultContainer.appendChild(status);
+
+                                const dataStream = document.createElement('div');
+                                dataStream.className = 'data-stream';
+                                dataStream.textContent = getCurrentTimestamp();
+                                resultContainer.appendChild(dataStream);
+
+                                const scanLines = document.createElement('div');
+                                scanLines.className = 'scan-lines';
+                                resultContainer.appendChild(scanLines);
+
+                                const endMsg = document.createElement('div');
+                                endMsg.className = 'travel-result-message';
+                                endMsg.textContent = t('hateEnd');
+                                resultContainer.appendChild(endMsg);
+
+                                elements.overlay.appendChild(resultContainer);
+
+                                typewriterEffect(endMsg, t('hateEnd').replace(/([。！!？?])\s*(?=.)/g, '$1\n').replace(/\.\s+(?=[A-Z])/g, '.\n'));
+                                createSparkles(elements.overlay, true);
+
+                                const closeBtn = createCloseButton(() => {
+                                    elements.overlay.style.background = 'rgba(0, 0, 0, 0.85)';
+                                    elements.overlay.style.gap = '';
+                                    hateDone = true; try { localStorage.setItem('hellowworld_hate_done', '1'); } catch (e) {}
+                                    addResult(['hate myself … done', 'time patrol: past → future  ok', 'every moment full of light']);
+                                    showTimeMessages();
+                                });
+                                elements.overlay.appendChild(closeBtn);
+                            })();
+                        });
+                    }
+                })();
+            });
+        });
+
+        elements.btnWhy.addEventListener('click', () => {
+            if (elements.btnWhy.classList.contains('disabled')) return;
+            addLog('why');
+
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+
+            const msg = document.createElement('div');
+            msg.textContent = t('whyPrompt');
+            elements.overlay.appendChild(msg);
+
+            const bar = document.createElement('div');
+            bar.className = 'spin12';
+            for (let k = 0; k < 12; k++) { const b = document.createElement('i'); b.style.transform = 'rotate(' + (k * 30) + 'deg)'; b.style.opacity = String(0.15 + 0.85 * (k / 11)); bar.appendChild(b); }
+            elements.overlay.appendChild(bar);
+
+            let progress = 0;
+            const intv = setInterval(() => {
+                progress += 2;
+                if (progress >= 60) {
+                    clearInterval(intv);
+                    bar.remove();
+
+                    const stopMsg = document.createElement('div');
+                    stopMsg.style.cssText = 'margin-top:8px;max-width:88vw;white-space:normal;text-align:center;text-wrap:balance';
+                    stopMsg.textContent = t('whyStop');
+                    elements.overlay.appendChild(stopMsg);
+
+                    const okBtn = document.createElement('button');
+                    okBtn.textContent = t('whyOk');
+                    okBtn.style.marginTop = '8px';
+                    okBtn.style.padding = '8px 16px';
+                    okBtn.style.background = '#14ffec';
+                    okBtn.style.color = '#151515';
+                    okBtn.style.border = 'none';
+                    okBtn.style.cursor = 'pointer';
+                    okBtn.style.fontFamily = 'inherit';
+                    elements.overlay.appendChild(okBtn);
+
+                    okBtn.addEventListener('click', () => {
+                        console.log('🎯 WHYボタンのOKが押されました！');
+
+                        elements.overlay.innerHTML = '';
+                        elements.overlay.style.background = 'rgba(0, 0, 0, 0.95)';
+
+                        console.log('🏗️ 時計を作成中...');
+
+                        const clock = createOriginalClock();
+                        console.log('⏰ 時計要素:', clock);
+
+                        elements.overlay.appendChild(clock);
+                        console.log('📍 時計をDOMに追加完了');
+                        try { const sh = document.getElementById('secondHand'); if (sh && window.__ensureDoomsday) window.__ensureDoomsday(sh); } catch (e) {}
+
+                        console.log('🚀 時計アニメーション開始...');
+                        try {
+
+                            if (typeof startOriginalClock === 'undefined') {
+                                console.error('❌ startOriginalClock 関数が定義されていません！');
+
+                                console.log('🔧 直接時計を開始します...');
+
+                                function updateClock() {
+                                    try {
+                                        const now = new Date();
+                                        const japanTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Tokyo"}));
+
+                                        const hours = japanTime.getHours() % 12;
+                                        const minutes = japanTime.getMinutes();
+                                        const seconds = japanTime.getSeconds();
+
+                                        const hourAngle = (hours * 30) + (minutes * 0.5);
+                                        const minuteAngle = (minutes * 6);
+                                        const secondAngle = (seconds * 6);
+
+                                        const hourHand = document.getElementById('hourHand');
+                                        const minuteHand = document.getElementById('minuteHand');
+                                        const secondHand = document.getElementById('secondHand');
+
+                                        if (hourHand) {
+                                            hourHand.style.transform = `translateX(-50%) rotate(${hourAngle}deg)`;
+                                            hourHand.style.transformOrigin = 'center bottom';
+                                        }
+                                        if (minuteHand) {
+                                            minuteHand.style.transform = `translateX(-50%) rotate(${minuteAngle}deg)`;
+                                            minuteHand.style.transformOrigin = 'center bottom';
+                                        }
+                                        if (secondHand && !secondHand.dataset.glitch) {
+                                            secondHand.style.transform = `translateX(-50%) rotate(${secondAngle}deg)`;
+                                            secondHand.style.transformOrigin = 'center bottom';
+                                        }
+
+                                        console.log(`⏰ 時計更新: ${hours}:${minutes}:${seconds}`);
+
+                                    } catch (error) {
+                                        console.error('❌ 時計更新エラー:', error);
+                                    }
+                                }
+
+                                updateClock();
+
+                                const clockInterval = setInterval(updateClock, 1000);
+                                console.log('✅ 直接時計アニメーション設定完了, intervalID:', clockInterval);
+
+                                const closeHandler = () => {
+                                    console.log('⏹️ 時計を停止中...');
+                                    clearInterval(clockInterval);
+                                    console.log('✅ 時計停止完了');
+                                };
+
+                                elements.overlay.addEventListener('click', (e) => {
+                                    if (e.target === elements.overlay) {
+                                        closeHandler();
+                                        elements.overlay.style.display = 'none';
+                                    }
+                                });
+
+                                const escHandler = (e) => {
+                                    if (e.key === 'Escape') {
+                                        closeHandler();
+                                        elements.overlay.style.display = 'none';
+                                        document.removeEventListener('keydown', escHandler);
+                                    }
+                                };
+                                document.addEventListener('keydown', escHandler);
+
+                            } else {
+
+                                const clockInterval = startOriginalClock();
+                                console.log('✅ 時計アニメーション設定完了, intervalID:', clockInterval);
+                            }
+
+                        } catch (error) {
+                            console.error('❌ 時計アニメーション開始エラー:', error);
+                            console.error('エラーの詳細:', error.message);
+                            console.error('エラーのスタック:', error.stack);
+                        }
+
+                        console.log('🎉 時計表示処理完了！');
+                    });
+                }
+            }, 400);
+        });
+
+        document.getElementById('messagesBtn').addEventListener('click', () => { addLog('messages'); showTimeMessages(); });
+        elements.rankingBtn.addEventListener('click', async () => {
+            elements.overlay.innerHTML = '';
+            elements.overlay.style.display = 'flex';
+
+            const loadingMsg = document.createElement('div');
+            loadingMsg.textContent = '🌐 Loading global rankings...';
+            loadingMsg.style.marginBottom = '20px';
+            elements.overlay.appendChild(loadingMsg);
+
+            const rankingDisplay = await displayRankings();
+            elements.overlay.removeChild(loadingMsg);
+            elements.overlay.appendChild(rankingDisplay);
+
+            const closeBtn = createCloseButton(() => {
+                elements.overlay.style.display = 'none';
+            });
+            elements.overlay.appendChild(closeBtn);
+        });
+
+        setInterval(async () => {
+            await rankingManager.checkConnection();
+        }, 15000);
+
+        rankingManager.checkConnection();
+
+        (function(){
+            const L=document.createElement('div'); L.id='glitchLayer'; document.body.appendChild(L);
+
+            const C=['#ff0000','#00ff00','#0000ff','#ffff00','#ff00ff','#00ffff','#ffffff'];
+            function frame(){
+                L.innerHTML='';
+                const tears=1+(Math.random()*2|0);
+                for(let i=0;i<tears;i++){const b=document.createElement('div');b.className='band tear';b.style.top=(Math.random()*92)+'%';b.style.height=(8+Math.random()*34)+'px';b.style.transform='translateX('+((Math.random()-0.5)*22)+'px)';b.style.backdropFilter=b.style.webkitBackdropFilter=(Math.random()<0.5?'invert(1) ':'')+'hue-rotate('+(Math.random()*360|0)+'deg) contrast(1.6)';L.appendChild(b);}
+                const lines=2+(Math.random()*3|0);
+                for(let i=0;i<lines;i++){const b=document.createElement('div');b.className='band';b.style.top=(Math.random()*100)+'%';b.style.height=(1+(Math.random()<0.3?1:0))+'px';b.style.background=C[Math.random()*C.length|0];b.style.left=(Math.random()*40)+'%';b.style.right=(Math.random()*40)+'%';L.appendChild(b);}
+                if(Math.random()<0.5){const b=document.createElement('div');b.className='band';b.style.top=(Math.random()*100)+'%';b.style.height=(3+Math.random()*10)+'px';b.style.background='#000';b.style.left=(Math.random()*30)+'%';L.appendChild(b);}
+                if(Math.random()<0.6){const b=document.createElement('div');b.className='band';b.style.top=(Math.random()*100)+'%';b.style.height=(2+Math.random()*5)+'px';b.style.background='#fff';b.style.right=(20+Math.random()*60)+'%';L.appendChild(b);}
+            }
+
+            const GL='▮▯░▒▓█ｱｲｳｴｵｶｷｸｹｺ£¥§ÆØ¿∆∑◊01#%&';
+            const CORR=new Map();
+            function corrupt(){
+                const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentElement;if(!p||!n.nodeValue.trim()||n.nodeValue.trim().length<3)return NodeFilter.FILTER_REJECT;if(p.closest('script,style,input,textarea,#glitchLayer,[data-typing]'))return NodeFilter.FILTER_REJECT;const r=p.getBoundingClientRect();if(r.width===0||r.bottom<0||r.top>innerHeight)return NodeFilter.FILTER_REJECT;return NodeFilter.FILTER_ACCEPT;}});
+                const nodes=[];let n;while((n=walker.nextNode()))nodes.push(n);
+                const picked=nodes.filter(t=>!CORR.has(t)).sort(()=>Math.random()-0.5).slice(0,3+(Math.random()*4|0));
+                picked.forEach(t=>CORR.set(t,t.nodeValue));
+                picked.forEach(t=>{const a=[...t.nodeValue];const k=Math.max(1,Math.round(a.length*(0.2+Math.random()*0.35)));for(let i=0;i<k;i++){const j=Math.random()*a.length|0;if(a[j]!==' ')a[j]=GL[Math.random()*GL.length|0];}t.nodeValue=a.join('');});
+                return()=>picked.forEach(t=>{if(CORR.has(t)){t.nodeValue=CORR.get(t);CORR.delete(t);}});
+            }
+            window.__zap=()=>zap();
+            function zap(){
+                frame(); L.classList.add('on'); document.body.classList.add('glitching');
+                let restore=null; try{restore=corrupt();}catch(e){}
+                setTimeout(()=>{try{restore&&restore();}catch(e){} if(Math.random()<0.5){try{const r2=corrupt();setTimeout(r2,60+Math.random()*60);}catch(e){}}}, 90+Math.random()*60);
+                document.body.style.filter='drop-shadow('+(1+Math.random()*2|0)+'px 0 #f00) drop-shadow(-'+(1+Math.random()*2|0)+'px 0 #0ff)';
+                setTimeout(frame, 70+Math.random()*50);
+                setTimeout(()=>{document.body.style.filter='';}, 60+Math.random()*60);
+                if(Math.random()<0.26){document.documentElement.classList.add('inv');setTimeout(()=>document.documentElement.classList.remove('inv'),40+Math.random()*40);}
+                if(window.__sublim && Math.random()<0.9) setTimeout(window.__sublim, 40);
+                setTimeout(()=>{L.classList.remove('on'); L.innerHTML=''; document.body.classList.remove('glitching');}, 170+Math.random()*70);
+                if(Math.random()<0.45) setTimeout(zap, 260+Math.random()*380);
+            }
+            (function loop(){ setTimeout(()=>{ zap(); loop(); }, 5000+Math.random()*12000); })();
+        })();
+
+        (function(){
+            const img=document.createElement('img'); img.id='sublim'; img.src='ai-ra-logo.png'; img.alt=''; document.body.appendChild(img);
+            window.__sublim=function(){
+                img.style.setProperty('--so', (0.16+Math.random()*0.12).toFixed(2));
+                img.style.setProperty('--sd', (70+Math.random()*60|0)+'ms');
+                img.style.left=(46+Math.random()*8)+'%'; img.style.top=(30+Math.random()*12)+'%';
+                img.classList.remove('on'); void img.offsetWidth; img.classList.add('on');
+            };
+
+            (function loop(){ setTimeout(()=>{ window.__sublim(); loop(); }, 45000+Math.random()*75000); })();
+        })();
+
+        (function(){
+
+            const B=document.getElementById('bootlog');
+            if(false&&B){const boot=['$ python3 0108.py','import time'].concat(Math.random()<0.4?['load ra.sys … ok']:[]).concat((typeof worldLine==='function'&&worldLine())?[worldLine()]:[]).concat(['def main():','    print("🌐 HELL0w0RLD! 🌐 ")','    while True:','        user_input = input("📡 0108: What’s on your mind? > ")','','🌐 HELL0w0RLD! 🌐 ','📡 0108: What’s on your mind? > _']);
+                let i=0;(function step(){if(i>=boot.length)return;const l=document.createElement('div');l.textContent=boot[i++];B.appendChild(l);if(B.childElementCount>9)B.removeChild(B.firstChild);setTimeout(step,120+Math.random()*260);})();}
+        })();
+
+        (function(){
+            let ep=null;
+            const readAngle=el=>{const m=/rotate\(([-\d.]+)deg\)/.exec(el.style.transform||'');return m?+m[1]:null;};
+            function trueAngle(){const now=new Date();const jp=new Date(now.toLocaleString('en-US',{timeZone:'Asia/Tokyo'}));return jp.getSeconds()*6+jp.getMilliseconds()*0.006;}
+
+            let dd=null; fetch('https://hellowworld-rank.nagi-line-bot.workers.dev/doomsday').then(r=>r.json()).then(j=>{dd=j;}).catch(()=>{dd={seconds:85,set:'2026-01-27',src:'thebulletin.org'};});
+            window.__ensureDoomsday=ensureDoomsday;
+            function ensureDoomsday(h){
+                if(document.getElementById('doomsday'))return;
+                const box=h.closest('#overlay')||h.parentElement; if(!box)return;
+                const d=document.createElement('div'); d.id='doomsday';
+                d.style.cssText='position:fixed;right:10px;bottom:8px;font-family:DotGothic16,PixelMplus10,monospace;font-size:9px;letter-spacing:.14em;color:#14ffec;opacity:.3;z-index:601';
+                box.appendChild(d);
+                let tick=0;
+                (function upd(){ if(!d.isConnected)return; const v=dd||{seconds:85,set:'2026-01-27',src:'thebulletin.org'}; const sec=v.seconds; const mm=String(Math.floor((60*60*24-sec)/60)%60).padStart(2,'0'), ss=String((60-sec%60)%60).padStart(2,'0');
+                    const hh=String(23-Math.floor(sec/3600)).padStart(2,'0');
+                    d.textContent=String(sec)+'s left'+(tick%2?' ▮':' ▯');
+                    tick++; setTimeout(upd,1000); })();
+            }
+            function frame(){
+                const h=document.getElementById('secondHand');
+                if(h&&h.isConnected){
+                    ensureDoomsday(h);
+                    if(!ep && Math.random()<1/(60*28)){
+                        const cur=readAngle(h); ep={t0:performance.now(),dur:1500+Math.random()*1500,kind:Math.random()<0.5?'race':'spin',base:cur==null?0:cur,off:cur==null?0:cur-(trueAngle()%360)};
+                        h.dataset.glitch='1';
+                    }
+                    if(ep){
+                        const t=(performance.now()-ep.t0)/ep.dur;
+                        if(t>=1){ delete h.dataset.glitch; ep=null; h.style.transform='translateX(-50%) rotate('+(trueAngle()%360)+'deg)'; }
+                        else{
+                            let a;
+                            if(ep.kind==='race'){ a=ep.base-Math.min(1,t*1.6)*(120+Math.random()*30)+(t>0.6?Math.sin(t*90)*6:0); }
+                            else { const turns=1+Math.round(Math.random()); a=ep.base- (t<0.75? (t/0.75)*(360*turns) : 360*turns - Math.sin(t*60)*4); }
+                            if(Math.random()<0.08) a+= (Math.random()-0.5)*40;
+                            h.style.transform='translateX(-50%) rotate('+a+'deg)';
+                        }
+                    }
+                }
+                requestAnimationFrame(frame);
+            }
+            requestAnimationFrame(frame);
+            window.__clockGlitch=(kind)=>{const h=document.getElementById('secondHand');if(!h)return false;const cur=readAngle(h);ep={t0:performance.now(),dur:2200,kind:kind||'spin',base:cur==null?0:cur,off:0};h.dataset.glitch='1';return true;};
+        })();
+</script>
+</body>
+</html>
